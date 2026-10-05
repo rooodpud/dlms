@@ -1,0 +1,1043 @@
+/**
+ * DeutschLMS front end.
+ *
+ * Uses CSS logical properties (margin-inline-start, ...) so layouts mirror
+ * automatically in right-to-left languages. Colors are custom properties a
+ * theme can override, e.g. `:root { --dlms-accent: #b91c1c; }`.
+ */
+
+.dlms,
+.wp-block-deutschlms-course-outline,
+.wp-block-deutschlms-progress-bar,
+.wp-block-deutschlms-mark-complete,
+.wp-block-deutschlms-enroll-button,
+.wp-block-deutschlms-course-grid,
+.wp-block-deutschlms-student-dashboard {
+	--dlms-accent: var(--wp--preset--color--primary, #1d4ed8);
+	--dlms-accent-contrast: #fff;
+	--dlms-success: #15803d;
+	--dlms-success-contrast: #fff;
+	--dlms-danger: #b91c1c;
+
+	/* Opaque panels (e.g. the sticky special-character bar). */
+	--dlms-panel-background: #fff;
+	--dlms-panel-color: #1f2937;
+
+	/* Derived from the text color, so they work on light and dark themes. */
+	--dlms-muted: color-mix(in srgb, currentcolor 72%, transparent);
+	--dlms-border: color-mix(in srgb, currentcolor 20%, transparent);
+	--dlms-surface: color-mix(in srgb, currentcolor 5%, transparent);
+	--dlms-radius: 6px;
+	--dlms-gap: 1rem;
+}
+
+.dlms-sr {
+	position: absolute !important;
+	inline-size: 1px;
+	block-size: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* Buttons and links ------------------------------------------------------ */
+
+.dlms-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4em;
+	padding-block: 0.65em;
+	padding-inline: 1.3em;
+	border: 2px solid var(--dlms-accent);
+	border-radius: var(--dlms-radius);
+	background: var(--dlms-accent);
+	color: var(--dlms-accent-contrast);
+	font: inherit;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.dlms-button:hover,
+.dlms-button:focus-visible {
+	filter: brightness(1.1);
+	color: var(--dlms-accent-contrast);
+}
+
+.dlms-button:focus-visible,
+.dlms a:focus-visible {
+	outline: 3px solid var(--dlms-accent);
+	outline-offset: 2px;
+}
+
+.dlms-button[disabled],
+.dlms-button[aria-busy="true"] {
+	opacity: 0.6;
+	cursor: progress;
+}
+
+.dlms-button--secondary {
+	background: transparent;
+	color: var(--dlms-accent);
+}
+
+.dlms-button--secondary:hover,
+.dlms-button--secondary:focus-visible {
+	color: var(--dlms-accent);
+}
+
+.dlms-link {
+	color: var(--dlms-accent);
+}
+
+.dlms-empty {
+	color: var(--dlms-muted);
+}
+
+/* Status icons (no icon font; plain characters) -------------------------- */
+
+.dlms-status-icon {
+	display: inline-grid;
+	place-items: center;
+	flex: none;
+	inline-size: 1.4em;
+	block-size: 1.4em;
+	border: 2px solid var(--dlms-border);
+	border-radius: 50%;
+	font-size: 0.8em;
+	line-height: 1;
+}
+
+.dlms-status--complete > .dlms-step-row > .dlms-status-icon,
+.dlms-status--complete > .dlms-status-icon {
+	border-color: var(--dlms-success);
+	background: var(--dlms-success);
+	color: var(--dlms-success-contrast);
+}
+
+.dlms-status--complete > .dlms-step-row > .dlms-status-icon::before,
+.dlms-status--complete > .dlms-status-icon::before {
+	content: "\2713";
+}
+
+.dlms-status--locked > .dlms-step-row > .dlms-status-icon::before {
+	content: "\1F512";
+	font-size: 0.75em;
+}
+
+.dlms-status--locked > .dlms-step-row {
+	color: var(--dlms-muted);
+}
+
+/* Course overview, enrollment, notices ----------------------------------- */
+
+.dlms-course-overview,
+.dlms-step-footer,
+.dlms-locked-wrap {
+	display: grid;
+	gap: var(--dlms-gap);
+	margin-block-start: 2rem;
+}
+
+.dlms-enroll {
+	padding: 1.25rem;
+	border: 1px solid var(--dlms-border);
+	border-radius: var(--dlms-radius);
+	background: var(--dlms-surface);
+}
+
+.dlms-enroll > p,
+.dlms-enroll__form {
+	margin: 0;
+}
+
+.dlms-enroll > p + p {
+	margin-block-start: 0.75rem;
+}
+
+.dlms-enroll__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem 1.25rem;
+}
+
+.dlms-enroll__text.dlms-status--complete {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	font-weight: 600;
+}
+
+.dlms-form-status:empty {
+	display: none;
+}
+
+.dlms-form-status {
+	margin-block: 0.5rem 0;
+	color: var(--dlms-danger);
+}
+
+.dlms-notice {
+	padding: 0.85rem 1rem;
+	border-inline-start: 4px solid var(--dlms-success);
+	border-radius: var(--dlms-radius);
+	background: color-mix(in srgb, var(--dlms-success) 8%, transparent);
+}
+
+.dlms-notice--error {
+	border-inline-start-color: var(--dlms-danger);
+	background: color-mix(in srgb, var(--dlms-danger) 8%, transparent);
+}
+
+/* Progress bar ------------------------------------------------------------ */
+
+.dlms-progress {
+	display: grid;
+	gap: 0.4rem;
+}
+
+.dlms-progress__bar {
+	overflow: hidden;
+	block-size: 0.65rem;
+	border-radius: 999px;
+	background: var(--dlms-border);
+}
+
+.dlms-progress__fill {
+	display: block;
+	block-size: 100%;
+	border-radius: inherit;
+	background: var(--dlms-success);
+	transition: inline-size 0.3s ease;
+}
+
+.dlms-progress__label {
+	margin: 0;
+	color: var(--dlms-muted);
+	font-size: 0.9em;
+}
+
+/* Outline and topic lists ------------------------------------------- */
+
+.dlms-outline__heading,
+.dlms-topics__heading,
+.dlms-dashboard__heading {
+	margin-block: 0 0.75rem;
+	font-size: 1.25em;
+}
+
+.dlms-outline__lessons,
+.dlms-outline__topics,
+.dlms-topics__list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.dlms-outline__lessons {
+	border: 1px solid var(--dlms-border);
+	border-radius: var(--dlms-radius);
+}
+
+/* Section headings between groups of lessons (set in the course builder). */
+.dlms-outline__section {
+	margin-block: 2rem 0.75rem;
+	padding-block-end: 0.35rem;
+	border-block-end: 3px solid var(--dlms-accent);
+	font-size: 1.75em;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.dlms-outline__heading + .dlms-outline__section {
+	margin-block-start: 0.5rem;
+}
+
+.dlms-outline__lesson {
+	padding: 0.75rem 1rem;
+}
+
+.dlms-outline__lesson + .dlms-outline__lesson {
+	border-block-start: 1px solid var(--dlms-border);
+}
+
+.dlms-outline__lesson > .dlms-step-row {
+	font-weight: 600;
+}
+
+.dlms-outline__topics {
+	margin-block-start: 0.5rem;
+	padding-inline-start: 2rem;
+}
+
+.dlms-outline__topic,
+.dlms-topics__item {
+	padding-block: 0.3rem;
+}
+
+.dlms-step-row {
+	display: flex;
+	align-items: center;
+	gap: 0.6em;
+}
+
+.is-current > .dlms-step-row .dlms-step-row__title {
+	text-decoration: underline;
+	text-decoration-thickness: 2px;
+}
+
+/* Mark complete and step navigation ------------------------------------- */
+
+.dlms-complete__form,
+.dlms-complete__status {
+	margin: 0;
+}
+
+.dlms-complete__status.dlms-status--complete {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	color: var(--dlms-success);
+	font-weight: 600;
+}
+
+.dlms-complete__status--preview {
+	padding: 0.75rem 1rem;
+	border-radius: var(--dlms-radius);
+	background: var(--dlms-surface);
+	color: var(--dlms-muted);
+}
+
+.dlms-step-nav {
+	display: grid;
+	gap: 0.75rem;
+	padding-block-start: var(--dlms-gap);
+	border-block-start: 1px solid var(--dlms-border);
+}
+
+.dlms-step-nav__course {
+	margin: 0;
+}
+
+.dlms-step-nav__links {
+	display: flex;
+	justify-content: space-between;
+	gap: var(--dlms-gap);
+}
+
+.dlms-step-nav__link {
+	display: grid;
+	max-inline-size: 48%;
+	text-decoration: none;
+}
+
+.dlms-step-nav__link--next {
+	margin-inline-start: auto;
+	text-align: end;
+}
+
+.dlms-step-nav__dir {
+	color: var(--dlms-muted);
+	font-size: 0.85em;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.dlms-step-nav__title {
+	font-weight: 600;
+}
+
+.dlms-step-nav__link.is-locked {
+	color: var(--dlms-muted);
+}
+
+.dlms-arrow::before {
+	content: "\2190";
+	display: inline-block;
+}
+
+/* Arrows point the other way in right-to-left languages. */
+[dir="rtl"] .dlms-arrow::before {
+	transform: scaleX(-1);
+}
+
+/* Locked content ---------------------------------------------------- */
+
+.dlms-locked {
+	padding: 1.25rem;
+	border: 1px dashed var(--dlms-border);
+	border-radius: var(--dlms-radius);
+}
+
+.dlms-locked > p {
+	margin-block: 0 0.5rem;
+}
+
+.dlms-locked__title {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	font-size: 1.15em;
+	font-weight: 600;
+}
+
+.dlms-lock-icon::before {
+	content: "\1F512";
+}
+
+/* Course grid -------------------------------------------------------------- */
+
+.dlms-grid {
+	display: grid;
+	grid-template-columns: repeat(var(--dlms-columns, 3), minmax(0, 1fr));
+	gap: 1.5rem;
+}
+
+.dlms-grid--cols-1 {
+	--dlms-columns: 1;
+}
+
+.dlms-grid--cols-2 {
+	--dlms-columns: 2;
+}
+
+.dlms-grid--cols-3 {
+	--dlms-columns: 3;
+}
+
+.dlms-grid--cols-4 {
+	--dlms-columns: 4;
+}
+
+@media (max-width: 900px) {
+
+	.dlms-grid--cols-3,
+	.dlms-grid--cols-4 {
+		--dlms-columns: 2;
+	}
+}
+
+@media (max-width: 600px) {
+
+	.dlms-grid {
+		--dlms-columns: 1;
+	}
+}
+
+.dlms-card {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	border: 1px solid var(--dlms-border);
+	border-radius: var(--dlms-radius);
+}
+
+.dlms-card__media img {
+	display: block;
+	inline-size: 100%;
+	block-size: auto;
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+}
+
+.dlms-card__body {
+	display: grid;
+	gap: 0.5rem;
+	padding: 1rem;
+}
+
+.dlms-card__body > * {
+	margin: 0;
+}
+
+.dlms-card__title {
+	font-size: 1.15em;
+}
+
+.dlms-card__meta,
+.dlms-card__progress-label {
+	color: var(--dlms-muted);
+	font-size: 0.9em;
+}
+
+.dlms-card__badge,
+.dlms-badge {
+	justify-self: start;
+	padding: 0.15em 0.6em;
+	border-radius: 999px;
+	background: var(--dlms-surface);
+	font-size: 0.8em;
+	font-weight: 600;
+}
+
+.dlms-badge--complete {
+	background: color-mix(in srgb, var(--dlms-success) 25%, transparent);
+}
+
+.dlms-badge--progress {
+	background: color-mix(in srgb, var(--dlms-accent) 25%, transparent);
+}
+
+/* Dashboard ---------------------------------------------------------------- */
+
+.dlms-dashboard__list {
+	display: grid;
+	gap: var(--dlms-gap);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.dlms-dashboard__course {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--dlms-gap);
+	padding: 1rem;
+	border: 1px solid var(--dlms-border);
+	border-radius: var(--dlms-radius);
+}
+
+.dlms-dashboard__thumb img {
+	display: block;
+	inline-size: 72px;
+	block-size: 72px;
+	border-radius: var(--dlms-radius);
+	object-fit: cover;
+}
+
+.dlms-dashboard__body {
+	display: grid;
+	gap: 0.4rem;
+	grid-column: 2;
+}
+
+.dlms-dashboard__body > * {
+	margin: 0;
+}
+
+.dlms-dashboard__title {
+	font-size: 1.1em;
+}
+
+.dlms-dashboard__action {
+	grid-column: 3;
+}
+
+@media (max-width: 600px) {
+
+	.dlms-dashboard__course {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.dlms-dashboard__thumb {
+		display: none;
+	}
+
+	.dlms-dashboard__body,
+	.dlms-dashboard__action {
+		grid-column: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.dlms-progress__fill {
+		transition: none;
+	}
+}
+
+/* Quizzes and scheduled (drip) steps ------------------------------------- */
+
+.dlms-step-row__type {
+	padding: 0.05em 0.45em;
+	border-radius: 999px;
+	background: var(--dlms-surface);
+	font-size: 0.75em;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.dlms-step-row__date {
+	color: var(--dlms-muted);
+	font-size: 0.85em;
+}
+
+.dlms-status--scheduled > .dlms-step-row {
+	color: var(--dlms-muted);
+}
+
+.dlms-status--scheduled > .dlms-step-row > .dlms-status-icon::before {
+	content: "\23F3";
+	font-size: 0.75em;
+}
+
+.dlms-outline__quizzes {
+	margin: 0.25rem 0 0;
+	padding-inline-start: 2rem;
+	list-style: none;
+}
+
+.dlms-outline__final > .dlms-step-row {
+	font-weight: 600;
+}
+
+.dlms-quiz {
+	display: grid;
+	gap: var(--dlms-gap);
+}
+
+.dlms-quiz__facts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1.25rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	color: var(--dlms-muted);
+	font-size: 0.9em;
+}
+
+.dlms-quiz__passed {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5em;
+	margin: 0;
+	font-weight: 600;
+}
+
+.dlms-quiz__questions,
+.dlms-quiz-result__questions {
+	display: grid;
+	gap: var(--dlms-gap);
+	margin: 0 0 var(--dlms-gap);
+	padding-inline-start: 1.5rem;
+}
+
+.dlms-quiz__question fieldset {
+	margin: 0;
+	padding: 1rem;
+	border: 1px solid var(--dlms-border);
+	border-radius: var(--dlms-radius);
+}
+
+.dlms-quiz__text {
+	padding: 0;
+	font-weight: 600;
+}
+
+.dlms-quiz__hint {
+	margin: 0.25rem 0 0;
+	color: var(--dlms-muted);
+	font-size: 0.85em;
+}
+
+.dlms-quiz__answer {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.6em;
+	margin-block-start: 0.6rem;
+	cursor: pointer;
+}
+
+.dlms-quiz__answer input {
+	margin-block-start: 0.25em;
+}
+
+.dlms-quiz__closed {
+	color: var(--dlms-muted);
+}
+
+/* Gap-fill ----------------------------------------------------------- */
+
+.dlms-quiz__cloze {
+	margin: 0;
+	font-weight: 400;
+	line-height: 2.1;
+}
+
+.dlms-quiz .dlms-gap {
+
+	/* Themes often stretch text inputs (width: 100%); here `size` decides. */
+	inline-size: auto;
+	min-inline-size: 0;
+	max-inline-size: 100%;
+	margin-inline: 0.1em;
+	padding-block: 0.1em;
+	padding-inline: 0.4em;
+	border: 0;
+	border-block-end: 2px solid var(--dlms-accent);
+	border-radius: 4px 4px 0 0;
+	background: var(--dlms-surface);
+	color: inherit;
+	font: inherit;
+	line-height: 1.4;
+}
+
+.dlms-quiz .dlms-gap:focus-visible {
+	outline: 2px solid var(--dlms-accent);
+	outline-offset: 1px;
+}
+
+/* Bar that sticks to the bottom of the screen: time left and ä/ö/ü/ß. */
+.dlms-dock {
+	position: sticky;
+	inset-block-end: 0.5rem;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 0.35rem;
+	margin-block: 0 var(--dlms-gap);
+}
+
+.dlms-dock:empty {
+	display: none;
+}
+
+.dlms-chars {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.35rem;
+	margin: 0;
+	padding: 0.5rem;
+	border: 1px solid var(--dlms-border);
+	border-radius: var(--dlms-radius);
+	background: var(--dlms-panel-background);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+	color: var(--dlms-panel-color);
+}
+
+.dlms-chars[hidden] {
+	display: none;
+}
+
+.dlms-chars__label {
+	margin-inline-end: 0.25rem;
+	font-size: 0.85em;
+}
+
+.dlms-quiz .dlms-chars__key {
+	min-inline-size: 2.2em;
+	padding: 0.2em 0.5em;
+	border: 1px solid var(--dlms-border);
+	border-radius: 4px;
+	background: color-mix(in srgb, currentcolor 8%, transparent);
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+}
+
+.dlms-quiz .dlms-chars__key:hover,
+.dlms-quiz .dlms-chars__key:focus-visible {
+	border-color: var(--dlms-accent);
+}
+
+/* Time limit ---------------------------------------------------------- */
+
+.dlms-timer {
+	display: flex;
+	align-items: center;
+	align-self: flex-end;
+	gap: 0.4rem;
+	margin: 0;
+	padding: 0.35rem 0.75rem;
+	border: 1px solid var(--dlms-border);
+	border-radius: 999px;
+	background: var(--dlms-panel-background);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+	color: var(--dlms-panel-color);
+	font-size: 0.95em;
+}
+
+.dlms-timer[hidden] {
+	display: none;
+}
+
+.dlms-timer__clock {
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+
+.dlms-timer.is-low {
+	border-color: var(--dlms-danger);
+	background: var(--dlms-danger);
+	color: #fff;
+}
+
+.dlms-timeup {
+	max-inline-size: min(32rem, calc(100vw - 2rem));
+	padding: 1.25rem 1.5rem;
+	border: 0;
+	border-block-start: 4px solid var(--dlms-danger);
+	border-radius: var(--dlms-radius);
+	background: var(--dlms-panel-background);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+	color: var(--dlms-panel-color);
+}
+
+.dlms-timeup::backdrop {
+	background: rgba(0, 0, 0, 0.6);
+}
+
+.dlms-timeup__heading {
+	margin-block: 0 0.5rem;
+	color: inherit;
+	font-size: 1.4em;
+}
+
+.dlms-timeup__countdown {
+	font-weight: 700;
+}
+
+.dlms-quiz-result__late {
+	padding: 0.6rem 0.8rem;
+	border-inline-start: 4px solid var(--dlms-danger);
+	background: var(--dlms-surface);
+	font-weight: 600;
+}
+
+/* Word order --------------------------------------------------------- */
+
+/* `.dlms-quiz` beats themes' `.entry-content ol` padding. */
+.dlms-quiz .dlms-order__slots {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin: 0.6rem 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.dlms-quiz .dlms-order__slots > li {
+	margin: 0;
+}
+
+.dlms-order__answer,
+.dlms-order__bank {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.4rem;
+	min-block-size: 2.8rem;
+	margin-block-start: 0.6rem;
+	padding: 0.4rem;
+	border-radius: var(--dlms-radius);
+}
+
+.dlms-order__answer {
+	border: 2px dashed var(--dlms-border);
+}
+
+.dlms-order__empty {
+	padding-inline: 0.4rem;
+	color: var(--dlms-muted);
+	font-size: 0.9em;
+}
+
+.dlms-quiz .dlms-order__tile {
+	padding: 0.35em 0.75em;
+	border: 1px solid var(--dlms-accent);
+	border-radius: 999px;
+	background: var(--dlms-surface);
+	color: inherit;
+	font: inherit;
+	line-height: 1.3;
+	cursor: pointer;
+}
+
+.dlms-quiz .dlms-order__answer .dlms-order__tile {
+	background: var(--dlms-accent);
+	color: var(--dlms-accent-contrast);
+}
+
+.dlms-quiz .dlms-order__tile:focus-visible {
+	outline: 2px solid var(--dlms-accent);
+	outline-offset: 2px;
+}
+
+.dlms-quiz .dlms-order__tile:disabled {
+	cursor: default;
+	opacity: 0.7;
+}
+
+/* The selects are the no-JavaScript fallback of the drag display. */
+.dlms-quiz .dlms-order__slots[hidden] {
+	display: none;
+}
+
+/* Drag and drop. Tiles don't scroll the page, so a finger can drag them. */
+.dlms-quiz .dlms-order--drag .dlms-order__tile:not(:disabled) {
+	cursor: grab;
+	touch-action: none;
+	user-select: none;
+}
+
+.dlms-quiz .dlms-order__tile.is-dragging {
+	opacity: 0.35;
+}
+
+.dlms-quiz .dlms-order__ghost {
+	position: fixed;
+	z-index: 100000;
+	box-shadow: 0 6px 18px rgb(0 0 0 / 35%);
+	background: var(--dlms-accent);
+	color: var(--dlms-accent-contrast);
+	cursor: grabbing;
+	pointer-events: none;
+	transform: translate(-50%, -115%);
+}
+
+.dlms-order__marker {
+	align-self: stretch;
+	inline-size: 3px;
+	min-block-size: 1.8em;
+	border-radius: 2px;
+	background: var(--dlms-accent);
+}
+
+.dlms-order__answer.is-over,
+.dlms-order__bank.is-over {
+	outline: 2px solid var(--dlms-accent);
+	outline-offset: 2px;
+}
+
+/* Dropdown display: one select per position. */
+.dlms-order--select .dlms-order__slots select {
+	min-inline-size: 7em;
+}
+
+.dlms-quiz-result {
+	padding: 1.25rem;
+	border: 1px solid var(--dlms-border);
+	border-inline-start-width: 4px;
+	border-radius: var(--dlms-radius);
+}
+
+.dlms-quiz-result.is-passed {
+	border-inline-start-color: var(--dlms-success);
+}
+
+.dlms-quiz-result.is-failed {
+	border-inline-start-color: var(--dlms-danger);
+}
+
+.dlms-quiz-result__heading {
+	margin-block: 0 0.5rem;
+	font-size: 1.3em;
+}
+
+.dlms-quiz-result__question > p {
+	margin-block: 0 0.4rem;
+}
+
+.dlms-quiz-result__text {
+	font-weight: 600;
+}
+
+.dlms-quiz-result__verdict {
+	font-size: 0.85em;
+	font-weight: 600;
+}
+
+.is-correct > .dlms-quiz-result__verdict {
+	color: var(--dlms-success);
+}
+
+.is-wrong > .dlms-quiz-result__verdict {
+	color: var(--dlms-danger);
+}
+
+.dlms-quiz-result__answers {
+	margin: 0 0 0.4rem;
+	padding-inline-start: 1.25rem;
+}
+
+.dlms-quiz-result__answer.is-selected {
+	font-weight: 600;
+}
+
+.dlms-quiz-result__tag {
+	margin-inline-start: 0.4em;
+	padding: 0.05em 0.45em;
+	border-radius: 999px;
+	background: var(--dlms-surface);
+	font-size: 0.75em;
+	font-weight: 600;
+}
+
+.dlms-quiz-result__tag--right {
+	background: color-mix(in srgb, var(--dlms-success) 25%, transparent);
+}
+
+.dlms-quiz-result__cloze {
+	font-weight: 400;
+	line-height: 2;
+}
+
+.dlms-gap-result {
+	margin-inline: 0.1em;
+	padding: 0.1em 0.4em;
+	border-radius: 4px;
+	font-weight: 600;
+}
+
+.dlms-gap-result.is-right {
+	background: color-mix(in srgb, var(--dlms-success) 18%, transparent);
+}
+
+.dlms-gap-result.is-wrong {
+	background: color-mix(in srgb, var(--dlms-danger) 15%, transparent);
+	text-decoration: line-through;
+}
+
+.dlms-gap-result__solution {
+	margin-inline-end: 0.1em;
+	padding: 0.1em 0.4em;
+	border-radius: 4px;
+	background: color-mix(in srgb, var(--dlms-success) 25%, transparent);
+	font-weight: 600;
+}
+
+.dlms-quiz-result__sentence {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.4em;
+}
+
+.dlms-quiz-result__sentence .dlms-quiz-result__tag {
+	margin-inline-start: 0;
+}
+
+.dlms-quiz-result__explanation {
+	color: var(--dlms-muted);
+	font-size: 0.9em;
+}
+
+.dlms-quiz-result__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem 1.25rem;
+	margin: var(--dlms-gap) 0 0;
+}
+
+.dlms-dashboard__action {
+	display: grid;
+	justify-items: end;
+	gap: 0.4rem;
+}
+
+.dlms-notice .dlms-link {
+	margin-inline-start: 0.5em;
+	font-weight: 600;
+}

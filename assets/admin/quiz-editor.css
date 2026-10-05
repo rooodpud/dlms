@@ -1,0 +1,170 @@
+/* DeutschLMS quiz question editor (admin). */
+
+.dlms-qe__question {
+	margin-block: 12px;
+	padding: 12px;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	background: #fff;
+}
+
+.dlms-qe__question.has-problem {
+	border-inline-start: 4px solid #dba617;
+}
+
+.dlms-qe__toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+	margin-block-end: 8px;
+}
+
+.dlms-qe__toolbar .button-link-delete {
+	margin-inline-start: auto;
+}
+
+.dlms-qe__label {
+	display: block;
+	margin-block: 8px 4px;
+	font-weight: 600;
+}
+
+.dlms-qe__answers {
+	margin-block: 4px;
+}
+
+.dlms-qe__answer {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-block: 4px;
+}
+
+.dlms-qe__position {
+	min-width: 1.5em;
+	color: #646970;
+	text-align: end;
+}
+
+.dlms-qe__gaps {
+	margin-block: 4px 0;
+	color: #646970;
+}
+
+.dlms-qe__problem {
+	margin-block: 8px 0;
+	color: #996800;
+	font-weight: 600;
+}
+
+.dlms-qe__empty {
+	color: #646970;
+}
+
+/* Question bank: notes, terms, random rules, picker. */
+
+.dlms-qe__body {
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.dlms-qe__bank {
+	margin-block: 0 8px;
+	color: #50575e;
+}
+
+.dlms-qe__bank.is-shared {
+	padding: 6px 10px;
+	border-inline-start: 4px solid #72aee6;
+	background: #f0f6fc;
+	color: #1d2327;
+}
+
+.dlms-qe__bank.is-warning,
+.dlms-qe__matches.is-warning,
+.dlms-qe__picker-status.is-warning {
+	color: #996800;
+	font-weight: 600;
+}
+
+.dlms-qe__terms {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 16px;
+	margin-block: 10px 0;
+}
+
+.dlms-qe__random {
+	border-style: dashed;
+	background: #f6f7f7;
+}
+
+.dlms-qe__matches {
+	margin-block: 8px 0;
+	color: #50575e;
+}
+
+.dlms-qe__add {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.dlms-qe__picker {
+	margin-block: 12px;
+	padding: 12px;
+	border: 1px solid #2271b1;
+	border-radius: 4px;
+	background: #fff;
+}
+
+.dlms-qe__picker h3 {
+	margin-block: 0 8px;
+}
+
+.dlms-qe__results {
+	max-height: 420px;
+	margin: 8px 0;
+	overflow-y: auto;
+	border-block: 1px solid #dcdcde;
+}
+
+.dlms-qe__results li {
+	margin: 0;
+	padding: 6px 4px;
+	border-block-end: 1px solid #f0f0f1;
+}
+
+.dlms-qe__results label {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+}
+
+.dlms-qe__results input {
+	margin-block-start: 3px;
+}
+
+.dlms-qe__result {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.dlms-qe__result-meta {
+	color: #646970;
+	font-size: 12px;
+}
+
+.dlms-qe__picker-footer {
+	display: flex;
+	gap: 8px;
+}
+
+.dlms-question-incomplete {
+	color: #996800;
+}

@@ -1,0 +1,48 @@
+<wpml-config>
+	<custom-types>
+		<custom-type translate="1">dlms_course</custom-type>
+		<custom-type translate="1">dlms_lesson</custom-type>
+		<custom-type translate="1">dlms_topic</custom-type>
+		<custom-type translate="1">dlms_quiz</custom-type>
+		<custom-type translate="1">dlms_question</custom-type>
+	</custom-types>
+	<taxonomies>
+		<taxonomy translate="1">dlms_question_category</taxonomy>
+		<taxonomy translate="1">dlms_question_difficulty</taxonomy>
+		<taxonomy translate="1">dlms_question_level</taxonomy>
+	</taxonomies>
+	<custom-fields>
+		<!-- Hierarchy and settings are copied to translations. DeutschLMS maps
+		     copied IDs to the right language at runtime and stores enrollments,
+		     progress and quiz attempts against the default-language IDs. -->
+		<custom-field action="copy">_dlms_course_id</custom-field>
+		<custom-field action="copy">_dlms_lesson_id</custom-field>
+		<custom-field action="copy">_dlms_parent_id</custom-field>
+		<custom-field action="copy">_dlms_linear_progression</custom-field>
+		<custom-field action="copy">_dlms_drip_days</custom-field>
+		<custom-field action="copy">_dlms_pass_mark</custom-field>
+		<custom-field action="copy">_dlms_attempts_limit</custom-field>
+		<custom-field action="copy">_dlms_show_answers</custom-field>
+		<custom-field action="copy">_dlms_time_limit</custom-field>
+		<custom-field action="copy">_dlms_certificate_enabled</custom-field>
+		<custom-field action="copy">_dlms_certificate_background</custom-field>
+		<!-- Copied once so a translation starts with the original questions and
+		     their (stable) IDs; the translator then edits the texts in the
+		     quiz's question editor. -->
+		<custom-field action="copy-once">_dlms_questions</custom-field>
+		<!-- Question bank: quizzes keep the default-language question IDs
+		     (mapped to the translated questions at runtime); a translated
+		     question starts as a copy with the same question ID, so attempts
+		     line up in every language. -->
+		<custom-field action="copy">_dlms_quiz_items</custom-field>
+		<custom-field action="copy-once">_dlms_question</custom-field>
+		<custom-field action="copy">_dlms_question_key</custom-field>
+		<custom-field action="copy">_dlms_question_type</custom-field>
+		<custom-field action="copy-once">_dlms_question_ready</custom-field>
+		<!-- Section headings: copied once (anchors are mapped to the translated
+		     lessons at runtime), then translated in the course builder. -->
+		<custom-field action="copy-once">_dlms_section_headings</custom-field>
+		<custom-field action="translate">_dlms_certificate_title</custom-field>
+		<custom-field action="translate">_dlms_certificate_signer</custom-field>
+	</custom-fields>
+</wpml-config>

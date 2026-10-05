@@ -1,0 +1,22 @@
+# Dependencies (reinstall with `npm install` and `composer dev:install`)
+/node_modules/
+/tools/dev/vendor/
+/tools/composer.phar
+
+# Test / tool output
+/.phpunit.result.cache
+/.phpcs-cache
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Note: /vendor/ (Composer's runtime autoloader only) and /build/ (compiled
+# blocks) are committed on purpose so the plugin runs from a plain checkout.
+
+# Local demo credentials (never commit)
+*.local.txt
+*.local.html

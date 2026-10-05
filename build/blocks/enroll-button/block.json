@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "deutschlms/enroll-button",
+  "version": "0.1.0",
+  "title": "Enroll Button",
+  "category": "deutschlms",
+  "icon": "welcome-learn-more",
+  "description": "Enroll button for a course, or the student's progress and a “Continue” link once enrolled.",
+  "keywords": [
+    "lms",
+    "enroll",
+    "join"
+  ],
+  "textdomain": "deutschlms",
+  "attributes": {
+    "courseId": {
+      "type": "integer",
+      "default": 0
+    }
+  },
+  "supports": {
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "style": "dlms-frontend",
+  "render": "file:./render.php"
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "deutschlms/student-dashboard",
+  "version": "0.1.0",
+  "title": "Student Dashboard",
+  "category": "deutschlms",
+  "icon": "id-alt",
+  "description": "The logged-in student's enrolled courses with percentage complete and a “Continue” link.",
+  "keywords": [
+    "lms",
+    "my courses",
+    "account"
+  ],
+  "textdomain": "deutschlms",
+  "attributes": {
+    "showCompleted": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "supports": {
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "style": "dlms-frontend",
+  "render": "file:./render.php"
+}

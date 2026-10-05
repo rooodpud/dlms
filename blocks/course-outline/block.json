@@ -1,0 +1,40 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "deutschlms/course-outline",
+	"version": "0.1.0",
+	"title": "Course Outline",
+	"category": "deutschlms",
+	"icon": "list-view",
+	"description": "Lessons and topics of a course, with the student's completion and lock state.",
+	"keywords": [
+		"lms",
+		"lessons",
+		"curriculum"
+	],
+	"textdomain": "deutschlms",
+	"attributes": {
+		"courseId": {
+			"type": "integer",
+			"default": 0
+		},
+		"showTopics": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		],
+		"spacing": {
+			"margin": true,
+			"padding": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "dlms-frontend",
+	"render": "file:./render.php"
+}

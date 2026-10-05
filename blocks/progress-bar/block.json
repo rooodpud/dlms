@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "deutschlms/progress-bar",
+	"version": "0.1.0",
+	"title": "Course Progress Bar",
+	"category": "deutschlms",
+	"icon": "chart-bar",
+	"description": "The current student's progress in a course. Hidden for visitors who are not enrolled.",
+	"keywords": [
+		"lms",
+		"progress"
+	],
+	"textdomain": "deutschlms",
+	"attributes": {
+		"courseId": {
+			"type": "integer",
+			"default": 0
+		},
+		"showLabel": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		],
+		"spacing": {
+			"margin": true,
+			"padding": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "dlms-frontend",
+	"render": "file:./render.php"
+}

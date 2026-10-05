@@ -1,0 +1,168 @@
+/* DeutschLMS course builder (admin). Logical properties keep RTL correct. */
+
+.dlms-builder__lessons,
+.dlms-builder__topics {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.dlms-builder__lessons {
+	display: grid;
+	gap: 8px;
+	margin-block: 12px;
+}
+
+.dlms-builder__lesson {
+	margin: 0;
+	padding: 8px;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	background: #fff;
+}
+
+.dlms-builder__topics {
+	min-block-size: 8px;
+	margin-block: 6px;
+	margin-inline-start: 28px;
+	padding-block: 2px;
+}
+
+.dlms-builder__topic {
+	margin-block: 4px;
+	padding: 4px 8px;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	background: #f6f7f7;
+}
+
+.dlms-builder__row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-block-size: 30px;
+}
+
+.dlms-builder__handle {
+	color: #787c82;
+	cursor: move;
+}
+
+.dlms-builder__type {
+	color: #646970;
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.dlms-builder__title {
+	flex: 1;
+	font-weight: 600;
+}
+
+.dlms-builder__topic .dlms-builder__title {
+	font-weight: 400;
+}
+
+.dlms-builder__status {
+	padding: 1px 6px;
+	border-radius: 3px;
+	background: #f0f0f1;
+	color: #50575e;
+	font-size: 12px;
+}
+
+.dlms-builder__actions {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.dlms-builder__move {
+	color: #50575e;
+}
+
+.dlms-builder__add {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-block-start: 6px;
+	margin-inline-start: 28px;
+}
+
+.dlms-builder > .dlms-builder__add {
+	margin-inline-start: 0;
+}
+
+.dlms-builder__placeholder {
+	block-size: 32px;
+	margin-block: 4px;
+	border: 2px dashed #2271b1;
+	border-radius: 4px;
+	background: #f0f6fc;
+}
+
+.dlms-builder__footer {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-block-start: 16px;
+	padding-block-start: 12px;
+	border-block-start: 1px solid #dcdcde;
+}
+
+.dlms-builder__message.is-error {
+	color: #b32d2e;
+}
+
+.dlms-builder__quizzes {
+	min-block-size: 6px;
+	margin-block: 4px;
+	margin-inline-start: 28px;
+	padding: 0;
+	list-style: none;
+}
+
+.dlms-builder__quizzes--course {
+	min-block-size: 24px;
+	margin-inline-start: 0;
+	padding: 4px;
+	border: 1px dashed #c3c4c7;
+	border-radius: 4px;
+}
+
+.dlms-builder__quiz {
+	margin-block: 4px;
+	padding: 4px 8px;
+	border: 1px solid #dcdcde;
+	border-inline-start: 3px solid #2271b1;
+	border-radius: 4px;
+	background: #f6f7f7;
+}
+
+.dlms-builder__status--warning {
+	background: #fcf0d4;
+	color: #996800;
+}
+
+.dlms-builder__subheading {
+	margin-block: 16px 4px;
+	font-size: 13px;
+}
+
+/* Section heading between lessons (a label in the outline, not a step). */
+.dlms-builder__heading {
+	margin: 0;
+	padding: 8px;
+	border: 1px solid #c3c4c7;
+	border-inline-start: 4px solid #1d2327;
+	border-radius: 4px;
+	background: #f0f0f1;
+}
+
+.dlms-builder__heading-input {
+	flex: 1;
+	min-inline-size: 0;
+	font-size: 15px;
+	font-weight: 700;
+}

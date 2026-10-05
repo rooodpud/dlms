@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "deutschlms/mark-complete",
+  "version": "0.1.0",
+  "title": "Mark Complete Button",
+  "category": "deutschlms",
+  "icon": "yes-alt",
+  "description": "Lets an enrolled student mark the current lesson or topic as complete.",
+  "keywords": [
+    "lms",
+    "complete",
+    "progress"
+  ],
+  "textdomain": "deutschlms",
+  "supports": {
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "style": "dlms-frontend",
+  "render": "file:./render.php"
+}
