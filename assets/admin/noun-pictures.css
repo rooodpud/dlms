@@ -1,0 +1,150 @@
+/* DeutschLMS noun pictures: the library page and the icon picker. */
+
+.dlms-np-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0 32px;
+	align-items: flex-end;
+}
+
+.dlms-np-toolbar__label {
+	display: block;
+	margin-bottom: 4px;
+	font-weight: 600;
+}
+
+.dlms-np-table {
+	max-width: 960px;
+}
+
+.dlms-np-table td {
+	vertical-align: middle;
+}
+
+.dlms-np-table__picture {
+	width: 72px;
+}
+
+.dlms-np-table__actions .button {
+	margin: 2px 6px 2px 0;
+}
+
+.dlms-np-source {
+	display: block;
+	color: #646970;
+	font-size: 12px;
+}
+
+.dlms-np-none {
+	color: #646970;
+	font-style: italic;
+}
+
+.dlms-np-remove {
+	color: #b32d2e;
+}
+
+/* Previews: icons as a coloured mask, images as they are. */
+.dlms-np-icon {
+	display: block;
+	width: 48px;
+	height: 48px;
+	background-color: currentcolor;
+	-webkit-mask: var(--dlms-np-icon) center / contain no-repeat;
+	mask: var(--dlms-np-icon) center / contain no-repeat;
+}
+
+.dlms-np-icon--der,
+.dlms-np-article--der {
+	color: #1d4ed8;
+}
+
+.dlms-np-icon--die,
+.dlms-np-article--die {
+	color: #b91c1c;
+}
+
+.dlms-np-icon--das,
+.dlms-np-article--das {
+	color: #15803d;
+}
+
+.dlms-np-image {
+	display: block;
+	width: 48px;
+	height: 48px;
+	border-radius: 4px;
+	object-fit: contain;
+}
+
+/* Icon picker. */
+.dlms-np-dialog {
+	width: min(760px, calc(100vw - 32px));
+	max-height: calc(100vh - 64px);
+	padding: 16px 20px 20px;
+	border: 0;
+	border-radius: 4px;
+	box-shadow: 0 8px 32px rgb(0 0 0 / 30%);
+}
+
+.dlms-np-dialog::backdrop {
+	background: rgb(0 0 0 / 50%);
+}
+
+.dlms-np-dialog__head {
+	display: flex;
+	gap: 16px;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.dlms-np-dialog__title {
+	margin: 0;
+}
+
+.dlms-np-dialog__label {
+	display: block;
+	margin: 12px 0 4px;
+	font-weight: 600;
+}
+
+.dlms-np-dialog__search {
+	width: 100%;
+}
+
+.dlms-np-dialog__status {
+	color: #646970;
+}
+
+.dlms-np-dialog__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+	gap: 8px;
+	max-height: 55vh;
+	overflow-y: auto;
+}
+
+.dlms-np-dialog__icon {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	align-items: center;
+	padding: 8px 4px;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	background: #fff;
+	cursor: pointer;
+	font-size: 11px;
+	overflow-wrap: anywhere;
+}
+
+.dlms-np-dialog__icon:hover,
+.dlms-np-dialog__icon:focus {
+	border-color: #2271b1;
+	background: #f0f6fc;
+}
+
+.dlms-np-dialog__icon:focus {
+	outline: 2px solid #2271b1;
+	outline-offset: 1px;
+}

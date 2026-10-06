@@ -19,6 +19,12 @@
 	--dlms-success-contrast: #fff;
 	--dlms-danger: #b91c1c;
 
+	/* Article colours (der / die / das) and the text on a filled article. */
+	--dlms-der: #1d4ed8;
+	--dlms-die: #b91c1c;
+	--dlms-das: #15803d;
+	--dlms-article-contrast: #fff;
+
 	/* Opaque panels (e.g. the sticky special-character bar). */
 	--dlms-panel-background: #fff;
 	--dlms-panel-color: #1f2937;
@@ -1040,4 +1046,259 @@
 .dlms-notice .dlms-link {
 	margin-inline-start: 0.5em;
 	font-weight: 600;
+}
+
+/* Articles: der / die / das ------------------------------------------ */
+
+/* Every element with an article class gets its colour as --dlms-article. */
+.dlms-article--der {
+	--dlms-article: var(--dlms-der);
+}
+
+.dlms-article--die {
+	--dlms-article: var(--dlms-die);
+}
+
+.dlms-article--das {
+	--dlms-article: var(--dlms-das);
+}
+
+.dlms-noun-picture {
+	display: block;
+	flex: none;
+	inline-size: 4.5rem;
+	block-size: 4.5rem;
+}
+
+/* Uploaded images keep their colours; border and text carry the article's. */
+img.dlms-noun-picture--image {
+	max-inline-size: none;
+	border-radius: var(--dlms-radius);
+	object-fit: contain;
+}
+
+/* [dlms_noun style="inline"] */
+.dlms-noun {
+	color: var(--dlms-article);
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.dlms-noun strong {
+	font-weight: 800;
+}
+
+/* [dlms_nouns] with [dlms_noun] cards */
+.dlms-nouns {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+	gap: 0.75rem;
+	margin-block: 1rem;
+}
+
+.dlms-noun-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 0.9rem 0.5rem 0.75rem;
+	border: 2px solid color-mix(in srgb, var(--dlms-article) 55%, transparent);
+	border-block-start-width: 6px;
+	border-radius: var(--dlms-radius);
+	background: color-mix(in srgb, var(--dlms-article) 8%, transparent);
+	color: var(--dlms-article);
+	line-height: 1.3;
+	text-align: center;
+}
+
+.dlms-noun-card__text {
+	font-size: 1.1em;
+	font-weight: 600;
+}
+
+.dlms-noun-card__article {
+	font-weight: 800;
+}
+
+/* [dlms_article_legend] */
+.dlms-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-block: 0.5rem 1rem;
+}
+
+.dlms-legend__item {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0.4em;
+	padding: 0.35em 0.9em;
+	border-radius: 999px;
+	background: var(--dlms-article);
+	color: var(--dlms-article-contrast);
+}
+
+.dlms-legend__item strong {
+	font-size: 1.15em;
+}
+
+/* Article questions: the noun, then three colour-coded choices. The legend
+   floats so it sits inside the frame instead of on its border. */
+.dlms-article-q__noun {
+	display: flex;
+	float: inline-start;
+	align-items: center;
+	gap: 1rem;
+	inline-size: 100%;
+}
+
+.dlms-article-q__noun + * {
+	clear: both;
+}
+
+.dlms-article-q__noun .dlms-noun-picture {
+	inline-size: 4rem;
+	block-size: 4rem;
+	color: var(--dlms-muted);
+}
+
+.dlms-article-q__word {
+	font-size: 1.4em;
+	font-weight: 700;
+}
+
+.dlms-article-q__choices {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.6rem;
+	margin-block-start: 0.75rem;
+}
+
+.dlms-article-choice {
+	position: relative;
+	cursor: pointer;
+}
+
+/* The radio stays in place (and focusable) under its pill. */
+.dlms-article-choice__input {
+	position: absolute;
+	inset: 0;
+	inline-size: 100%;
+	block-size: 100%;
+	margin: 0;
+	opacity: 0;
+	cursor: pointer;
+}
+
+.dlms-article-choice__label {
+	display: inline-block;
+	min-inline-size: 4.5rem;
+	padding: 0.45em 1.1em;
+	border: 2px solid var(--dlms-article);
+	border-radius: 999px;
+	color: var(--dlms-article);
+	font-size: 1.1em;
+	font-weight: 700;
+	text-align: center;
+	transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dlms-article-choice__input:checked + .dlms-article-choice__label {
+	background: var(--dlms-article);
+	color: var(--dlms-article-contrast);
+}
+
+.dlms-article-choice__input:focus-visible + .dlms-article-choice__label {
+	outline: 3px solid var(--dlms-accent);
+	outline-offset: 2px;
+}
+
+.dlms-article-choice__input:disabled {
+	cursor: default;
+}
+
+.dlms-article-choice__input:disabled + .dlms-article-choice__label {
+	opacity: 0.6;
+}
+
+/* The chosen article colours the noun, its picture and the frame. */
+.dlms-article-q:has(input[value="der"]:checked) {
+	--dlms-article: var(--dlms-der);
+}
+
+.dlms-article-q:has(input[value="die"]:checked) {
+	--dlms-article: var(--dlms-die);
+}
+
+.dlms-article-q:has(input[value="das"]:checked) {
+	--dlms-article: var(--dlms-das);
+}
+
+.dlms-quiz__question .dlms-article-q:has(:checked) {
+	border-color: var(--dlms-article);
+}
+
+.dlms-article-q:has(:checked) .dlms-article-q__noun,
+.dlms-article-q:has(:checked) .dlms-article-q__noun .dlms-noun-picture {
+	color: var(--dlms-article);
+}
+
+/* Results */
+.dlms-noun-result {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.dlms-noun-result .dlms-noun-picture {
+	inline-size: 3rem;
+	block-size: 3rem;
+	color: var(--dlms-muted);
+}
+
+.dlms-noun-result[class*="dlms-article--"],
+.dlms-noun-result[class*="dlms-article--"] .dlms-noun-picture {
+	color: var(--dlms-article);
+}
+
+.dlms-noun-result__word {
+	font-size: 1.15em;
+}
+
+/* "Your answer" and, when it was wrong, "Correct answer". */
+.dlms-article-answers {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1.5rem;
+	margin: 0 0 0.4rem;
+}
+
+.dlms-article-answers__row {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.dlms-article-answers dt {
+	font-weight: 600;
+}
+
+.dlms-article-answers dd {
+	margin: 0;
+}
+
+.dlms-article-pill {
+	display: inline-block;
+	padding: 0.15em 0.8em;
+	border: 2px solid currentcolor;
+	border-radius: 999px;
+	font-weight: 700;
+}
+
+/* A wrong answer stays in the text colour; only right articles get colour. */
+.dlms-article-pill.is-filled {
+	border-color: var(--dlms-article);
+	background: var(--dlms-article);
+	color: var(--dlms-article-contrast);
 }

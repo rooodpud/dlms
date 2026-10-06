@@ -247,7 +247,8 @@ final class QuizEditor {
 	 */
 	public static function enqueue_assets(): void {
 		wp_enqueue_style( self::SCRIPT, DLMS_URL . 'assets/admin/quiz-editor.css', array(), DLMS_VERSION );
-		wp_enqueue_script( self::SCRIPT, DLMS_URL . 'assets/admin/quiz-editor.js', array( 'wp-i18n', 'wp-a11y', 'wp-data', 'wp-api-fetch' ), DLMS_VERSION, true );
+		NounPicturesPage::enqueue_picker();
+		wp_enqueue_script( self::SCRIPT, DLMS_URL . 'assets/admin/quiz-editor.js', array( 'wp-i18n', 'wp-a11y', 'wp-data', 'wp-api-fetch', NounPicturesPage::SCRIPT ), DLMS_VERSION, true );
 		wp_set_script_translations( self::SCRIPT, 'deutschlms', DLMS_PATH . 'languages' );
 	}
 

@@ -11,6 +11,7 @@ use DeutschLMS\Access\AccessControl;
 use DeutschLMS\Admin\CourseBuilder;
 use DeutschLMS\Admin\CourseSettings;
 use DeutschLMS\Admin\ListTables;
+use DeutschLMS\Admin\NounPicturesPage;
 use DeutschLMS\Admin\QuestionEditor;
 use DeutschLMS\Admin\QuestionList;
 use DeutschLMS\Admin\QuizEditor;
@@ -21,6 +22,7 @@ use DeutschLMS\Blocks\Blocks;
 use DeutschLMS\Certificates\CertificateController;
 use DeutschLMS\Certificates\CertificateService;
 use DeutschLMS\Content\CourseStructure;
+use DeutschLMS\Content\NounPictures;
 use DeutschLMS\Content\PostTypes;
 use DeutschLMS\Content\StructureEditor;
 use DeutschLMS\Database\Installer;
@@ -40,6 +42,7 @@ use DeutschLMS\Quiz\QuestionBank;
 use DeutschLMS\Quiz\QuizService;
 use DeutschLMS\Rest\CourseBuilderController;
 use DeutschLMS\Rest\EnrollmentController;
+use DeutschLMS\Rest\NounPicturesController;
 use DeutschLMS\Rest\ProgressController;
 use DeutschLMS\Rest\QuestionBankController;
 use DeutschLMS\Rest\QuizController;
@@ -209,6 +212,7 @@ final class Plugin {
 			( new QuizEditor( $this->structure, $this->structure_editor, $this->bank ) )->register_hooks();
 			( new QuestionEditor( $this->bank ) )->register_hooks();
 			( new QuestionList( $this->structure, $this->bank ) )->register_hooks();
+			( new NounPicturesPage( $this->bank ) )->register_hooks();
 			( new UserQuizAttempts( $this->quizzes ) )->register_hooks();
 			( new QuizResults( $this->quizzes ) )->register_hooks();
 			( new StepMetaBoxes( $this->structure, $this->structure_editor ) )->register_hooks();
@@ -232,6 +236,7 @@ final class Plugin {
 		( new CourseBuilderController( $this->structure, $this->structure_editor, $this->bank ) )->register_routes();
 		( new QuizController( $this->quizzes ) )->register_routes();
 		( new QuestionBankController( $this->bank ) )->register_routes();
+		( new NounPicturesController() )->register_routes();
 	}
 
 	/**
@@ -329,5 +334,6 @@ final class Plugin {
 	 */
 	public function flush_runtime_caches(): void {
 		$this->structure->flush();
+		NounPictures::flush();
 	}
 }

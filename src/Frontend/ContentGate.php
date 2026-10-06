@@ -172,7 +172,8 @@ final class ContentGate {
 	/**
 	 * Whether to append the course UI: only on the post's own single view, in
 	 * the main loop, and not when the author placed DeutschLMS blocks or
-	 * shortcodes in the content (they control the layout then).
+	 * layout shortcodes in the content (they control the layout then). Content
+	 * shortcodes such as [dlms_noun] don't count.
 	 *
 	 * @param WP_Post $post Post.
 	 * @return bool
@@ -182,7 +183,8 @@ final class ContentGate {
 			return false;
 		}
 
-		$has_own_layout = str_contains( $post->post_content, '<!-- wp:deutschlms/' ) || str_contains( $post->post_content, '[dlms_' );
+		$has_own_layout = str_contains( $post->post_content, '<!-- wp:deutschlms/' )
+			|| 1 === preg_match( '/\[dlms_(?:' . implode( '|', Shortcodes::LAYOUT ) . ')\b/', $post->post_content );
 
 		/**
 		 * Filters whether DeutschLMS appends its UI to a course/lesson/topic page.

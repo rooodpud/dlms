@@ -7,6 +7,8 @@
 
 namespace DeutschLMS\Quiz;
 
+use DeutschLMS\Content\NounPictures;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -17,13 +19,14 @@ defined( 'ABSPATH' ) || exit;
  *     [
  *       [
  *         'id'           => 'q_ab12cd34',          // stable, unique in the quiz
- *         'type'         => 'single' | 'multiple' | 'true_false' | 'fill_blank' | 'word_order',
+ *         'type'         => 'single' | 'multiple' | 'true_false' | 'fill_blank' | 'word_order' | 'article',
  *         'text'         => 'Plain text question',
  *         'points'       => 1,
  *         'explanation'  => 'Optional, shown with results',
  *         'answers'      => [ [ 'id' => 'a_ef56gh78', 'text' => '…', 'correct' => bool ], … ],
  *         'alternatives' => [ 'Other accepted sentence', … ], // word_order only
  *         'display'      => 'drag' | 'select',                // word_order only
+ *         'picture'      => 'icon:armchair',                  // article only ('' = the noun's own picture)
  *       ],
  *       …
  *     ]
@@ -40,6 +43,12 @@ defined( 'ABSPATH' ) || exit;
  *   the default) or `select` (one dropdown per position; a word chosen in one
  *   dropdown is no longer offered in the others). Students see the sentence
  *   start with a capital letter and end with the mark from sentence_end().
+ * - Article (`article`) questions ask for the article of a noun: the text is
+ *   the noun without its article ("Tisch"), the answers are always `der`,
+ *   `die` and `das` (in that order, one marked correct). Students see the noun
+ *   with its picture and pick a colour-coded article (der blue, die red, das
+ *   green). The picture comes from the noun picture library; `picture` can
+ *   name another one (an icon, an image or another noun, see NounPictures).
  *
  * Question and answer IDs survive edits, so stored attempts keep pointing at
  * the right answers.
@@ -51,6 +60,12 @@ final class Questions {
 	public const TYPE_TRUE_FALSE = 'true_false';
 	public const TYPE_FILL_BLANK = 'fill_blank';
 	public const TYPE_WORD_ORDER = 'word_order';
+	public const TYPE_ARTICLE    = 'article';
+
+	/**
+	 * The answers of an article question, in display order.
+	 */
+	public const ARTICLES = array( 'der', 'die', 'das' );
 
 	public const DISPLAY_DRAG   = 'drag';
 	public const DISPLAY_SELECT = 'select';
@@ -75,6 +90,7 @@ final class Questions {
 			self::TYPE_TRUE_FALSE => __( 'True / false', 'deutschlms' ),
 			self::TYPE_FILL_BLANK => __( 'Gap-fill (type the missing words)', 'deutschlms' ),
 			self::TYPE_WORD_ORDER => __( 'Word order (put the words in order)', 'deutschlms' ),
+			self::TYPE_ARTICLE    => __( 'Article (der, die or das)', 'deutschlms' ),
 		);
 	}
 
@@ -85,7 +101,7 @@ final class Questions {
 	 * @return bool
 	 */
 	public static function is_choice( array $question ): bool {
-		return in_array( $question['type'], array( self::TYPE_SINGLE, self::TYPE_MULTIPLE, self::TYPE_TRUE_FALSE ), true );
+		return in_array( $question['type'], array( self::TYPE_SINGLE, self::TYPE_MULTIPLE, self::TYPE_TRUE_FALSE, self::TYPE_ARTICLE ), true );
 	}
 
 	/**
@@ -126,6 +142,9 @@ final class Questions {
 			if ( self::TYPE_WORD_ORDER === $type ) {
 				$question['alternatives'] = self::sanitize_alternatives( $item['alternatives'] ?? array() );
 				$question['display']      = self::display( $item );
+			}
+			if ( self::TYPE_ARTICLE === $type ) {
+				$question['picture'] = self::picture_override( $item, $text );
 			}
 			$questions[] = $question;
 		}//end foreach
@@ -234,6 +253,47 @@ final class Questions {
 	}
 
 	/**
+	 * Picture of an article question: its own choice, else its noun (a
+	 * reference for NounPictures::render()).
+	 *
+	 * @param array $question Question.
+	 * @return string
+	 */
+	public static function picture( array $question ): string {
+		if ( self::TYPE_ARTICLE !== ( $question['type'] ?? '' ) ) {
+			return '';
+		}
+		$own = NounPictures::sanitize_ref( (string) ( $question['picture'] ?? '' ) );
+		return '' !== $own ? $own : NounPictures::key_for( (string) ( $question['text'] ?? '' ) );
+	}
+
+	/**
+	 * The picture an article question names instead of its noun's ('' = the
+	 * noun's own picture).
+	 *
+	 * @param array  $item Raw question.
+	 * @param string $noun The question's noun.
+	 * @return string
+	 */
+	private static function picture_override( array $item, string $noun ): string {
+		$ref = NounPictures::sanitize_ref( (string) ( $item['picture'] ?? '' ) );
+		return NounPictures::key_for( $noun ) === $ref ? '' : $ref;
+	}
+
+	/**
+	 * The correct article of an article question ('' when none is marked).
+	 *
+	 * @param array $question Question.
+	 * @return string
+	 */
+	public static function article_of( array $question ): string {
+		if ( self::TYPE_ARTICLE !== $question['type'] ) {
+			return '';
+		}
+		return self::correct_ids( $question )[0] ?? '';
+	}
+
+	/**
 	 * Display label of an answer (true/false labels are translated).
 	 *
 	 * @param array $question Question.
@@ -243,6 +303,9 @@ final class Questions {
 	public static function answer_label( array $question, array $answer ): string {
 		if ( self::TYPE_TRUE_FALSE === $question['type'] ) {
 			return 'true' === $answer['id'] ? __( 'True', 'deutschlms' ) : __( 'False', 'deutschlms' );
+		}
+		if ( self::TYPE_ARTICLE === $question['type'] ) {
+			return (string) $answer['id'];
 		}
 		return (string) $answer['text'];
 	}
@@ -421,6 +484,25 @@ final class Questions {
 
 		if ( self::TYPE_FILL_BLANK === $type ) {
 			return array();
+		}
+
+		if ( self::TYPE_ARTICLE === $type ) {
+			// Always der, die, das; the first one marked correct counts.
+			$marked = '';
+			foreach ( $raw as $answer ) {
+				if ( is_array( $answer ) && ! empty( $answer['correct'] ) && 'false' !== $answer['correct'] && in_array( $answer['id'] ?? '', self::ARTICLES, true ) ) {
+					$marked = $answer['id'];
+					break;
+				}
+			}
+			return array_map(
+				static fn( string $article ): array => array(
+					'id'      => $article,
+					'text'    => $article,
+					'correct' => $article === $marked,
+				),
+				self::ARTICLES
+			);
 		}
 
 		if ( self::TYPE_TRUE_FALSE === $type ) {

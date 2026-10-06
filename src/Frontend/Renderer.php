@@ -338,6 +338,9 @@ final class Renderer {
 
 		$settings = $this->quizzes->settings( $quiz_id );
 		$enrolled = $this->enrollments->is_enrolled( $user_id, $access->course_id );
+		if ( ! $enrolled && AccessControl::BYPASS === $access->reason ) {
+			return $this->quiz_trial( $quiz_id, $access->course_id, $settings );
+		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; ownership is checked by get_attempt().
 		$attempt_id = isset( $_GET['dlms_attempt'] ) ? absint( $_GET['dlms_attempt'] ) : 0;
@@ -382,6 +385,75 @@ final class Renderer {
 				'nonce_action'       => FormHandler::quiz_nonce_action( $quiz_id ),
 			)
 		);
+	}
+
+	/**
+	 * Nonce action of a manager's trial of a quiz.
+	 *
+	 * @param int $quiz_id Quiz ID.
+	 * @return string
+	 */
+	public static function trial_nonce_action( int $quiz_id ): string {
+		return 'dlms_quiz_trial_' . $quiz_id;
+	}
+
+	/**
+	 * Quiz page for a course manager who isn't enrolled (instructors, LMS
+	 * admins, administrators): they can answer and submit, and see the
+	 * result like a student, but nothing is saved. The form posts back to
+	 * the quiz page itself, without the script that sends student answers
+	 * through the REST API.
+	 *
+	 * @param int   $quiz_id   Quiz ID.
+	 * @param int   $course_id Course ID.
+	 * @param array $settings  Quiz settings.
+	 * @return string
+	 */
+	private function quiz_trial( int $quiz_id, int $course_id, array $settings ): string {
+		$quiz_url = (string) get_permalink( $quiz_id );
+		$args     = array(
+			'quiz_id'            => $quiz_id,
+			'pass_mark'          => $settings['pass_mark'],
+			'attempts_limit'     => $settings['attempts_limit'],
+			'attempts_used'      => 0,
+			'attempts_remaining' => null,
+			'mode'               => 'trial',
+			'trial'              => true,
+			'trial_draw'         => '',
+			'time_limit'         => $settings['time_limit'],
+			'time_remaining'     => null,
+			'time_up_seconds'    => QuizService::TIME_UP_SECONDS,
+			'closed_message'     => '',
+			'passed'             => false,
+			'best_percent'       => null,
+			'attempt'            => null,
+			'details'            => array(),
+			'can_retake'         => true,
+			'retake_url'         => $quiz_url,
+			'next_url'           => '',
+			'course_url'         => (string) get_permalink( $course_id ),
+			'action_url'         => $quiz_url,
+			'nonce_action'       => self::trial_nonce_action( $quiz_id ),
+		);
+
+		$nonce = isset( $_POST['dlms_trial_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['dlms_trial_nonce'] ) ) : '';
+		if ( '' !== $nonce && wp_verify_nonce( $nonce, self::trial_nonce_action( $quiz_id ) ) ) {
+			// Values are capped in QuizService::clean_answers() and checked against the quiz by the grader.
+			$answers = isset( $_POST['dlms_answers'] ) && is_array( $_POST['dlms_answers'] ) ? map_deep( wp_unslash( $_POST['dlms_answers'] ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized with map_deep().
+			$draw    = isset( $_POST['dlms_trial_draw'] ) ? json_decode( wp_unslash( $_POST['dlms_trial_draw'] ), true ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Decoded JSON; QuestionBank::resolve() checks its signature and IDs.
+			$trial   = $this->quizzes->trial( $quiz_id, (array) $answers, is_array( $draw ) ? $draw : null );
+
+			$args['mode']      = 'result';
+			$args['questions'] = Questions::public_view( $trial['questions'] );
+			$args['attempt']   = $trial['attempt'];
+			$args['details']   = $trial['details'];
+		} else {
+			$form               = $this->quizzes->trial_questions( $quiz_id );
+			$args['questions']  = Questions::public_view( $form['questions'] );
+			$args['trial_draw'] = $form['draw'];
+		}
+
+		return Templates::render( 'quiz/quiz.php', $args );
 	}
 
 	/**

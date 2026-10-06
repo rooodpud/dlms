@@ -9,6 +9,13 @@
  * the same bar; when it runs out, the "time is up" dialog locks the answers and
  * submits them after a short countdown (see frontend.js).
  *
+ * Article questions show the noun with its picture and three colour-coded
+ * choices (der blue, die red, das green; see the --dlms-der/-die/-das colours).
+ *
+ * Course managers who aren't enrolled get a trial (mode "trial", then a
+ * "result" with $trial set): the same form, posted back to the quiz page and
+ * graded without saving anything.
+ *
  * Override by copying to yourtheme/deutschlms/quiz/quiz.php.
  *
  * @package DeutschLMS
@@ -20,7 +27,10 @@
  *     @type int        $attempts_limit     0 = unlimited.
  *     @type int        $attempts_used      Counted attempts so far.
  *     @type int|null   $attempts_remaining null = unlimited.
- *     @type string     $mode               form|result|closed|preview.
+ *     @type string     $mode               form|result|closed|preview|trial.
+ *     @type bool       $trial              A course manager trying the quiz: answers are
+ *                                          checked but not saved (form posts to the quiz page).
+ *     @type string     $trial_draw         Random draw of a trial form (JSON, '' = none).
  *     @type int        $time_limit         Minutes per attempt (0 = no limit).
  *     @type int|null   $time_remaining     Seconds left in "form" mode (null = no limit).
  *     @type int        $time_up_seconds    Seconds between "time is up" and the automatic submission.
@@ -42,6 +52,7 @@ defined( 'ABSPATH' ) || exit;
 
 $dlms_mode     = $args['mode'];
 $dlms_disabled = 'preview' === $dlms_mode;
+$dlms_trial    = ! empty( $args['trial'] );
 ?>
 <div class="dlms-quiz dlms-quiz--<?php echo esc_attr( $dlms_mode ); ?>">
 	<ul class="dlms-quiz__facts">
@@ -121,6 +132,10 @@ $dlms_disabled = 'preview' === $dlms_mode;
 		</p>
 	<?php endif; ?>
 
+	<?php if ( $dlms_trial ) : ?>
+		<p class="dlms-complete__status dlms-complete__status--preview dlms-quiz__trial"><?php esc_html_e( 'Test mode: you manage this course, so you can try the quiz. Your answers are checked but not saved.', 'deutschlms' ); ?></p>
+	<?php endif; ?>
+
 	<?php if ( 'result' === $dlms_mode && $args['attempt'] ) : ?>
 		<?php $dlms_attempt = $args['attempt']; ?>
 		<section class="dlms-quiz-result <?php echo $dlms_attempt['passed'] ? 'is-passed' : 'is-failed'; ?>" aria-labelledby="dlms-quiz-result-heading" tabindex="-1">
@@ -176,6 +191,17 @@ $dlms_disabled = 'preview' === $dlms_mode;
 									}
 									?>
 								</p>
+							<?php elseif ( 'article' === $dlms_type ) : ?>
+								<?php $dlms_article = $dlms_detail['article'] ?? ''; ?>
+								<p class="dlms-quiz-result__text dlms-noun-result<?php echo '' !== $dlms_article ? ' dlms-article--' . esc_attr( $dlms_article ) : ''; ?>">
+									<?php echo \DeutschLMS\Content\NounPictures::render( $dlms_detail['picture'] ?? '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon filtered by wp_kses(), image from wp_get_attachment_image(). ?>
+									<span class="dlms-noun-result__word">
+										<?php if ( '' !== $dlms_article ) : ?>
+											<strong><?php echo esc_html( $dlms_article ); ?></strong>
+										<?php endif; ?>
+										<?php echo esc_html( $dlms_detail['text'] ); ?>
+									</span>
+								</p>
 							<?php else : ?>
 								<p class="dlms-quiz-result__text"><?php echo nl2br( esc_html( $dlms_detail['text'] ) ); ?></p>
 							<?php endif; ?>
@@ -194,7 +220,39 @@ $dlms_disabled = 'preview' === $dlms_mode;
 									</p>
 								<?php endif; ?>
 							<?php endif; ?>
-							<?php if ( ! empty( $dlms_detail['answers'] ) ) : ?>
+							<?php if ( 'article' === $dlms_type ) : ?>
+								<?php
+								// Only the student's article and, when it was wrong and answers are shown, the right one.
+								$dlms_given = '';
+								$dlms_right = '';
+								foreach ( $dlms_detail['answers'] as $dlms_answer ) {
+									if ( $dlms_answer['selected'] && '' === $dlms_given ) {
+										$dlms_given = $dlms_answer['label'];
+									}
+									if ( true === $dlms_answer['is_correct'] ) {
+										$dlms_right = $dlms_answer['label'];
+									}
+								}
+								?>
+								<dl class="dlms-article-answers">
+									<div class="dlms-article-answers__row">
+										<dt><?php esc_html_e( 'Your answer', 'deutschlms' ); ?>:</dt>
+										<dd>
+											<?php if ( '' === $dlms_given ) : ?>
+												<span class="dlms-article-pill is-wrong"><?php esc_html_e( 'No answer', 'deutschlms' ); ?></span>
+											<?php else : ?>
+												<span class="dlms-article-pill <?php echo $dlms_detail['correct'] ? 'is-filled dlms-article--' . esc_attr( $dlms_given ) : 'is-wrong'; ?>"><?php echo esc_html( $dlms_given ); ?></span>
+											<?php endif; ?>
+										</dd>
+									</div>
+									<?php if ( ! $dlms_detail['correct'] && '' !== $dlms_right ) : ?>
+										<div class="dlms-article-answers__row">
+											<dt><?php esc_html_e( 'Correct answer', 'deutschlms' ); ?>:</dt>
+											<dd><span class="dlms-article-pill is-filled dlms-article--<?php echo esc_attr( $dlms_right ); ?>"><?php echo esc_html( $dlms_right ); ?></span></dd>
+										</div>
+									<?php endif; ?>
+								</dl>
+							<?php elseif ( ! empty( $dlms_detail['answers'] ) ) : ?>
 								<ul class="dlms-quiz-result__answers">
 									<?php foreach ( $dlms_detail['answers'] as $dlms_answer ) : ?>
 										<?php
@@ -250,10 +308,16 @@ $dlms_disabled = 'preview' === $dlms_mode;
 			<p class="dlms-complete__status dlms-complete__status--preview"><?php esc_html_e( 'Preview: you can see this because you manage the course. Only enrolled students can submit answers.', 'deutschlms' ); ?></p>
 		<?php endif; ?>
 		<?php $dlms_timed = isset( $args['time_remaining'] ) && null !== $args['time_remaining']; ?>
-		<form class="dlms-quiz__form" method="post" action="<?php echo esc_url( $args['action_url'] ); ?>" data-dlms-action="quiz" data-dlms-id="<?php echo esc_attr( (string) $args['quiz_id'] ); ?>"<?php echo $dlms_timed ? ' data-dlms-time-remaining="' . esc_attr( (string) (int) $args['time_remaining'] ) . '" data-dlms-time-up="' . esc_attr( (string) (int) $args['time_up_seconds'] ) . '"' : ''; ?>>
-			<input type="hidden" name="action" value="dlms_submit_quiz" />
-			<input type="hidden" name="quiz_id" value="<?php echo esc_attr( (string) $args['quiz_id'] ); ?>" />
-			<input type="hidden" name="dlms_nonce" value="<?php echo esc_attr( wp_create_nonce( $args['nonce_action'] ) ); ?>" />
+		<?php if ( $dlms_trial ) : ?>
+			<form class="dlms-quiz__form dlms-quiz__form--trial" method="post" action="<?php echo esc_url( $args['action_url'] ); ?>">
+				<input type="hidden" name="dlms_trial_nonce" value="<?php echo esc_attr( wp_create_nonce( $args['nonce_action'] ) ); ?>" />
+				<input type="hidden" name="dlms_trial_draw" value="<?php echo esc_attr( $args['trial_draw'] ?? '' ); ?>" />
+		<?php else : ?>
+			<form class="dlms-quiz__form" method="post" action="<?php echo esc_url( $args['action_url'] ); ?>" data-dlms-action="quiz" data-dlms-id="<?php echo esc_attr( (string) $args['quiz_id'] ); ?>"<?php echo $dlms_timed ? ' data-dlms-time-remaining="' . esc_attr( (string) (int) $args['time_remaining'] ) . '" data-dlms-time-up="' . esc_attr( (string) (int) $args['time_up_seconds'] ) . '"' : ''; ?>>
+				<input type="hidden" name="action" value="dlms_submit_quiz" />
+				<input type="hidden" name="quiz_id" value="<?php echo esc_attr( (string) $args['quiz_id'] ); ?>" />
+				<input type="hidden" name="dlms_nonce" value="<?php echo esc_attr( wp_create_nonce( $args['nonce_action'] ) ); ?>" />
+		<?php endif; ?>
 			<ol class="dlms-quiz__questions">
 				<?php foreach ( $args['questions'] as $dlms_index => $dlms_question ) : ?>
 					<li class="dlms-quiz__question dlms-quiz__question--<?php echo esc_attr( $dlms_question['type'] ); ?>">
@@ -354,6 +418,39 @@ $dlms_disabled = 'preview' === $dlms_mode;
 										</li>
 									<?php endforeach; ?>
 								</ol>
+							</fieldset>
+						<?php elseif ( 'article' === $dlms_question['type'] ) : ?>
+							<fieldset class="dlms-article-q">
+								<legend class="dlms-quiz__text dlms-article-q__noun">
+									<span class="dlms-sr">
+										<?php
+										echo esc_html(
+											sprintf(
+												/* translators: %d: question number. */
+												__( 'Question %d:', 'deutschlms' ),
+												$dlms_index + 1
+											) . ' ' . __( 'Which article?', 'deutschlms' )
+										);
+										?>
+									</span>
+									<?php echo \DeutschLMS\Content\NounPictures::render( \DeutschLMS\Quiz\Questions::picture( $dlms_question ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon filtered by wp_kses(), image from wp_get_attachment_image(). ?>
+									<span class="dlms-article-q__word"><?php echo esc_html( $dlms_question['text'] ); ?></span>
+								</legend>
+								<p class="dlms-quiz__hint" aria-hidden="true"><?php esc_html_e( 'Which article?', 'deutschlms' ); ?></p>
+								<div class="dlms-article-q__choices">
+									<?php foreach ( $dlms_question['answers'] as $dlms_answer ) : ?>
+										<label class="dlms-article-choice dlms-article--<?php echo esc_attr( $dlms_answer['id'] ); ?>">
+											<input
+												type="radio"
+												class="dlms-article-choice__input"
+												name="dlms_answers[<?php echo esc_attr( $dlms_question['id'] ); ?>][]"
+												value="<?php echo esc_attr( $dlms_answer['id'] ); ?>"
+												<?php disabled( $dlms_disabled ); ?>
+											/>
+											<span class="dlms-article-choice__label"><?php echo esc_html( $dlms_answer['text'] ); ?></span>
+										</label>
+									<?php endforeach; ?>
+								</div>
 							</fieldset>
 						<?php else : ?>
 							<fieldset>

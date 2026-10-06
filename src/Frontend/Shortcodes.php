@@ -7,6 +7,9 @@
 
 namespace DeutschLMS\Frontend;
 
+use DeutschLMS\Content\NounPictures;
+use DeutschLMS\Quiz\Questions;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -20,8 +23,29 @@ defined( 'ABSPATH' ) || exit;
  * [dlms_student_dashboard show_completed="yes"]
  *
  * An empty course_id/step_id means "the current course/step".
+ *
+ * Content shortcodes for teaching articles with colours (der blue, die red,
+ * das green); they don't replace the automatic course output:
+ *
+ * [dlms_noun der Tisch]                      Card: picture, coloured article and noun.
+ * [dlms_noun die Lampe style="inline"]       Coloured text in a sentence: "die Lampe".
+ * [dlms_noun der Tisch as="ein" style="inline"]  Shows "ein Tisch", coloured as der.
+ * [dlms_noun article="das" word="Sofa"]       Same with named attributes.
+ * [dlms_noun der Sessel picture="icon:armchair"]  Another picture (see below).
+ * [dlms_nouns] [dlms_noun …] … [/dlms_nouns] A grid of cards.
+ * [dlms_article_legend]                      The three colours with their genders.
+ *
+ * The picture is the noun's picture from the noun picture library
+ * (Courses → Noun pictures). picture="…" names another one: an icon
+ * (icon:sofa), a Media Library image (media:123) or another noun (lampe for
+ * die Tischlampe); picture="" shows none.
  */
 final class Shortcodes {
+
+	/**
+	 * Shortcodes that lay out the course UI themselves (see ContentGate).
+	 */
+	public const LAYOUT = array( 'course_outline', 'progress_bar', 'enroll_button', 'mark_complete', 'course_grid', 'student_dashboard' );
 
 	/**
 	 * Renderer.
@@ -56,6 +80,9 @@ final class Shortcodes {
 		add_shortcode( 'dlms_mark_complete', array( $this, 'mark_complete' ) );
 		add_shortcode( 'dlms_course_grid', array( $this, 'course_grid' ) );
 		add_shortcode( 'dlms_student_dashboard', array( $this, 'student_dashboard' ) );
+		add_shortcode( 'dlms_noun', array( $this, 'noun' ) );
+		add_shortcode( 'dlms_nouns', array( $this, 'nouns' ) );
+		add_shortcode( 'dlms_article_legend', array( $this, 'article_legend' ) );
 	}
 
 	/**
@@ -155,6 +182,96 @@ final class Shortcodes {
 	public function student_dashboard( $atts ): string {
 		$atts = shortcode_atts( array( 'show_completed' => 'yes' ), $atts, 'dlms_student_dashboard' );
 		return $this->wrap( $this->renderer->student_dashboard( array( 'show_completed' => $this->flag( $atts['show_completed'] ) ) ) );
+	}
+
+	/**
+	 * [dlms_noun]: a noun with its colour-coded article.
+	 *
+	 * @param array|string $atts Attributes (positional: article, noun).
+	 * @return string
+	 */
+	public function noun( $atts ): string {
+		$atts = is_array( $atts ) ? $atts : array();
+		$args = shortcode_atts(
+			array(
+				'article' => (string) ( $atts[0] ?? '' ),
+				'word'    => (string) ( $atts[1] ?? '' ),
+				'picture' => null,
+				'as'      => '',
+				'style'   => 'card',
+			),
+			$atts,
+			'dlms_noun'
+		);
+
+		$article = strtolower( trim( (string) $args['article'] ) );
+		$word    = trim( (string) $args['word'] );
+		if ( '' === $word || ! in_array( $article, Questions::ARTICLES, true ) ) {
+			return '';
+		}
+		$shown = '' !== trim( (string) $args['as'] ) ? trim( (string) $args['as'] ) : $article;
+		Assets::enqueue();
+
+		if ( 'inline' === $args['style'] ) {
+			return sprintf(
+				'<span class="dlms dlms-noun dlms-article--%1$s"><strong>%2$s</strong> %3$s</span>',
+				esc_attr( $article ),
+				esc_html( $shown ),
+				esc_html( $word )
+			);
+		}
+
+		$picture = null === $args['picture'] ? NounPictures::key_for( $word ) : NounPictures::sanitize_ref( (string) $args['picture'] );
+		return sprintf(
+			'<span class="dlms-noun-card dlms-article--%1$s" role="listitem">%2$s<span class="dlms-noun-card__text"><strong class="dlms-noun-card__article">%3$s</strong> <span class="dlms-noun-card__word">%4$s</span></span></span>',
+			esc_attr( $article ),
+			NounPictures::render( $picture, 'dlms-noun-picture dlms-noun-card__picture' ),
+			esc_html( $shown ),
+			esc_html( $word )
+		);
+	}
+
+	/**
+	 * [dlms_nouns]: a grid of noun cards. Built from inline elements, so it
+	 * stays valid inside the paragraph the shortcode block wraps it in.
+	 *
+	 * @param array|string $atts    Attributes (none).
+	 * @param string|null  $content [dlms_noun] shortcodes.
+	 * @return string
+	 */
+	public function nouns( $atts, $content = null ): string {
+		unset( $atts );
+		// Drop the line breaks and paragraphs wpautop() put between the cards.
+		$content = (string) preg_replace( '#<br\s*/?>|</?p>#i', '', (string) $content );
+		$cards   = trim( do_shortcode( $content ) );
+		if ( '' === $cards ) {
+			return '';
+		}
+		Assets::enqueue();
+		return '<span class="dlms dlms-nouns" role="list">' . $cards . '</span>';
+	}
+
+	/**
+	 * [dlms_article_legend]: der / die / das with their colours and genders.
+	 *
+	 * @return string
+	 */
+	public function article_legend(): string {
+		Assets::enqueue();
+		$genders = array(
+			'der' => __( 'masculine', 'deutschlms' ),
+			'die' => __( 'feminine', 'deutschlms' ),
+			'das' => __( 'neuter', 'deutschlms' ),
+		);
+		$items   = '';
+		foreach ( $genders as $article => $gender ) {
+			$items .= sprintf(
+				'<span class="dlms-legend__item dlms-article--%1$s" role="listitem"><strong>%1$s</strong> <span>%2$s</span></span>',
+				esc_attr( $article ),
+				esc_html( $gender )
+			);
+		}
+		return '<span class="dlms dlms-legend" role="list">' . $items . '</span>';
 	}
 
 	/**

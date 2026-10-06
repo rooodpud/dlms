@@ -28,6 +28,17 @@
 	const isQuiz = 'question' !== root.getAttribute( 'data-mode' );
 	const canCreate = '0' !== root.getAttribute( 'data-can-create' );
 	const types = parseJson( root.getAttribute( 'data-types' ), {} );
+	// Noun picture library and picker (noun-pictures.js).
+	const pictures = window.dlmsNounPictures || null;
+	const pictureFields = [];
+	if ( pictures ) {
+		pictures.onChange( function () {
+			pictureFields.forEach( function ( refresh ) {
+				refresh();
+			} );
+		} );
+	}
+	const ARTICLES = [ 'der', 'die', 'das' ];
 	const termOptions = Object.assign(
 		{ category: [], difficulty: [], level: [] },
 		parseJson( root.getAttribute( 'data-terms' ), {} )
@@ -221,6 +232,19 @@
 				? __( 'Add at least two words or blocks.', 'deutschlms' )
 				: '';
 		}
+		if ( 'article' === question.type ) {
+			if ( /^(der|die|das)\s/i.test( question.text.trim() ) ) {
+				return __(
+					'Enter the noun without its article (Tisch, not der Tisch).',
+					'deutschlms'
+				);
+			}
+			return question.answers.some( function ( answer ) {
+				return answer.correct;
+			} )
+				? ''
+				: __( 'Mark the correct article.', 'deutschlms' );
+		}
 		const answers = question.answers.filter( function ( answer ) {
 			return (
 				'true_false' === question.type || ( answer.text || '' ).trim()
@@ -301,6 +325,20 @@
 			}
 			question.alternatives = question.alternatives || [];
 			question.display = question.display || 'drag';
+			return;
+		}
+		if ( 'article' === type ) {
+			const marked = question.answers.find( function ( answer ) {
+				return answer.correct && ARTICLES.includes( answer.id );
+			} );
+			question.answers = ARTICLES.map( function ( article ) {
+				return {
+					id: article,
+					text: article,
+					correct: !! marked && marked.id === article,
+				};
+			} );
+			question.picture = question.picture || '';
 			return;
 		}
 		if ( 'true_false' === type ) {
@@ -435,6 +473,7 @@
 			return blockRow( question, answer, qIndex, aIndex, changed );
 		}
 		const isTrueFalse = 'true_false' === question.type;
+		const isArticle = 'article' === question.type;
 		const groupName = 'dlms-q-' + qIndex + '-' + question.id;
 		const toggle = el( 'input', {
 			type: 'multiple' === question.type ? 'checkbox' : 'radio',
@@ -455,7 +494,15 @@
 		} );
 
 		const children = [ toggle ];
-		if ( isTrueFalse ) {
+		if ( isArticle ) {
+			children.push(
+				el( 'span', {
+					className:
+						'dlms-qe__article dlms-qe__article--' + answer.id,
+					text: answer.id,
+				} )
+			);
+		} else if ( isTrueFalse ) {
 			children.push(
 				el( 'span', {
 					text:
@@ -811,6 +858,8 @@
 			textLabel = __( 'Text with gaps', 'deutschlms' );
 		} else if ( 'word_order' === question.type ) {
 			textLabel = __( 'Instruction', 'deutschlms' );
+		} else if ( 'article' === question.type ) {
+			textLabel = __( 'Noun (without article)', 'deutschlms' );
 		}
 		body.appendChild(
 			el( 'label', {
@@ -855,12 +904,26 @@
 			);
 		}
 
+		if ( 'article' === question.type ) {
+			body.appendChild(
+				el( 'p', {
+					className: 'description',
+					text: __(
+						'Students see the noun with its picture and choose der (blue), die (red) or das (green). Write the noun with a capital letter and without its article, e.g. Tisch.',
+						'deutschlms'
+					),
+				} )
+			);
+		}
+
 		const answers = el( 'div', { className: 'dlms-qe__answers' } );
 		let answersLabel = __(
 			'Answers (select the correct one)',
 			'deutschlms'
 		);
-		if ( 'multiple' === question.type ) {
+		if ( 'article' === question.type ) {
+			answersLabel = __( 'Correct article', 'deutschlms' );
+		} else if ( 'multiple' === question.type ) {
 			answersLabel = __(
 				'Answers (tick every correct one)',
 				'deutschlms'
@@ -884,6 +947,7 @@
 		if (
 			'true_false' !== question.type &&
 			'fill_blank' !== question.type &&
+			'article' !== question.type &&
 			question.answers.length < 20
 		) {
 			const add = el( 'button', {
@@ -914,6 +978,10 @@
 			answers.appendChild( add );
 		}
 		body.appendChild( answers );
+
+		if ( 'article' === question.type ) {
+			body.appendChild( pictureField( question, index, changed ) );
+		}
 
 		if ( 'word_order' === question.type ) {
 			const altId = 'dlms-qe-alt-' + index + '-' + question.id;
@@ -1014,6 +1082,230 @@
 			);
 		}
 		return card;
+	}
+
+	/**
+	 * Picture of an article question. It comes from the noun picture library
+	 * (one picture per noun): the buttons change the noun's picture there,
+	 * saved right away, for every question and card with that noun. A
+	 * compound noun can use another noun's picture (die Tischlampe → Lampe).
+	 *
+	 * @param {Object}     question Article question.
+	 * @param {number}     index    Item index.
+	 * @param {() => void} changed  Marks the question as changed.
+	 * @return {HTMLElement} Field.
+	 */
+	function pictureField( question, index, changed ) {
+		const box = el( 'div', { className: 'dlms-qe__picture' } );
+		if ( ! pictures ) {
+			return box;
+		}
+		const selectId = 'dlms-qe-picture-' + index + '-' + question.id;
+		const own = question.picture || '';
+
+		function refresh() {
+			box.textContent = '';
+			const nounKey = pictures.keyFor( question.text );
+			const usesOther = own && -1 === own.indexOf( ':' ) ? own : '';
+			const targetKey = usesOther || nounKey;
+			const found = targetKey ? pictures.entry( targetKey ) : null;
+			const targetName = found
+				? found.noun
+				: usesOther || ( question.text || '' ).trim();
+			const article = ( question.answers || [] ).find(
+				function ( answer ) {
+					return answer.correct;
+				}
+			);
+
+			box.appendChild(
+				el( 'span', {
+					className: 'dlms-qe__label',
+					text: __( 'Picture', 'deutschlms' ),
+				} )
+			);
+
+			const row = el( 'span', { className: 'dlms-qe__picture-row' } );
+			if ( own && -1 !== own.indexOf( ':' ) ) {
+				// Set elsewhere (import or code): an own icon or image.
+				const url = pictures.previewUrl( own );
+				if ( url ) {
+					row.appendChild(
+						el( 'img', { src: url, alt: '', width: '48' } )
+					);
+				}
+				row.appendChild(
+					el( 'span', {
+						text: __(
+							'This question has its own picture.',
+							'deutschlms'
+						),
+					} )
+				);
+			} else if ( ! targetKey ) {
+				row.appendChild(
+					el( 'span', {
+						className: 'description',
+						text: __( 'Enter the noun first.', 'deutschlms' ),
+					} )
+				);
+			} else {
+				if ( found && found.url ) {
+					row.appendChild(
+						pictures.preview( found, article ? article.id : '' )
+					);
+				}
+				row.appendChild(
+					el( 'span', {
+						text: found
+							? sprintf(
+									/* translators: %s: noun. */
+									__( 'Picture of %s', 'deutschlms' ),
+									targetName
+								)
+							: sprintf(
+									/* translators: %s: noun. */
+									__(
+										'%s has no picture yet.',
+										'deutschlms'
+									),
+									targetName
+								),
+					} )
+				);
+				const chooseIcon = el( 'button', {
+					type: 'button',
+					className: 'button',
+					text: __( 'Choose icon', 'deutschlms' ),
+				} );
+				chooseIcon.addEventListener( 'click', function () {
+					pictures
+						.chooseIcon(
+							sprintf(
+								/* translators: %s: noun. */
+								__( 'Icon for %s', 'deutschlms' ),
+								targetName
+							)
+						)
+						.then( function ( name ) {
+							return name
+								? pictures.save( targetName, 'icon:' + name )
+								: null;
+						} )
+						.catch( saveFailed );
+				} );
+				row.appendChild( chooseIcon );
+				if ( pictures.canUpload ) {
+					const chooseImage = el( 'button', {
+						type: 'button',
+						className: 'button',
+						text: __( 'Upload or choose image', 'deutschlms' ),
+					} );
+					chooseImage.addEventListener( 'click', function () {
+						pictures
+							.chooseImage(
+								sprintf(
+									/* translators: %s: noun. */
+									__( 'Image for %s', 'deutschlms' ),
+									targetName
+								)
+							)
+							.then( function ( image ) {
+								return image
+									? pictures.save(
+											targetName,
+											'media:' + image.id
+										)
+									: null;
+							} )
+							.catch( saveFailed );
+					} );
+					row.appendChild( chooseImage );
+				}
+			}
+			box.appendChild( row );
+			if ( targetKey ) {
+				box.appendChild(
+					el( 'p', {
+						className: 'description',
+						text: sprintf(
+							/* translators: %s: noun. */
+							__(
+								'Saved right away for every question and noun card with %s (Courses → Noun pictures).',
+								'deutschlms'
+							),
+							targetName
+						),
+					} )
+				);
+			}
+
+			// Compound nouns: use another noun's picture.
+			const select = el( 'select', { id: selectId } );
+			select.appendChild(
+				el( 'option', {
+					value: '',
+					text: __( '— This noun —', 'deutschlms' ),
+				} )
+			);
+			pictures.nouns().forEach( function ( item ) {
+				if ( item.key !== nounKey ) {
+					select.appendChild(
+						el( 'option', { value: item.key, text: item.noun } )
+					);
+				}
+			} );
+			if (
+				usesOther &&
+				! select.querySelector( 'option[value="' + usesOther + '"]' )
+			) {
+				select.appendChild(
+					el( 'option', { value: usesOther, text: usesOther } )
+				);
+			}
+			select.value = usesOther;
+			select.disabled = !! own && -1 !== own.indexOf( ':' );
+			select.addEventListener( 'change', function () {
+				question.picture = select.value;
+				changed();
+				render( index );
+			} );
+			box.appendChild(
+				el( 'p', { className: 'dlms-qe__picture-other' }, [
+					el( 'label', {
+						for: selectId,
+						text: __(
+							'Use the picture of another noun (for compound nouns, e.g. die Tischlampe → Lampe):',
+							'deutschlms'
+						),
+					} ),
+					document.createTextNode( ' ' ),
+					select,
+				] )
+			);
+		}
+
+		function saveFailed( error ) {
+			speak(
+				( error && error.message ) ||
+					__( 'The picture could not be saved.', 'deutschlms' ),
+				'assertive'
+			);
+			// eslint-disable-next-line no-alert -- A native alert is the simplest accessible error message here.
+			window.alert(
+				( error && error.message ) ||
+					__( 'The picture could not be saved.', 'deutschlms' )
+			);
+		}
+
+		refresh();
+		// Library changes (here or in another question) update every box.
+		pictureFields.push( function () {
+			if ( box.isConnected ) {
+				refresh();
+			}
+		} );
+		return box;
 	}
 
 	function moveItemButtons( index, what ) {
@@ -1324,7 +1616,15 @@
 	}
 
 	function questionPreview( question ) {
-		const text = ( question.text || '' ).replace( /\{([^{}]*)\}/g, '[$1]' );
+		let text = ( question.text || '' ).replace( /\{([^{}]*)\}/g, '[$1]' );
+		if ( 'article' === question.type ) {
+			const correct = ( question.answers || [] ).find(
+				function ( answer ) {
+					return answer.correct;
+				}
+			);
+			text = ( correct ? correct.id + ' ' : '' ) + text;
+		}
 		return text.length > 160 ? text.slice( 0, 159 ) + '…' : text;
 	}
 

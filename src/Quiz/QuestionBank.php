@@ -319,6 +319,11 @@ final class QuestionBank {
 	 */
 	public static function title_for( array $question ): string {
 		$text = (string) preg_replace( '/\{([^{}]*)\}/u', '[$1]', (string) $question['text'] );
+		// Article questions read like a dictionary entry: "der Tisch".
+		$article = Questions::article_of( $question );
+		if ( '' !== $article ) {
+			$text = $article . ' ' . $text;
+		}
 		$text = trim( (string) preg_replace( '/\s+/u', ' ', wp_strip_all_tags( $text ) ) );
 		return mb_strlen( $text ) > 120 ? rtrim( mb_substr( $text, 0, 119 ) ) . '…' : $text;
 	}
@@ -331,9 +336,12 @@ final class QuestionBank {
 	 * @return string
 	 */
 	public static function search_text( array $question ): string {
-		$lines = array_merge(
+		$answers = Questions::TYPE_ARTICLE === $question['type']
+			? array( Questions::article_of( $question ) )
+			: array_column( $question['answers'], 'text' );
+		$lines   = array_merge(
 			array( $question['text'] ),
-			array_column( $question['answers'], 'text' ),
+			$answers,
 			$question['alternatives'] ?? array(),
 			array( $question['explanation'] )
 		);
@@ -976,6 +984,7 @@ final class QuestionBank {
 			Questions::TYPE_TRUE_FALSE,
 			Questions::TYPE_FILL_BLANK,
 			Questions::TYPE_WORD_ORDER,
+			Questions::TYPE_ARTICLE,
 		);
 	}
 }

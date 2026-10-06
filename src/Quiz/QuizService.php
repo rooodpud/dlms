@@ -400,6 +400,50 @@ final class QuizService {
 	}
 
 	/**
+	 * Grades a trial by a course manager: nothing is stored, no clock runs
+	 * and no progress is recorded.
+	 *
+	 * @param int        $quiz_id Quiz ID.
+	 * @param array      $answers Question ID => answer IDs or typed answers.
+	 * @param array|null $draw    The random draw the form was built from (see QuestionBank::resolve()).
+	 * @return array{questions: array, attempt: array, details: array}
+	 */
+	public function trial( int $quiz_id, array $answers, ?array $draw ): array {
+		$questions = $this->bank->resolve( $quiz_id, $draw )['questions'];
+		$graded    = Grader::grade( $questions, self::clean_answers( $answers ) );
+		$attempt   = array(
+			'id'        => 0,
+			'quiz_id'   => $quiz_id,
+			'score'     => $graded['score'],
+			'max_score' => $graded['max_score'],
+			'percent'   => $graded['percent'],
+			'passed'    => Grader::passes( $graded['score'], $graded['max_score'], $this->settings( $quiz_id )['pass_mark'] ),
+			'late'      => false,
+			'answers'   => $graded['results'],
+		);
+		return array(
+			'questions' => $questions,
+			'attempt'   => $attempt,
+			'details'   => $this->result_details( $quiz_id, $attempt ),
+		);
+	}
+
+	/**
+	 * A random draw as a form field value, so a trial is graded on the
+	 * questions it showed ('' when the quiz has no random questions).
+	 *
+	 * @param int $quiz_id Quiz ID.
+	 * @return array{questions: array, draw: string}
+	 */
+	public function trial_questions( int $quiz_id ): array {
+		$resolved = $this->bank->resolve( $quiz_id );
+		return array(
+			'questions' => $resolved['questions'],
+			'draw'      => null === $resolved['draw'] ? '' : (string) wp_json_encode( $resolved['draw'] ),
+		);
+	}
+
+	/**
 	 * The user's running quiz clocks.
 	 *
 	 * @param int $user_id User ID.
@@ -506,6 +550,8 @@ final class QuizService {
 				'gaps'        => array(),
 				'given'       => '',
 				'solution'    => '',
+				'picture'     => '',
+				'article'     => '',
 				'explanation' => $show ? $question['explanation'] : '',
 			);
 
@@ -535,6 +581,11 @@ final class QuizService {
 				$detail['given']    = count( $blocks ) === count( $question['answers'] ) ? Questions::finish( $given, $ending ) : $given;
 				$detail['solution'] = $show ? Questions::finish( Questions::solution_sentence( $question ), $ending ) : '';
 			} else {
+				if ( Questions::TYPE_ARTICLE === $question['type'] ) {
+					$detail['picture'] = Questions::picture( $question );
+					// The noun's colour gives the answer away: only when answers are shown or it was right.
+					$detail['article'] = $show || $detail['correct'] ? Questions::article_of( $question ) : '';
+				}
 				foreach ( $question['answers'] as $answer ) {
 					$detail['answers'][] = array(
 						'label'      => Questions::answer_label( $question, $answer ),

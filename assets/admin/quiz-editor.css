@@ -168,3 +168,35 @@
 .dlms-question-incomplete {
 	color: #996800;
 }
+
+/* Article questions: der / die / das in their colours, and the picture. */
+.dlms-qe__article {
+	min-width: 3em;
+	padding: 1px 10px;
+	border: 2px solid currentcolor;
+	border-radius: 999px;
+	font-weight: 700;
+	text-align: center;
+}
+
+.dlms-qe__article--der {
+	color: #1d4ed8;
+}
+
+.dlms-qe__article--die {
+	color: #b91c1c;
+}
+
+.dlms-qe__article--das {
+	color: #15803d;
+}
+
+.dlms-qe__picture-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.dlms-qe__picture-preview img {
+	display: block;
+}

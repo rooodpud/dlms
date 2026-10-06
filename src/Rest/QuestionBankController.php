@@ -49,7 +49,7 @@ final class QuestionBankController extends RestController {
 			'type'       => array(
 				'type'    => 'string',
 				'default' => '',
-				'enum'    => array( '', 'single', 'multiple', 'true_false', 'fill_blank', 'word_order' ),
+				'enum'    => array( '', 'single', 'multiple', 'true_false', 'fill_blank', 'word_order', 'article' ),
 			),
 			'category'   => $this->term_arg(),
 			'difficulty' => $this->term_arg(),

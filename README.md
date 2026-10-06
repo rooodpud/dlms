@@ -6,7 +6,7 @@ their progress and hand out PDF certificates. It was built for teaching
 German, so its quizzes include gap-fill and word-order questions with
 an ä/ö/ü/ß keyboard bar, but it works for any subject.
 
-- **Version:** 0.2.0
+- **Version:** 0.3.0
 - **Requires:** WordPress 6.5 or newer, PHP 8.1 or newer
 - **License:** GPL-2.0-or-later (see [License](#license))
 - **Languages:** English, plus a full German translation
@@ -61,8 +61,9 @@ an ä/ö/ü/ß keyboard bar, but it works for any subject.
 - **Student dashboard** with enrolled courses, progress and certificates.
 
 **Quizzes**
-- Four question types: multiple choice, true/false, gap-fill and word order
-  (drag-and-drop or dropdowns; works on phones).
+- Five question types: multiple choice, true/false, gap-fill, word order
+  (drag-and-drop or dropdowns; works on phones) and **article** (der, die or
+  das, colour-coded, with a picture of the noun).
 - **Graded on the server.** The quiz page never contains the correct
   answers, so they can't be read from the page source.
 - Pass mark, attempt limit, optional answer review, and an optional
@@ -260,6 +261,7 @@ is answered completely right.
 | **True / false** | Pick True or False | Choose the correct one |
 | **Gap-fill** | Type the missing words into gaps in the text | Put each answer in curly braces, other accepted answers after a `\|`: `Ich {bin} nach Berlin {gefahren}.` or `Er {ist\|war} müde.` |
 | **Word order** | Build the sentence from shuffled words or blocks | List the blocks in the correct order; add other correct orders as alternatives |
+| **Article** | See the noun with its picture and pick **der** (blue), **die** (red) or **das** (green) | Write the noun without its article (`Tisch`) and mark the correct article; the picture comes from **Courses → Noun pictures** |
 
 - **Gap-fill:** extra spaces and different quote characters are forgiven;
   capital letters and ä/ö/ü/ß count. A bar with ä, ö, ü, ß, Ä, Ö, Ü buttons
@@ -273,6 +275,17 @@ is answered completely right.
   "?" or "!" taken from the end of the question text. When comparing
   answers, capitalisation and punctuation are ignored. Without JavaScript,
   both modes fall back to plain dropdowns.
+- **Article** questions always offer der, die and das in that order. The
+  article chosen colours the noun and its picture, which helps students tie
+  each noun to its colour. Results show **Your answer** (in its colour
+  when right, uncoloured when wrong) and, for a wrong answer when the quiz
+  shows correct answers, **Correct answer** in its colour; the noun is
+  shown in its colour when the correct answers are shown, or when the
+  student was right. The picture is
+  the noun's picture from the noun picture library; in the question editor
+  you can choose an icon or an image for the noun right there, or use
+  another noun's picture for a compound noun (see
+  [Teaching articles with colours](#teaching-articles-with-colours)).
 
 ---
 
@@ -281,7 +294,9 @@ is answered completely right.
 - **Access.** Course pages (overview and outline) are public. Lesson,
   topic and quiz content needs a login and an enrollment. Anyone who can
   edit a course (its author, LMS Admins, Administrators) can always view
-  it, to preview.
+  it, to preview. When they aren't enrolled, quizzes open in **test mode**:
+  they can answer and submit and see the result like a student, but nothing
+  is saved (no attempt, no progress, no clock).
 - **Completion.**
   - A lesson or topic without quizzes or topics under it is completed with
     the **Mark complete** button.
@@ -345,6 +360,47 @@ quiz.
 An empty `course_id` / `step_id` means "the course or step of the current
 page". The blocks are in the **DeutschLMS** category of the block inserter.
 
+### Teaching articles with colours
+
+Content shortcodes for lesson pages. Unlike the shortcodes above, they don't
+switch off the automatic course output. Put cards in a **Shortcode** block;
+inline nouns also work in a normal paragraph.
+
+| Shortcode | Shows |
+| --- | --- |
+| `[dlms_noun der Tisch]` | A card: picture, coloured article and noun |
+| `[dlms_noun die Lampe style="inline"]` | Coloured text inside a sentence: **die Lampe** |
+| `[dlms_noun der Tisch as="ein" style="inline"]` | **ein Tisch**, coloured like der |
+| `[dlms_noun article="das" word="Sofa"]` | The same with named attributes |
+| `[dlms_noun der Sessel picture="icon:armchair"]` | Another picture: an icon, `media:123` (a Media Library image), another noun (`picture="lampe"`), or `picture=""` for none |
+| `[dlms_nouns]` `[dlms_noun …]` … `[/dlms_nouns]` | A responsive grid of cards |
+| `[dlms_article_legend]` | The three colours with masculine / feminine / neuter |
+
+Colours: der blue, die red, das green. The article is always written too, so
+the colour is never the only signal.
+
+**Pictures: Courses → Noun pictures.** One picture per noun, used by every
+article question and noun card with that noun. For each noun choose an
+**icon** from the bundled [Tabler Icons](https://tabler.io/icons) set
+(5,000+ line icons, MIT licence; search in English, e.g. *bed*, *chair*,
+*fridge*) or **upload or choose an image** from the Media Library. Icons take
+the colour of the article; images keep their own colours (the card border
+and text carry the article colour). The page lists the nouns of all article
+questions, so you see which ones still have no picture. Changes are saved
+right away. Nouns are matched in lower case with umlauts as ae/oe/ue
+(`Kühlschrank` → `kuehlschrank`).
+
+The library is stored in the option `dlms_noun_pictures`
+(`key => [ 'noun' => 'Kühlschrank', 'picture' => 'icon:fridge' | 'media:123' ]`)
+and can be changed with the filter of the same name:
+
+```php
+add_filter( 'dlms_noun_pictures', function ( $library ) {
+	$library['auto'] = array( 'noun' => 'Auto', 'picture' => 'icon:car' );
+	return $library;
+} );
+```
+
 ---
 
 ## Customising the look
@@ -367,6 +423,21 @@ into a PDF by Dompdf, which supports only part of CSS:
 
 **Styles.** The front-end CSS uses `dlms-` class names (BEM style, for
 example `.dlms-outline__section`), so your theme can override it.
+
+**Colours** are CSS custom properties on `.dlms`: `--dlms-accent`,
+`--dlms-success`, `--dlms-danger`, and the article colours `--dlms-der`,
+`--dlms-die`, `--dlms-das` with `--dlms-article-contrast` (text on a filled
+article). The defaults suit light backgrounds; on a dark theme use lighter
+shades, for example:
+
+```css
+body .dlms {
+	--dlms-der: #60a5fa;
+	--dlms-die: #f87171;
+	--dlms-das: #4ade80;
+	--dlms-article-contrast: #17191c;
+}
+```
 
 ---
 
@@ -454,7 +525,7 @@ Please open an issue on GitHub.
 | Course settings | `_dlms_linear_progression`, `_dlms_certificate_enabled`, `_dlms_certificate_title`, `_dlms_certificate_signer`, `_dlms_certificate_background` |
 | Section headings | Course meta `_dlms_section_headings`: list of `{ id, title, before }`, `before` = the lesson the heading stands above (0 = after the last lesson). Not steps: no progress, no page. In the student view a heading above a draft lesson moves down to the next published lesson |
 | Lesson setting | `_dlms_drip_days` (days after enrollment) |
-| Question bank | Post type `dlms_question` (admin only): `_dlms_question` (the question incl. its stable ID and correct answers), `_dlms_question_key`, `_dlms_question_type`, `_dlms_question_ready` ('1' = complete). Taxonomies `dlms_question_category` (hierarchical), `dlms_question_difficulty`, `dlms_question_level` (one term each; defaults Leicht/Mittel/Schwer, A1–C2, option `dlms_question_terms_version`) |
+| Question bank | Post type `dlms_question` (admin only): `_dlms_question` (the question incl. its stable ID and correct answers; article questions: type `article`, answers `der`/`die`/`das`, `picture` = '' for the noun's own picture, or `icon:…`, `media:…` or another noun), `_dlms_question_key`, `_dlms_question_type`, `_dlms_question_ready` ('1' = complete). Taxonomies `dlms_question_category` (hierarchical), `dlms_question_difficulty`, `dlms_question_level` (one term each; defaults Leicht/Mittel/Schwer, A1–C2, option `dlms_question_terms_version`) |
 | Quiz content | `_dlms_quiz_items`: ordered `{ kind: question, question: post ID }` and `{ kind: random, count, category, difficulty, level, type }`. Without it a quiz uses its own `_dlms_questions` (from before the bank; kept as a backup) |
 | Random draws | User meta `_dlms_quiz_draws`: canonical quiz ID => the questions drawn for the current attempt (removed after each attempt) |
 | Quiz settings | `_dlms_pass_mark`, `_dlms_attempts_limit`, `_dlms_show_answers`, `_dlms_time_limit` (minutes, 0 = none) |
@@ -499,6 +570,10 @@ capabilities: `dlms_enroll_course` (course ID), `dlms_complete_step`
 | POST | `/courses/{id}/quizzes` | `edit_post` on the course (+ parent) + create quizzes; body `{ "title", "parent_id" }` |
 | GET | `/questions` | `edit_dlms_questions`; params `search`, `type`, `category`, `difficulty`, `level`, `page`, `per_page` (max 50) |
 | GET | `/questions/count` | `edit_dlms_questions`; same filters, returns the number of complete published matches |
+| POST | `/noun-pictures` | `edit_dlms_questions`; body `{ "noun", "picture" }` with `icon:<name>` or `media:<attachment ID>`; an empty picture removes the noun's picture |
+
+The `type` filter of `/questions` accepts `single`, `multiple`,
+`true_false`, `fill_blank`, `word_order` and `article`.
 
 Cookie-authenticated requests must send the `wp_rest` nonce (`X-WP-Nonce`);
 application passwords work for server-to-server use. Certificates:
@@ -519,7 +594,7 @@ Filters: `dlms_step_access`, `dlms_course_is_enrollable`,
 `dlms_learner_roles`, `dlms_auto_append_content`, `dlms_locate_template`,
 `dlms_template_args`, `dlms_certificate_data`, `dlms_canonical_post_id`,
 `dlms_course_slug`, `dlms_course_archive_slug`, `dlms_lesson_slug`,
-`dlms_topic_slug`, `dlms_quiz_slug`.
+`dlms_topic_slug`, `dlms_quiz_slug`, `dlms_noun_pictures`.
 
 Example: send a welcome email when a student enrolls.
 
@@ -537,7 +612,7 @@ add_action( 'dlms_user_enrolled', function ( $user_id, $course_id ) {
 | `deutschlms.php` | Plugin header, version and requirement checks, bootstrap |
 | `src/` | PHP classes (namespace `DeutschLMS\`, PSR-4): `Access`, `Admin`, `Blocks`, `Certificates`, `Content`, `Database`, `Enrollment`, `Frontend`, `Integrations`, `Progress`, `Quiz`, `Rest`, `Roles` |
 | `templates/` | Overridable front-end templates and the certificate |
-| `assets/` | Front-end and admin JavaScript and CSS (no build step) |
+| `assets/` | Front-end and admin JavaScript and CSS (no build step); `assets/icons/tabler/` holds the Tabler icons (outline SVGs, search index, licence) |
 | `blocks/` → `build/` | Block sources and their compiled output (committed) |
 | `languages/` | `.pot`, German `.po`/`.mo`/`.l10n.php` |
 | `vendor/` | Composer autoloader and Dompdf (runtime only, committed) |
@@ -614,6 +689,7 @@ you to choose.
 
 Bundled libraries keep their own licenses: Dompdf (LGPL-2.1),
 php-font-lib (LGPL-2.1-or-later), php-svg-lib (LGPL-3.0-or-later),
-masterminds/html5 and sabberworm/php-css-parser (MIT).
+masterminds/html5 and sabberworm/php-css-parser (MIT), Tabler Icons
+(MIT, `assets/icons/tabler/LICENSE`).
 
 Copyright © 2026 Pradeep Hingorani.
