@@ -8,7 +8,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-10-04T06:46:42+02:00\n"
-"PO-Revision-Date: 2026-10-05T17:14:06+00:00\n"
+"PO-Revision-Date: 2026-10-06T11:54:21+00:00\n"
 "Language: de_DE\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Domain: deutschlms\n"
@@ -38,6 +38,36 @@ msgstr "DeutschLMS benötigt PHP %1$s und WordPress %2$s oder neuer. Das Plugin 
 #: deutschlms.php:58
 msgid "DeutschLMS is missing its autoloader. Run \"composer install\" in the plugin folder."
 msgstr "DeutschLMS fehlt der Autoloader. Führen Sie im Plugin-Ordner „composer install“ aus."
+
+#: src/Admin/AudioPage.php:74
+#: src/Admin/AudioPage.php:75
+#: src/Admin/AudioPage.php:119
+#: assets/admin/audio-page.js:341
+msgid "Audio"
+msgstr "Audio"
+
+#: src/Admin/AudioPage.php:115
+#: src/Admin/NounPicturesPage.php:125
+#: src/Frontend/FormHandler.php:119
+#: src/Frontend/FormHandler.php:176
+#: src/Rest/RestController.php:55
+msgid "Sorry, you are not allowed to do that."
+msgstr "Das dürfen Sie leider nicht."
+
+#: src/Admin/AudioPage.php:121
+msgid "One recording per German text. Every play button with that text plays it: sentences and dialogues in lessons ([dlms_say], [dlms_dialog]), noun cards and listening questions. Texts without a recording are read aloud by the student’s browser with a German voice."
+msgstr "Eine Aufnahme pro deutschem Text. Jeder Abspielknopf mit diesem Text spielt sie ab: Sätze und Dialoge in Lektionen ([dlms_say], [dlms_dialog]), Nomenkarten und Hörfragen. Texte ohne Aufnahme liest der Browser der Lernenden mit einer deutschen Stimme vor."
+
+#: src/Admin/AudioPage.php:124
+#: src/Admin/NounPicturesPage.php:134
+#: assets/admin/quiz-editor.js:1822
+msgid "Loading…"
+msgstr "Wird geladen …"
+
+#: src/Admin/AudioPage.php:126
+#: src/Admin/NounPicturesPage.php:136
+msgid "This page needs JavaScript."
+msgstr "Diese Seite braucht JavaScript."
 
 #: src/Admin/CourseBuilder.php:38
 msgid "Course builder"
@@ -133,25 +163,9 @@ msgstr "Alle Kurse"
 msgid "Noun pictures"
 msgstr "Bilder für Nomen"
 
-#: src/Admin/NounPicturesPage.php:125
-#: src/Frontend/FormHandler.php:119
-#: src/Frontend/FormHandler.php:176
-#: src/Rest/RestController.php:55
-msgid "Sorry, you are not allowed to do that."
-msgstr "Das dürfen Sie leider nicht."
-
 #: src/Admin/NounPicturesPage.php:131
 msgid "One picture per noun: an icon or your own image. Every article question and noun card with that noun shows it, in the colour of its article."
 msgstr "Ein Bild pro Nomen: ein Icon oder ein eigenes Bild. Jede Artikel-Frage und jede Nomen-Karte mit diesem Nomen zeigt es, in der Farbe seines Artikels."
-
-#: src/Admin/NounPicturesPage.php:134
-#: assets/admin/quiz-editor.js:1708
-msgid "Loading…"
-msgstr "Wird geladen …"
-
-#: src/Admin/NounPicturesPage.php:136
-msgid "This page needs JavaScript."
-msgstr "Diese Seite braucht JavaScript."
 
 #: src/Admin/QuestionEditor.php:60
 #: src/Admin/QuestionList.php:110
@@ -166,18 +180,19 @@ msgstr "Schwierigkeit und Niveau"
 #: src/Admin/QuestionEditor.php:62
 #: src/Admin/QuestionList.php:108
 #: src/Admin/QuestionList.php:116
+#: assets/admin/audio-page.js:337
 msgid "Used in"
 msgstr "Verwendet in"
 
 #: src/Admin/QuestionEditor.php:102
 #: assets/admin/quiz-editor.js:627
-#: assets/admin/quiz-editor.js:1483
+#: assets/admin/quiz-editor.js:1597
 msgid "Difficulty"
 msgstr "Schwierigkeit"
 
 #: src/Admin/QuestionEditor.php:103
 #: assets/admin/quiz-editor.js:628
-#: assets/admin/quiz-editor.js:1488
+#: assets/admin/quiz-editor.js:1602
 msgid "CEFR level"
 msgstr "GER-Niveau"
 
@@ -216,7 +231,7 @@ msgid "(no title)"
 msgstr "(kein Titel)"
 
 #: src/Admin/QuestionList.php:112
-#: assets/admin/quiz-editor.js:1493
+#: assets/admin/quiz-editor.js:1607
 msgid "Type"
 msgstr "Typ"
 
@@ -241,25 +256,25 @@ msgid "Filter by type"
 msgstr "Nach Typ filtern"
 
 #: src/Admin/QuestionList.php:181
-#: assets/admin/quiz-editor.js:1671
+#: assets/admin/quiz-editor.js:1785
 msgid "All types"
 msgstr "Alle Typen"
 
 #: src/Admin/QuestionList.php:188
 #: src/Content/PostTypes.php:225
-#: assets/admin/quiz-editor.js:1672
+#: assets/admin/quiz-editor.js:1786
 msgid "All categories"
 msgstr "Alle Kategorien"
 
 #: src/Admin/QuestionList.php:189
 #: src/Content/PostTypes.php:249
-#: assets/admin/quiz-editor.js:1673
+#: assets/admin/quiz-editor.js:1787
 msgid "All difficulty levels"
 msgstr "Alle Schwierigkeitsgrade"
 
 #: src/Admin/QuestionList.php:190
 #: src/Content/PostTypes.php:271
-#: assets/admin/quiz-editor.js:1674
+#: assets/admin/quiz-editor.js:1788
 msgid "All CEFR levels"
 msgstr "Alle GER-Niveaus"
 
@@ -363,6 +378,7 @@ msgid "Result"
 msgstr "Ergebnis"
 
 #: src/Admin/QuizResults.php:79
+#: assets/admin/audio-page.js:345
 #: assets/admin/noun-pictures-page.js:84
 msgid "Actions"
 msgstr "Aktionen"
@@ -476,6 +492,17 @@ msgstr "Für diesen Kurs gibt es kein Zertifikat."
 #: src/Certificates/CertificateService.php:144
 msgid "The certificate is available once the course is completed."
 msgstr "Das Zertifikat ist verfügbar, sobald Sie den Kurs abgeschlossen haben."
+
+#. translators: %s: German text.
+#: src/Content/AudioClips.php:225
+#: assets/admin/audio-page.js:62
+#, php-format,js-format
+msgid "Listen: %s"
+msgstr "Anhören: %s"
+
+#: src/Content/AudioClips.php:244
+msgid "Listen"
+msgstr "Anhören"
 
 #: src/Content/PostTypes.php:94
 msgid "Courses made of lessons and topics."
@@ -994,7 +1021,7 @@ msgstr "Die gewählte Lektion gehört zu keinem Kurs."
 #: src/Frontend/FormHandler.php:116
 #: src/Quiz/QuestionBank.php:668
 #: src/Quiz/QuizService.php:301
-#: src/Quiz/QuizService.php:615
+#: src/Quiz/QuizService.php:618
 msgid "Invalid quiz."
 msgstr "Ungültiges Quiz."
 
@@ -1038,69 +1065,81 @@ msgstr "Für diesen Kurs ist keine Einschreibung möglich."
 msgid "Enrollment could not be saved. Please try again."
 msgstr "Die Einschreibung konnte nicht gespeichert werden. Bitte versuchen Sie es noch einmal."
 
-#: src/Frontend/Assets.php:80
+#: src/Frontend/Assets.php:92
 #: assets/admin/course-builder.js:740
 msgid "Saving…"
 msgstr "Wird gespeichert …"
 
-#: src/Frontend/Assets.php:81
+#: src/Frontend/Assets.php:93
 #: assets/admin/course-builder.js:63
 msgid "Something went wrong. Please try again."
 msgstr "Etwas ist schiefgelaufen. Bitte versuchen Sie es noch einmal."
 
-#: src/Frontend/Assets.php:82
+#: src/Frontend/Assets.php:94
 msgid "Drag the words into your sentence in the right order, or click them. Drag a word in your sentence to move it, or click it to put it back."
 msgstr "Ziehen Sie die Wörter in der richtigen Reihenfolge in Ihren Satz oder klicken Sie sie an. Ziehen Sie ein Wort in Ihrem Satz an eine andere Stelle oder klicken Sie es an, um es zurückzulegen."
 
-#: src/Frontend/Assets.php:83
+#: src/Frontend/Assets.php:95
 msgid "Choose the word for each position. Each word can be used only once."
 msgstr "Wählen Sie für jede Stelle das passende Wort. Jedes Wort kann nur einmal verwendet werden."
 
-#: src/Frontend/Assets.php:84
+#: src/Frontend/Assets.php:96
 msgid "Your sentence"
 msgstr "Ihr Satz"
 
-#: src/Frontend/Assets.php:85
+#: src/Frontend/Assets.php:97
 msgid "Words to use"
 msgstr "Wörter zur Auswahl"
 
-#: src/Frontend/Assets.php:86
+#: src/Frontend/Assets.php:98
 msgid "Your sentence appears here."
 msgstr "Hier erscheint Ihr Satz."
 
 #. translators: %s: a word or phrase.
-#: src/Frontend/Assets.php:88
+#: src/Frontend/Assets.php:100
 #, php-format
 msgid "Add “%s”"
 msgstr "„%s“ hinzufügen"
 
 #. translators: %s: a word or phrase.
-#: src/Frontend/Assets.php:90
+#: src/Frontend/Assets.php:102
 #, php-format
 msgid "Remove “%s” from your sentence"
 msgstr "„%s“ aus Ihrem Satz entfernen"
 
 #. translators: %s: a word or phrase.
-#: src/Frontend/Assets.php:92
+#: src/Frontend/Assets.php:104
 #, php-format
 msgid "Added “%s”."
 msgstr "„%s“ hinzugefügt."
 
 #. translators: %s: a word or phrase.
-#: src/Frontend/Assets.php:94
+#: src/Frontend/Assets.php:106
 #, php-format
 msgid "Removed “%s”."
 msgstr "„%s“ entfernt."
 
 #. translators: 1: a word or phrase, 2: its position in the sentence.
-#: src/Frontend/Assets.php:96
+#: src/Frontend/Assets.php:108
 #, php-format
 msgid "Moved “%1$s” to position %2$d."
 msgstr "„%1$s“ an Stelle %2$d verschoben."
 
-#: src/Frontend/Assets.php:97
+#: src/Frontend/Assets.php:109
 msgid "One minute left."
 msgstr "Noch eine Minute."
+
+#: src/Frontend/Assets.php:135
+msgid "This device has no German voice. You can add one in the language or speech settings of your device."
+msgstr "Dieses Gerät hat keine deutsche Stimme. Sie können eine in den Sprach- oder Spracheingabe-Einstellungen Ihres Geräts hinzufügen."
+
+#: src/Frontend/Assets.php:136
+msgid "This browser cannot read texts aloud."
+msgstr "Dieser Browser kann keine Texte vorlesen."
+
+#: src/Frontend/Assets.php:137
+msgid "The recording could not be played."
+msgstr "Die Aufnahme konnte nicht abgespielt werden."
 
 #. translators: PHP date format for dates shown to students, e.g. "j. F Y" (F = month name below). Keep "site" to use the site's date format.
 #: src/Frontend/Dates.php:30
@@ -1197,17 +1236,21 @@ msgstr "Ihr Fortschritt konnte nicht gespeichert werden. Bitte versuchen Sie es 
 msgid "Your answers could not be submitted. Please try again."
 msgstr "Ihre Antworten konnten nicht abgeschickt werden. Bitte versuchen Sie es noch einmal."
 
-#: src/Frontend/Shortcodes.php:262
+#: src/Frontend/Shortcodes.php:289
 msgid "masculine"
 msgstr "maskulin"
 
-#: src/Frontend/Shortcodes.php:263
+#: src/Frontend/Shortcodes.php:290
 msgid "feminine"
 msgstr "feminin"
 
-#: src/Frontend/Shortcodes.php:264
+#: src/Frontend/Shortcodes.php:291
 msgid "neuter"
 msgstr "neutral"
+
+#: src/Frontend/Shortcodes.php:379
+msgid "Play the whole dialogue"
+msgstr "Ganzen Dialog anhören"
 
 #: src/Progress/ProgressService.php:105
 msgid "Invalid lesson, topic or quiz."
@@ -1246,78 +1289,82 @@ msgstr "Bitte geben Sie den Fragetext ein."
 msgid "Invalid question."
 msgstr "Ungültige Frage."
 
-#: src/Quiz/Questions.php:88
+#: src/Quiz/Questions.php:98
 msgid "Multiple choice (one correct answer)"
 msgstr "Multiple Choice (eine richtige Antwort)"
 
-#: src/Quiz/Questions.php:89
+#: src/Quiz/Questions.php:99
 msgid "Multiple choice (several correct answers)"
 msgstr "Multiple Choice (mehrere richtige Antworten)"
 
-#: src/Quiz/Questions.php:90
+#: src/Quiz/Questions.php:100
 msgid "True / false"
 msgstr "Richtig / falsch"
 
-#: src/Quiz/Questions.php:91
+#: src/Quiz/Questions.php:101
 msgid "Gap-fill (type the missing words)"
 msgstr "Lückentext (fehlende Wörter eintippen)"
 
-#: src/Quiz/Questions.php:92
+#: src/Quiz/Questions.php:102
 msgid "Word order (put the words in order)"
 msgstr "Satzbau (Wörter ordnen)"
 
-#: src/Quiz/Questions.php:93
+#: src/Quiz/Questions.php:103
 msgid "Article (der, die or das)"
 msgstr "Artikel (der, die oder das)"
 
 #. translators: 1: question number, 2: problem description.
-#: src/Quiz/Questions.php:188
+#: src/Quiz/Questions.php:206
 #, php-format
 msgid "Question %1$d: %2$s"
 msgstr "Frage %1$d: %2$s"
 
-#: src/Quiz/Questions.php:305
+#: src/Quiz/Questions.php:288
+msgid "Play the audio for this question"
+msgstr "Audio zu dieser Frage abspielen"
+
+#: src/Quiz/Questions.php:355
 #: assets/admin/quiz-editor.js:510
 msgid "True"
 msgstr "Richtig"
 
-#: src/Quiz/Questions.php:305
+#: src/Quiz/Questions.php:355
 #: assets/admin/quiz-editor.js:511
 msgid "False"
 msgstr "Falsch"
 
-#: src/Quiz/Questions.php:439
+#: src/Quiz/Questions.php:489
 msgid "put at least one gap in curly braces, e.g. Ich {bin} müde."
 msgstr "setzen Sie mindestens eine Lücke in geschweifte Klammern, z. B. Ich {bin} müde."
 
 #. translators: %d: maximum number of gaps.
-#: src/Quiz/Questions.php:443
+#: src/Quiz/Questions.php:493
 #, php-format
 msgid "use at most %d gaps per question."
 msgstr "verwenden Sie höchstens %d Lücken pro Frage."
 
-#: src/Quiz/Questions.php:447
+#: src/Quiz/Questions.php:497
 msgid "every gap needs its answer inside the braces."
 msgstr "jede Lücke braucht ihre Antwort in den Klammern."
 
-#: src/Quiz/Questions.php:455
+#: src/Quiz/Questions.php:505
 msgid "add at least two words or blocks."
 msgstr "fügen Sie mindestens zwei Wörter oder Blöcke hinzu."
 
-#: src/Quiz/Questions.php:464
+#: src/Quiz/Questions.php:514
 msgid "add at least two answers."
 msgstr "fügen Sie mindestens zwei Antworten hinzu."
 
-#: src/Quiz/Questions.php:467
+#: src/Quiz/Questions.php:517
 msgid "mark the correct answer."
 msgstr "markieren Sie die richtige Antwort."
 
-#: src/Quiz/Questions.php:470
+#: src/Quiz/Questions.php:520
 msgid "only one answer may be correct for this question type."
 msgstr "bei diesem Fragetyp darf nur eine Antwort richtig sein."
 
 #: src/Quiz/QuizService.php:310
-#: templates/quiz/quiz.php:304
+#: templates/quiz/quiz.php:315
 msgid "This quiz has no questions yet."
 msgstr "Diese Übung hat noch keine Fragen."
 
@@ -1329,9 +1376,17 @@ msgstr "Sie haben alle Versuche für diese Übung verbraucht. Bitte wenden Sie s
 msgid "Your answers could not be saved. Please try again."
 msgstr "Ihre Antworten konnten nicht gespeichert werden. Bitte versuchen Sie es noch einmal."
 
-#: src/Quiz/QuizService.php:619
+#: src/Quiz/QuizService.php:622
 msgid "Sorry, you are not allowed to reset quiz attempts."
 msgstr "Sie dürfen Quizversuche leider nicht zurücksetzen."
+
+#: src/Rest/AudioClipsController.php:80
+msgid "Please enter a text."
+msgstr "Bitte geben Sie einen Text ein."
+
+#: src/Rest/AudioClipsController.php:83
+msgid "Choose an audio file (MP3, M4A, OGG or WAV)."
+msgstr "Wählen Sie eine Audiodatei (MP3, M4A, OGG oder WAV)."
 
 #: src/Rest/EnrollmentController.php:87
 msgid "Please log in to enroll."
@@ -1500,8 +1555,8 @@ msgid "Review"
 msgstr "Wiederholen"
 
 #: templates/dashboard/dashboard.php:76
-#: templates/quiz/quiz.php:130
-#: templates/quiz/quiz.php:289
+#: templates/quiz/quiz.php:134
+#: templates/quiz/quiz.php:300
 msgid "Continue"
 msgstr "Weiter"
 
@@ -1529,7 +1584,7 @@ msgid "Available on %s"
 msgstr "Verfügbar ab %s"
 
 #. translators: %d: number of questions.
-#: templates/quiz/quiz.php:64
+#: templates/quiz/quiz.php:68
 #, php-format
 msgid "%d question"
 msgid_plural "%d questions"
@@ -1537,23 +1592,23 @@ msgstr[0] "%d Frage"
 msgstr[1] "%d Fragen"
 
 #. translators: %d: percentage.
-#: templates/quiz/quiz.php:75
+#: templates/quiz/quiz.php:79
 #, php-format
 msgid "Pass mark: %d%%"
 msgstr "Zum Bestehen: %d %%"
 
 #. translators: 1: attempts used, 2: attempts allowed.
-#: templates/quiz/quiz.php:87
+#: templates/quiz/quiz.php:91
 #, php-format
 msgid "Attempts: %1$d of %2$d used"
 msgstr "Versuche: %1$d von %2$d genutzt"
 
-#: templates/quiz/quiz.php:93
+#: templates/quiz/quiz.php:97
 msgid "Unlimited attempts"
 msgstr "Unbegrenzte Versuche"
 
 #. translators: %d: minutes.
-#: templates/quiz/quiz.php:103
+#: templates/quiz/quiz.php:107
 #, php-format
 msgid "Time limit: %d minute"
 msgid_plural "Time limit: %d minutes"
@@ -1561,151 +1616,159 @@ msgstr[0] "Zeitlimit: %d Minute"
 msgstr[1] "Zeitlimit: %d Minuten"
 
 #. translators: %s: percentage.
-#: templates/quiz/quiz.php:116
+#: templates/quiz/quiz.php:120
 #, php-format
 msgid "Best result: %s%%"
 msgstr "Bestes Ergebnis: %s %%"
 
-#: templates/quiz/quiz.php:128
+#: templates/quiz/quiz.php:132
 msgid "You have passed this quiz."
 msgstr "Sie haben diese Übung bestanden."
 
-#: templates/quiz/quiz.php:136
+#: templates/quiz/quiz.php:140
 msgid "Test mode: you manage this course, so you can try the quiz. Your answers are checked but not saved."
 msgstr "Testmodus: Sie verwalten diesen Kurs und können das Quiz ausprobieren. Ihre Antworten werden geprüft, aber nicht gespeichert."
 
-#: templates/quiz/quiz.php:143
+#: templates/quiz/quiz.php:147
 msgid "Passed!"
 msgstr "Bestanden!"
 
-#: templates/quiz/quiz.php:143
+#: templates/quiz/quiz.php:147
 msgid "Not passed yet"
 msgstr "Noch nicht bestanden"
 
 #. translators: 1: points scored, 2: points possible, 3: percentage, 4: pass mark.
-#: templates/quiz/quiz.php:150
+#: templates/quiz/quiz.php:154
 #, php-format
 msgid "You scored %1$d of %2$d points (%3$s%%). Pass mark: %4$d%%."
 msgstr "Sie haben %1$d von %2$d Punkten erreicht (%3$s %%). Zum Bestehen: %4$d %%."
 
-#: templates/quiz/quiz.php:160
+#: templates/quiz/quiz.php:164
 msgid "Time exceeded: your answers arrived after the time limit, so this attempt counts as not passed."
 msgstr "Zeit überschritten: Ihre Antworten kamen nach Ablauf der Zeit an. Dieser Versuch zählt deshalb als nicht bestanden."
 
-#: templates/quiz/quiz.php:181
+#: templates/quiz/quiz.php:185
 msgid "Your answer (correct):"
 msgstr "Ihre Antwort (richtig):"
 
-#: templates/quiz/quiz.php:181
+#: templates/quiz/quiz.php:185
 msgid "Your answer (incorrect):"
 msgstr "Ihre Antwort (falsch):"
 
-#: templates/quiz/quiz.php:187
+#: templates/quiz/quiz.php:191
 msgid "Correct answer:"
 msgstr "Richtige Antwort:"
 
-#: templates/quiz/quiz.php:209
+#: templates/quiz/quiz.php:213
 msgid "Correct"
 msgstr "Richtig"
 
-#: templates/quiz/quiz.php:209
+#: templates/quiz/quiz.php:213
 msgid "Incorrect"
 msgstr "Falsch"
 
-#: templates/quiz/quiz.php:213
-#: templates/quiz/quiz.php:239
-#: templates/quiz/quiz.php:270
+#: templates/quiz/quiz.php:217
+#: templates/quiz/quiz.php:243
+#: templates/quiz/quiz.php:274
 msgid "Your answer"
 msgstr "Ihre Antwort"
 
-#: templates/quiz/quiz.php:218
-#: templates/quiz/quiz.php:250
-#: templates/quiz/quiz.php:273
+#: templates/quiz/quiz.php:222
+#: templates/quiz/quiz.php:254
+#: templates/quiz/quiz.php:277
 #: assets/admin/quiz-editor.js:482
 msgid "Correct answer"
 msgstr "Richtige Antwort"
 
-#: templates/quiz/quiz.php:242
+#: templates/quiz/quiz.php:246
 msgid "No answer"
 msgstr "Keine Antwort"
 
-#: templates/quiz/quiz.php:292
+#: templates/quiz/quiz.php:286
+msgid "Audio text"
+msgstr "Hörtext"
+
+#: templates/quiz/quiz.php:303
 msgid "Try again"
 msgstr "Noch einmal versuchen"
 
-#: templates/quiz/quiz.php:296
+#: templates/quiz/quiz.php:307
 msgid "Back to the course"
 msgstr "Zurück zum Kurs"
 
-#: templates/quiz/quiz.php:308
+#: templates/quiz/quiz.php:319
 msgid "Preview: you can see this because you manage the course. Only enrolled students can submit answers."
 msgstr "Vorschau: Sie sehen das, weil Sie den Kurs verwalten. Nur eingeschriebene Lernende können Antworten abschicken."
 
+#: templates/quiz/quiz.php:339
+msgid "Listen first, then answer."
+msgstr "Hören Sie zuerst, dann antworten Sie."
+
 #. translators: %d: question number.
-#: templates/quiz/quiz.php:332
-#: templates/quiz/quiz.php:377
-#: templates/quiz/quiz.php:430
-#: templates/quiz/quiz.php:463
+#: templates/quiz/quiz.php:350
+#: templates/quiz/quiz.php:395
+#: templates/quiz/quiz.php:448
+#: templates/quiz/quiz.php:481
 #, php-format
 msgid "Question %d:"
 msgstr "Frage %d:"
 
 #. translators: 1: gap number, 2: number of gaps.
-#: templates/quiz/quiz.php:352
+#: templates/quiz/quiz.php:370
 #, php-format
 msgid "Gap %1$d of %2$d"
 msgstr "Lücke %1$d von %2$d"
 
-#: templates/quiz/quiz.php:385
+#: templates/quiz/quiz.php:403
 msgid "Choose the word for each position."
 msgstr "Wählen Sie für jede Position das passende Wort."
 
 #. translators: %d: position in the sentence.
-#: templates/quiz/quiz.php:395
+#: templates/quiz/quiz.php:413
 #, php-format
 msgid "Position %d"
 msgstr "Position %d"
 
-#: templates/quiz/quiz.php:432
-#: templates/quiz/quiz.php:439
+#: templates/quiz/quiz.php:450
+#: templates/quiz/quiz.php:457
 msgid "Which article?"
 msgstr "Welcher Artikel?"
 
-#: templates/quiz/quiz.php:472
+#: templates/quiz/quiz.php:490
 msgid "Select all correct answers."
 msgstr "Wählen Sie alle richtigen Antworten."
 
-#: templates/quiz/quiz.php:493
+#: templates/quiz/quiz.php:511
 msgid "Time left:"
 msgstr "Verbleibende Zeit:"
 
-#: templates/quiz/quiz.php:499
+#: templates/quiz/quiz.php:517
 msgid "Special characters:"
 msgstr "Sonderzeichen:"
 
 #. translators: %s: a character such as ä.
-#: templates/quiz/quiz.php:508
+#: templates/quiz/quiz.php:526
 #, php-format
 msgid "Insert %s"
 msgstr "%s einfügen"
 
-#: templates/quiz/quiz.php:520
-#: templates/quiz/quiz.php:539
+#: templates/quiz/quiz.php:538
+#: templates/quiz/quiz.php:557
 msgid "Submit answers"
 msgstr "Antworten abschicken"
 
-#: templates/quiz/quiz.php:525
+#: templates/quiz/quiz.php:543
 msgid "Time is up"
 msgstr "Die Zeit ist abgelaufen"
 
 #. translators: %d: seconds.
-#: templates/quiz/quiz.php:531
+#: templates/quiz/quiz.php:549
 #, php-format
 msgid "Please click \"Submit answers\" so your answers are checked. If you do not submit within %d seconds, your answers are submitted automatically."
 msgstr "Bitte klicken Sie auf „Antworten abschicken“, damit Ihre Antworten geprüft werden. Wenn Sie nicht innerhalb von %d Sekunden abschicken, werden Ihre Antworten automatisch abgeschickt."
 
 #. translators: %d: seconds. Keep the %d: the page replaces it every second.
-#: templates/quiz/quiz.php:538
+#: templates/quiz/quiz.php:556
 #, php-format
 msgid "Automatic submission in %d seconds."
 msgstr "Automatisches Abschicken in %d Sekunden."
@@ -1802,6 +1865,110 @@ msgstr "Übungen zu diesem Thema"
 msgid "In this lesson"
 msgstr "In dieser Lektion"
 
+#: assets/admin/audio-page.js:27
+msgid "Sentence"
+msgstr "Satz"
+
+#: assets/admin/audio-page.js:28
+msgid "Noun card"
+msgstr "Nomenkarte"
+
+#: assets/admin/audio-page.js:29
+msgid "Listening question"
+msgstr "Hörfrage"
+
+#: assets/admin/audio-page.js:30
+msgid "Not used any more"
+msgstr "Nicht mehr verwendet"
+
+#. translators: %s: German text.
+#: assets/admin/audio-page.js:84
+#, js-format
+msgid "Recording for “%s”"
+msgstr "Aufnahme für „%s“"
+
+#: assets/admin/audio-page.js:88
+#: assets/admin/quiz-editor.js:1165
+msgid "Use this recording"
+msgstr "Diese Aufnahme verwenden"
+
+#: assets/admin/audio-page.js:118
+msgid "Recording saved."
+msgstr "Aufnahme gespeichert."
+
+#: assets/admin/audio-page.js:119
+msgid "Recording removed."
+msgstr "Aufnahme entfernt."
+
+#: assets/admin/audio-page.js:126
+msgid "The recording could not be saved."
+msgstr "Die Aufnahme konnte nicht gespeichert werden."
+
+#: assets/admin/audio-page.js:144
+msgid "All kinds"
+msgstr "Alle Arten"
+
+#: assets/admin/audio-page.js:180
+msgid "Recording"
+msgstr "Aufnahme"
+
+#: assets/admin/audio-page.js:189
+msgid "Browser voice"
+msgstr "Browser-Stimme"
+
+#: assets/admin/audio-page.js:200
+msgid "Replace recording"
+msgstr "Aufnahme ersetzen"
+
+#: assets/admin/audio-page.js:201
+msgid "Add recording"
+msgstr "Aufnahme hinzufügen"
+
+#: assets/admin/audio-page.js:216
+msgid "Remove recording"
+msgstr "Aufnahme entfernen"
+
+#. translators: 1: number of texts, 2: number with a recording.
+#: assets/admin/audio-page.js:260
+#, js-format
+msgid "%1$d text, %2$d with a recording."
+msgid_plural "%1$d texts, %2$d with a recording."
+msgstr[0] "%1$d Text, %2$d mit Aufnahme."
+msgstr[1] "%1$d Texte, %2$d mit Aufnahme."
+
+#. translators: %d: number of texts shown.
+#: assets/admin/audio-page.js:272
+#, js-format
+msgid "%d shown."
+msgid_plural "%d shown."
+msgstr[0] "%d angezeigt."
+msgstr[1] "%d angezeigt."
+
+#: assets/admin/audio-page.js:289
+#: assets/admin/quiz-editor.js:1806
+msgid "Search"
+msgstr "Suchen"
+
+#: assets/admin/audio-page.js:297
+msgid "Kind"
+msgstr "Art"
+
+#: assets/admin/audio-page.js:304
+msgid "Only texts without a recording"
+msgstr "Nur Texte ohne Aufnahme"
+
+#: assets/admin/audio-page.js:313
+msgid "You need permission to upload files to add recordings."
+msgstr "Um Aufnahmen hinzuzufügen, brauchen Sie die Berechtigung, Dateien hochzuladen."
+
+#: assets/admin/audio-page.js:329
+msgid "Play"
+msgstr "Abspielen"
+
+#: assets/admin/audio-page.js:333
+msgid "Text"
+msgstr "Text"
+
 #: assets/admin/course-builder.js:70
 msgid "You have unsaved changes to the order."
 msgstr "Sie haben ungespeicherte Änderungen an der Reihenfolge."
@@ -1875,7 +2042,7 @@ msgstr "Thema „%s“ als Entwurf angelegt."
 #: assets/admin/course-builder.js:393
 #: assets/admin/quiz-editor.js:460
 #: assets/admin/quiz-editor.js:536
-#: assets/admin/quiz-editor.js:1421
+#: assets/admin/quiz-editor.js:1535
 msgid "Remove"
 msgstr "Entfernen"
 
@@ -1969,7 +2136,7 @@ msgid "Add noun"
 msgstr "Nomen hinzufügen"
 
 #: assets/admin/noun-pictures-page.js:75
-#: assets/admin/quiz-editor.js:1124
+#: assets/admin/quiz-editor.js:1238
 msgid "Picture"
 msgstr "Bild"
 
@@ -2008,12 +2175,12 @@ msgid "Own image"
 msgstr "Eigenes Bild"
 
 #: assets/admin/noun-pictures-page.js:174
-#: assets/admin/quiz-editor.js:1179
+#: assets/admin/quiz-editor.js:1293
 msgid "Choose icon"
 msgstr "Icon wählen"
 
 #: assets/admin/noun-pictures-page.js:185
-#: assets/admin/quiz-editor.js:1202
+#: assets/admin/quiz-editor.js:1316
 msgid "Upload or choose image"
 msgstr "Bild hochladen oder wählen"
 
@@ -2042,21 +2209,21 @@ msgstr[0] "%d ohne Bild"
 msgstr[1] "%d ohne Bild"
 
 #: assets/admin/noun-pictures-page.js:284
-#: assets/admin/quiz-editor.js:1291
-#: assets/admin/quiz-editor.js:1297
+#: assets/admin/quiz-editor.js:1405
+#: assets/admin/quiz-editor.js:1411
 msgid "The picture could not be saved."
 msgstr "Das Bild konnte nicht gespeichert werden."
 
 #. translators: %s: noun.
 #: assets/admin/noun-pictures-page.js:304
-#: assets/admin/quiz-editor.js:1186
+#: assets/admin/quiz-editor.js:1300
 #, js-format
 msgid "Icon for %s"
 msgstr "Icon für %s"
 
 #. translators: %s: noun.
 #: assets/admin/noun-pictures-page.js:313
-#: assets/admin/quiz-editor.js:1209
+#: assets/admin/quiz-editor.js:1323
 #, js-format
 msgid "Image for %s"
 msgstr "Bild für %s"
@@ -2189,7 +2356,7 @@ msgstr "Kategorien: %s"
 
 #: assets/admin/quiz-editor.js:611
 #: assets/admin/quiz-editor.js:617
-#: assets/admin/quiz-editor.js:1478
+#: assets/admin/quiz-editor.js:1592
 msgid "Category"
 msgstr "Kategorie"
 
@@ -2340,215 +2507,243 @@ msgstr "Auswahllisten (jedes Wort nur einmal wählbar)"
 msgid "How students answer"
 msgstr "So antworten die Lernenden"
 
-#: assets/admin/quiz-editor.js:1065
+#: assets/admin/quiz-editor.js:1067
 msgid "Explanation (optional, shown with the correct answers)"
 msgstr "Erklärung (optional, wird mit den richtigen Antworten gezeigt)"
 
+#: assets/admin/quiz-editor.js:1118
+msgid "Listening (optional): German text students hear before they answer"
+msgstr "Hören (optional): deutscher Text, den die Lernenden vor dem Antworten hören"
+
+#: assets/admin/quiz-editor.js:1131
+msgid "No own recording: the recording of this text in Courses → Audio plays; without one, the browser reads the text aloud."
+msgstr "Keine eigene Aufnahme: Es spielt die Aufnahme dieses Textes unter Kurse → Audio; ohne Aufnahme liest der Browser den Text vor."
+
+#. translators: %d: attachment ID.
 #: assets/admin/quiz-editor.js:1139
+#, js-format
+msgid "Own recording: audio file #%d"
+msgstr "Eigene Aufnahme: Audiodatei #%d"
+
+#. translators: %s: file name.
+#: assets/admin/quiz-editor.js:1148
+#, js-format
+msgid "Own recording: %s"
+msgstr "Eigene Aufnahme: %s"
+
+#: assets/admin/quiz-editor.js:1159
+msgid "Choose recording"
+msgstr "Aufnahme wählen"
+
+#: assets/admin/quiz-editor.js:1163
+msgid "Recording for this question"
+msgstr "Aufnahme für diese Frage"
+
+#: assets/admin/quiz-editor.js:1184
+msgid "Remove own recording"
+msgstr "Eigene Aufnahme entfernen"
+
+#: assets/admin/quiz-editor.js:1253
 msgid "This question has its own picture."
 msgstr "Diese Frage hat ein eigenes Bild."
 
-#: assets/admin/quiz-editor.js:1149
+#: assets/admin/quiz-editor.js:1263
 msgid "Enter the noun first."
 msgstr "Geben Sie zuerst das Nomen ein."
 
 #. translators: %s: noun.
-#: assets/admin/quiz-editor.js:1163
+#: assets/admin/quiz-editor.js:1277
 #, js-format
 msgid "Picture of %s"
 msgstr "Bild für %s"
 
 #. translators: %s: noun.
-#: assets/admin/quiz-editor.js:1168
+#: assets/admin/quiz-editor.js:1282
 #, js-format
 msgid "%s has no picture yet."
 msgstr "%s hat noch kein Bild."
 
 #. translators: %s: noun.
-#: assets/admin/quiz-editor.js:1233
+#: assets/admin/quiz-editor.js:1347
 #, js-format
 msgid "Saved right away for every question and noun card with %s (Courses → Noun pictures)."
 msgstr "Wird sofort für jede Frage und Nomen-Karte mit %s gespeichert (Kurse → Bilder für Nomen)."
 
-#: assets/admin/quiz-editor.js:1248
+#: assets/admin/quiz-editor.js:1362
 msgid "— This noun —"
 msgstr "— Dieses Nomen —"
 
-#: assets/admin/quiz-editor.js:1277
+#: assets/admin/quiz-editor.js:1391
 msgid "Use the picture of another noun (for compound nouns, e.g. die Tischlampe → Lampe):"
 msgstr "Bild eines anderen Nomens verwenden (für zusammengesetzte Nomen, z. B. die Tischlampe → Lampe):"
 
 #. translators: %s: "question" or "rule".
-#: assets/admin/quiz-editor.js:1315
+#: assets/admin/quiz-editor.js:1429
 #, js-format
 msgid "Move %s up"
 msgstr "%s nach oben verschieben"
 
 #. translators: %s: "question" or "rule".
-#: assets/admin/quiz-editor.js:1317
+#: assets/admin/quiz-editor.js:1431
 #, js-format
 msgid "Move %s down"
 msgstr "%s nach unten verschieben"
 
-#: assets/admin/quiz-editor.js:1325
+#: assets/admin/quiz-editor.js:1439
 msgid "Moved."
 msgstr "Verschoben."
 
 #. translators: 1: matching questions, 2: questions asked for.
-#: assets/admin/quiz-editor.js:1356
+#: assets/admin/quiz-editor.js:1470
 #, js-format
 msgid "Only %1$d complete questions match, so students get %1$d instead of %2$d."
 msgstr "Nur %1$d vollständige Fragen passen, daher bekommen die Lernenden %1$d statt %2$d."
 
 #. translators: %d: number of matching questions.
-#: assets/admin/quiz-editor.js:1366
+#: assets/admin/quiz-editor.js:1480
 #, js-format
 msgid "%d complete question in the bank matches."
 msgid_plural "%d complete questions in the bank match."
 msgstr[0] "%d vollständige Frage in der Sammlung passt."
 msgstr[1] "%d vollständige Fragen in der Sammlung passen."
 
-#: assets/admin/quiz-editor.js:1383
+#: assets/admin/quiz-editor.js:1497
 msgid "Counting matching questions…"
 msgstr "Passende Fragen werden gezählt …"
 
 #. translators: %d: position in the quiz.
-#: assets/admin/quiz-editor.js:1408
+#: assets/admin/quiz-editor.js:1522
 #, js-format
 msgid "Random questions (position %d)"
 msgstr "Zufallsfragen (Position %d)"
 
-#: assets/admin/quiz-editor.js:1413
+#: assets/admin/quiz-editor.js:1527
 msgid "rule"
 msgstr "Regel"
 
-#: assets/admin/quiz-editor.js:1427
+#: assets/admin/quiz-editor.js:1541
 msgid "Random questions removed."
 msgstr "Zufallsfragen entfernt."
 
-#: assets/admin/quiz-editor.js:1435
+#: assets/admin/quiz-editor.js:1549
 msgid "Each student gets different questions from the bank, drawn when they open the quiz and kept until they submit. Questions already in this quiz are never drawn twice."
 msgstr "Alle Lernenden bekommen andere Fragen aus der Sammlung: Sie werden beim Öffnen des Quiz gezogen und bleiben bis zum Abschicken gleich. Fragen, die schon in diesem Quiz sind, werden nicht doppelt gezogen."
 
-#: assets/admin/quiz-editor.js:1470
+#: assets/admin/quiz-editor.js:1584
 msgid "Number of questions"
 msgstr "Anzahl der Fragen"
 
-#: assets/admin/quiz-editor.js:1479
+#: assets/admin/quiz-editor.js:1593
 msgid "Any category"
 msgstr "Jede Kategorie"
 
-#: assets/admin/quiz-editor.js:1484
+#: assets/admin/quiz-editor.js:1598
 msgid "Any difficulty"
 msgstr "Jede Schwierigkeit"
 
-#: assets/admin/quiz-editor.js:1489
+#: assets/admin/quiz-editor.js:1603
 msgid "Any level"
 msgstr "Jedes Niveau"
 
-#: assets/admin/quiz-editor.js:1494
+#: assets/admin/quiz-editor.js:1608
 msgid "Any type"
 msgstr "Jeder Typ"
 
 #. translators: %d: number of questions found.
-#: assets/admin/quiz-editor.js:1561
+#: assets/admin/quiz-editor.js:1675
 #, js-format
 msgid "%d question found."
 msgid_plural "%d questions found."
 msgstr[0] "%d Frage gefunden."
 msgstr[1] "%d Fragen gefunden."
 
-#: assets/admin/quiz-editor.js:1578
+#: assets/admin/quiz-editor.js:1692
 msgid "The question bank could not be loaded."
 msgstr "Die Fragensammlung konnte nicht geladen werden."
 
 #. translators: %d: number of quizzes.
-#: assets/admin/quiz-editor.js:1602
+#: assets/admin/quiz-editor.js:1716
 #, js-format
 msgid "used in %d quiz"
 msgid_plural "used in %d quizzes"
 msgstr[0] "in %d Quiz verwendet"
 msgstr[1] "in %d Quizzen verwendet"
 
-#: assets/admin/quiz-editor.js:1610
+#: assets/admin/quiz-editor.js:1724
 msgid "not used yet"
 msgstr "noch nicht verwendet"
 
-#: assets/admin/quiz-editor.js:1613
+#: assets/admin/quiz-editor.js:1727
 msgid "draft"
 msgstr "Entwurf"
 
-#: assets/admin/quiz-editor.js:1644
-#: assets/admin/quiz-editor.js:1647
-#: assets/admin/quiz-editor.js:1899
+#: assets/admin/quiz-editor.js:1758
+#: assets/admin/quiz-editor.js:1761
+#: assets/admin/quiz-editor.js:2013
 msgid "Add from question bank"
 msgstr "Aus der Fragensammlung hinzufügen"
 
-#: assets/admin/quiz-editor.js:1654
+#: assets/admin/quiz-editor.js:1768
 msgid "Search question text or answers"
 msgstr "Fragetext oder Antworten durchsuchen"
 
-#: assets/admin/quiz-editor.js:1655
+#: assets/admin/quiz-editor.js:1769
 msgid "Search questions"
 msgstr "Fragen durchsuchen"
 
-#: assets/admin/quiz-editor.js:1692
-msgid "Search"
-msgstr "Suchen"
-
 #. translators: 1: questions shown, 2: questions found.
-#: assets/admin/quiz-editor.js:1712
+#: assets/admin/quiz-editor.js:1826
 #, js-format
 msgid "Showing %1$d of %2$d questions."
 msgstr "%1$d von %2$d Fragen werden angezeigt."
 
-#: assets/admin/quiz-editor.js:1750
+#: assets/admin/quiz-editor.js:1864
 msgid "already in this quiz"
 msgstr "schon in diesem Quiz"
 
-#: assets/admin/quiz-editor.js:1768
+#: assets/admin/quiz-editor.js:1882
 msgid "Show more"
 msgstr "Mehr anzeigen"
 
 #. translators: %d: number of selected questions.
-#: assets/admin/quiz-editor.js:1796
+#: assets/admin/quiz-editor.js:1910
 #, js-format
 msgid "Add selected (%d)"
 msgstr "Ausgewählte hinzufügen (%d)"
 
 #. translators: %d: number of questions added.
-#: assets/admin/quiz-editor.js:1820
+#: assets/admin/quiz-editor.js:1934
 #, js-format
 msgid "%d question added to the quiz."
 msgid_plural "%d questions added to the quiz."
 msgstr[0] "%d Frage zum Quiz hinzugefügt."
 msgstr[1] "%d Fragen zum Quiz hinzugefügt."
 
-#: assets/admin/quiz-editor.js:1833
+#: assets/admin/quiz-editor.js:1947
 msgid "Close"
 msgstr "Schließen"
 
-#: assets/admin/quiz-editor.js:1851
+#: assets/admin/quiz-editor.js:1965
 msgid "Students see the questions in this order. Every question is kept in the question bank (Courses → Questions), so it can be used in other quizzes too. Only complete questions are shown to students; incomplete ones are marked below."
 msgstr "Die Lernenden sehen die Fragen in dieser Reihenfolge. Jede Frage liegt in der Fragensammlung (Kurse → Fragen) und kann auch in anderen Quizzen verwendet werden. Nur vollständige Fragen werden angezeigt; unvollständige sind unten markiert."
 
-#: assets/admin/quiz-editor.js:1871
+#: assets/admin/quiz-editor.js:1985
 msgid "No questions yet. Students cannot take this quiz until it has at least one complete question."
 msgstr "Noch keine Fragen. Dieses Quiz kann erst gemacht werden, wenn es mindestens eine vollständige Frage hat."
 
-#: assets/admin/quiz-editor.js:1885
+#: assets/admin/quiz-editor.js:1999
 msgid "Add new question"
 msgstr "Neue Frage hinzufügen"
 
-#: assets/admin/quiz-editor.js:1891
+#: assets/admin/quiz-editor.js:2005
 msgid "Question added."
 msgstr "Frage hinzugefügt."
 
-#: assets/admin/quiz-editor.js:1920
+#: assets/admin/quiz-editor.js:2034
 msgid "Add random questions"
 msgstr "Zufallsfragen hinzufügen"
 
-#: assets/admin/quiz-editor.js:1935
+#: assets/admin/quiz-editor.js:2049
 msgid "Random questions added."
 msgstr "Zufallsfragen hinzugefügt."
 

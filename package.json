@@ -1,6 +1,6 @@
 {
 	"name": "deutschlms",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"private": true,
 	"description": "Block sources for DeutschLMS. Compiled output in build/ ships with the plugin.",
 	"license": "GPL-2.0-or-later",

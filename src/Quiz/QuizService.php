@@ -553,6 +553,9 @@ final class QuizService {
 				'picture'     => '',
 				'article'     => '',
 				'explanation' => $show ? $question['explanation'] : '',
+				// Listening questions: the text heard, with the answers.
+				'listen'      => $show ? (string) ( $question['listen'] ?? '' ) : '',
+				'audio'       => $show ? (int) ( $question['audio'] ?? 0 ) : 0,
 			);
 
 			if ( Questions::TYPE_FILL_BLANK === $question['type'] ) {

@@ -8,6 +8,7 @@
 namespace DeutschLMS;
 
 use DeutschLMS\Access\AccessControl;
+use DeutschLMS\Admin\AudioPage;
 use DeutschLMS\Admin\CourseBuilder;
 use DeutschLMS\Admin\CourseSettings;
 use DeutschLMS\Admin\ListTables;
@@ -21,6 +22,7 @@ use DeutschLMS\Admin\UserQuizAttempts;
 use DeutschLMS\Blocks\Blocks;
 use DeutschLMS\Certificates\CertificateController;
 use DeutschLMS\Certificates\CertificateService;
+use DeutschLMS\Content\AudioClips;
 use DeutschLMS\Content\CourseStructure;
 use DeutschLMS\Content\NounPictures;
 use DeutschLMS\Content\PostTypes;
@@ -40,6 +42,7 @@ use DeutschLMS\Progress\ProgressService;
 use DeutschLMS\Quiz\AttemptRepository;
 use DeutschLMS\Quiz\QuestionBank;
 use DeutschLMS\Quiz\QuizService;
+use DeutschLMS\Rest\AudioClipsController;
 use DeutschLMS\Rest\CourseBuilderController;
 use DeutschLMS\Rest\EnrollmentController;
 use DeutschLMS\Rest\NounPicturesController;
@@ -213,6 +216,7 @@ final class Plugin {
 			( new QuestionEditor( $this->bank ) )->register_hooks();
 			( new QuestionList( $this->structure, $this->bank ) )->register_hooks();
 			( new NounPicturesPage( $this->bank ) )->register_hooks();
+			( new AudioPage( $this->bank ) )->register_hooks();
 			( new UserQuizAttempts( $this->quizzes ) )->register_hooks();
 			( new QuizResults( $this->quizzes ) )->register_hooks();
 			( new StepMetaBoxes( $this->structure, $this->structure_editor ) )->register_hooks();
@@ -237,6 +241,7 @@ final class Plugin {
 		( new QuizController( $this->quizzes ) )->register_routes();
 		( new QuestionBankController( $this->bank ) )->register_routes();
 		( new NounPicturesController() )->register_routes();
+		( new AudioClipsController() )->register_routes();
 	}
 
 	/**
@@ -335,5 +340,6 @@ final class Plugin {
 	public function flush_runtime_caches(): void {
 		$this->structure->flush();
 		NounPictures::flush();
+		AudioClips::flush();
 	}
 }

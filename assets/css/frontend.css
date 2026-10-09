@@ -1302,3 +1302,182 @@ img.dlms-noun-picture--image {
 	background: var(--dlms-article);
 	color: var(--dlms-article-contrast);
 }
+
+/* Play buttons: [dlms_say], noun cards, listening questions (audio.js) */
+.dlms-play {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	inline-size: 2.25rem;
+	block-size: 2.25rem;
+	margin: 0;
+	padding: 0;
+	border: 2px solid currentcolor;
+	border-radius: 999px;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+	line-height: 1;
+	vertical-align: middle;
+}
+
+.dlms-play:hover,
+.dlms-play:focus-visible {
+	background: color-mix(in srgb, currentcolor 14%, transparent);
+}
+
+.dlms-play:focus-visible {
+	outline: 3px solid var(--dlms-accent);
+	outline-offset: 2px;
+}
+
+.dlms-play__icon {
+	margin-inline-start: 2px;
+}
+
+/* While playing: the triangle becomes a square (stop). */
+.dlms-play__stop,
+.is-playing > .dlms-play__icon .dlms-play__start {
+	display: none;
+}
+
+.is-playing > .dlms-play__icon .dlms-play__stop {
+	display: inline;
+}
+
+.is-playing > .dlms-play__icon {
+	margin-inline-start: 0;
+}
+
+.dlms-play.is-playing {
+	background: color-mix(in srgb, currentcolor 18%, transparent);
+}
+
+.dlms-play.is-unavailable {
+	opacity: 0.55;
+}
+
+.dlms-play__note {
+	display: block;
+	margin-block-start: 0.25rem;
+	color: var(--dlms-muted);
+	font-size: 0.85em;
+}
+
+/* Button left, text right: a long text wraps beside the button, not below. */
+.dlms-say {
+	display: inline-grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	column-gap: 0.5rem;
+	align-items: center;
+	max-inline-size: 100%;
+	vertical-align: middle;
+}
+
+.dlms-say--button {
+	display: inline-flex;
+}
+
+.dlms-say > .dlms-play__note {
+	grid-column: 2;
+}
+
+li:has(> .dlms-say) + li {
+	margin-block-start: 0.4rem;
+}
+
+/* [dlms_dialog]: the button, then the speaker's name and the line. */
+.dlms-dialog {
+	margin-block: 0 1.5em;
+}
+
+.dlms-dialog__bar {
+	margin-block-end: 0.75rem;
+}
+
+.dlms-play-all {
+	display: inline-flex;
+	gap: 0.5rem;
+	align-items: center;
+	margin: 0;
+	padding: 0.5rem 1.1rem 0.5rem 0.8rem;
+	border: 2px solid var(--dlms-accent);
+	border-radius: 999px;
+	background: var(--dlms-accent);
+	color: var(--dlms-accent-contrast);
+	font: inherit;
+	font-weight: 700;
+	line-height: 1.2;
+	cursor: pointer;
+}
+
+.dlms-play-all:hover,
+.dlms-play-all:focus-visible {
+	background: color-mix(in srgb, var(--dlms-accent) 82%, #fff);
+}
+
+.dlms-play-all:focus-visible {
+	outline: 3px solid var(--dlms-accent);
+	outline-offset: 2px;
+}
+
+.dlms-play-all.is-playing {
+	background: transparent;
+	color: inherit;
+}
+
+.dlms-dialog__bar > .dlms-play__note {
+	display: block;
+}
+
+.dlms-dialog .dlms-dialog__lines {
+	display: grid;
+	gap: 0.3rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.dlms-dialog .dlms-dialog__line {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	column-gap: 0.6rem;
+	align-items: center;
+	margin: 0;
+	padding: 0.3rem 0.5rem;
+	border-radius: 0.5rem;
+}
+
+.dlms-dialog__line.is-speaking {
+	background: color-mix(in srgb, var(--dlms-accent) 18%, transparent);
+}
+
+.dlms-dialog__line > .dlms-play__note {
+	grid-column: 2;
+}
+
+.dlms-noun-card .dlms-play {
+	inline-size: 1.9rem;
+	block-size: 1.9rem;
+}
+
+.dlms-quiz__listen,
+.dlms-quiz-result__listen {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.6rem;
+	align-items: center;
+	margin-block: 0 0.5rem;
+}
+
+.dlms-quiz__listen .dlms-play {
+	inline-size: 2.75rem;
+	block-size: 2.75rem;
+	color: var(--dlms-accent);
+}
+
+.dlms-quiz__listen-label {
+	color: var(--dlms-muted);
+	font-size: 0.95em;
+}

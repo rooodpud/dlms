@@ -1046,6 +1046,8 @@
 			body.appendChild( display );
 		}
 
+		body.appendChild( listenField( question, index, changed ) );
+
 		const explanationId = 'dlms-qe-expl-' + index + '-' + question.id;
 		const explanation = el( 'textarea', {
 			id: explanationId,
@@ -1082,6 +1084,118 @@
 			);
 		}
 		return card;
+	}
+
+	/**
+	 * Listening: a German text students hear before they answer, and an
+	 * optional recording of it. Without a recording, the recording of the
+	 * same text in Courses → Audio plays, else the browser reads the text.
+	 *
+	 * @param {Object}     question Question.
+	 * @param {number}     index    Card index.
+	 * @param {() => void} changed  Marks the item as changed.
+	 * @return {Element} Field.
+	 */
+	function listenField( question, index, changed ) {
+		const box = el( 'div', { className: 'dlms-qe__listen' } );
+		const textId = 'dlms-qe-listen-' + index + '-' + question.id;
+		const text = el( 'textarea', {
+			id: textId,
+			className: 'large-text',
+			rows: '2',
+			maxlength: '1000',
+			lang: 'de',
+		} );
+		text.value = question.listen || '';
+		text.addEventListener( 'input', function () {
+			question.listen = text.value;
+			changed();
+		} );
+		box.appendChild(
+			el( 'label', {
+				for: textId,
+				className: 'dlms-qe__label',
+				text: __(
+					'Listening (optional): German text students hear before they answer',
+					'deutschlms'
+				),
+			} )
+		);
+		box.appendChild( text );
+
+		const row = el( 'p', { className: 'dlms-qe__listen-row' } );
+		const status = el( 'span', { className: 'description' } );
+		function showStatus() {
+			const id = parseInt( question.audio, 10 ) || 0;
+			if ( ! id ) {
+				status.textContent = __(
+					'No own recording: the recording of this text in Courses → Audio plays; without one, the browser reads the text aloud.',
+					'deutschlms'
+				);
+				return;
+			}
+			status.textContent = sprintf(
+				/* translators: %d: attachment ID. */
+				__( 'Own recording: audio file #%d', 'deutschlms' ),
+				id
+			);
+			if ( window.wp && wp.media && wp.media.attachment ) {
+				const attachment = wp.media.attachment( id );
+				attachment.fetch().then( function () {
+					if ( id === ( parseInt( question.audio, 10 ) || 0 ) ) {
+						status.textContent = sprintf(
+							/* translators: %s: file name. */
+							__( 'Own recording: %s', 'deutschlms' ),
+							attachment.get( 'filename' ) || '#' + id
+						);
+					}
+				} );
+			}
+		}
+		if ( window.wp && wp.media ) {
+			const choose = el( 'button', {
+				type: 'button',
+				className: 'button',
+				text: __( 'Choose recording', 'deutschlms' ),
+			} );
+			choose.addEventListener( 'click', function () {
+				const frame = wp.media( {
+					title: __( 'Recording for this question', 'deutschlms' ),
+					library: { type: 'audio' },
+					button: { text: __( 'Use this recording', 'deutschlms' ) },
+					multiple: false,
+				} );
+				frame.on( 'select', function () {
+					const chosen = frame
+						.state()
+						.get( 'selection' )
+						.first()
+						.toJSON();
+					question.audio = chosen.id;
+					changed();
+					showStatus();
+				} );
+				frame.open();
+			} );
+			row.appendChild( choose );
+			const remove = el( 'button', {
+				type: 'button',
+				className: 'button-link',
+				text: __( 'Remove own recording', 'deutschlms' ),
+			} );
+			remove.addEventListener( 'click', function () {
+				question.audio = 0;
+				changed();
+				showStatus();
+			} );
+			row.appendChild( document.createTextNode( ' ' ) );
+			row.appendChild( remove );
+			row.appendChild( document.createTextNode( ' ' ) );
+		}
+		row.appendChild( status );
+		showStatus();
+		box.appendChild( row );
+		return box;
 	}
 
 	/**

@@ -200,3 +200,19 @@
 .dlms-qe__picture-preview img {
 	display: block;
 }
+
+/* Listening: the text students hear and its recording. */
+.dlms-qe__listen {
+	margin: 12px 0;
+	padding: 8px 12px;
+	border-left: 4px solid #2271b1;
+	background: #f6f7f7;
+}
+
+.dlms-qe__listen-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 10px;
+	align-items: center;
+	margin: 6px 0 0;
+}

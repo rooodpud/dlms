@@ -6,7 +6,7 @@ their progress and hand out PDF certificates. It was built for teaching
 German, so its quizzes include gap-fill and word-order questions with
 an ä/ö/ü/ß keyboard bar, but it works for any subject.
 
-- **Version:** 0.3.0
+- **Version:** 0.4.0
 - **Requires:** WordPress 6.5 or newer, PHP 8.1 or newer
 - **License:** GPL-2.0-or-later (see [License](#license))
 - **Languages:** English, plus a full German translation
@@ -68,6 +68,8 @@ an ä/ö/ü/ß keyboard bar, but it works for any subject.
   answers, so they can't be read from the page source.
 - Pass mark, attempt limit, optional answer review, and an optional
   **time limit** that survives page reloads.
+- **Listening questions:** any question can play a German text first (a
+  recording, or the browser's German voice).
 - Instructors can see every student's attempts and reset a student's
   attempts.
 
@@ -79,6 +81,15 @@ an ä/ö/ü/ß keyboard bar, but it works for any subject.
   labels "Leicht / Mittel / Schwer") and CEFR level (A1–C2).
 - **Random questions:** a quiz can say "5 random questions from category X,
   difficulty Y", and each student gets a different set.
+
+**Audio** (new in 0.4.0)
+- Play buttons on German sentences (`[dlms_say]`) and on noun cards;
+  dialogues (`[dlms_dialog]`) with a female or male voice per speaker and a
+  button for the whole dialogue.
+- **Courses → Audio:** one recording per German text (an MP3 or other audio
+  file from the Media Library), used by every play button with that text.
+  Until a text has a recording, the student's browser reads it aloud with a
+  German voice (Web Speech API; nothing is sent anywhere by the plugin).
 
 **Certificates**
 - A PDF certificate when a student completes a course, made on demand
@@ -275,6 +286,13 @@ is answered completely right.
   "?" or "!" taken from the end of the question text. When comparing
   answers, capitalisation and punctuation are ignored. Without JavaScript,
   both modes fall back to plain dropdowns.
+- **Listening (any type):** a question can have a German text students
+  hear before they answer (**Listening** field in the question editor) and,
+  optionally, its own recording. The play button plays the question's own
+  recording, else the text's recording from **Courses → Audio**, else the
+  browser reads the text. With a recording the text stays out of the page;
+  with the browser voice it is in the page (the browser needs it). The text
+  is shown with the results when the quiz shows correct answers.
 - **Article** questions always offer der, die and das in that order. The
   article chosen colours the noun and its picture, which helps students tie
   each noun to its colour. Results show **Your answer** (in its colour
@@ -378,6 +396,57 @@ inline nouns also work in a normal paragraph.
 
 Colours: der blue, die red, das green. The article is always written too, so
 the colour is never the only signal.
+
+Noun cards have a play button that says the noun with its article ("der
+Tisch"); `audio="no"` leaves it out. Inline nouns have none.
+
+### Audio: `[dlms_say]` and Courses → Audio
+
+| Shortcode | Shows |
+| --- | --- |
+| `[dlms_say]Guten Morgen![/dlms_say]` | The German text with a play button (inline HTML and inline nouns allowed inside) |
+| `[dlms_say show="no"]Guten Morgen![/dlms_say]` | Only the play button, for listening tasks (with a recording, the text stays out of the page) |
+| `[dlms_say audio="123"]…[/dlms_say]` | Plays that audio attachment instead of the library's recording |
+| `[dlms_say text="Hallo"]` | The same with an attribute |
+| `[dlms_say voice="female"]Ich bin fertig.[/dlms_say]` | The browser reads it with a woman's voice (`male`: a man's) |
+
+A dialogue, with a play button per line and a **Ganzen Dialog anhören**
+button that plays the lines one after the other (the line being spoken is
+highlighted; click again to stop):
+
+```
+[dlms_dialog voices="Marco=male, Amina=female"]
+Marco: Guten Morgen, Amina!
+Amina: Guten Morgen, Marco!
+[/dlms_dialog]
+```
+
+One line per speaker, starting with the name and a colon; inline HTML and
+inline nouns are allowed. `voices` gives each speaker a voice (`male`/`m`/
+`Mann`, `female`/`f`/`w`/`Frau`); speakers without one get the browser's best
+German voice.
+
+The browser's voices don't say whether they are a woman's or a man's, so the
+script decides by the name (e.g. Katja/Conrad in Edge, Hedda/Stefan in
+Windows, Google Deutsch, Anna/Markus on Apple devices). On a device with only
+one German voice, the man's lines are read lower. Recordings are one per text
+and are used for every voice.
+
+**Courses → Audio** lists every text with a play button: `[dlms_say]` texts,
+dialogue lines and noun cards in course content, the texts of listening questions, and
+recordings whose text is no longer used. For each text: play it, **Add
+recording** (Media Library, audio files), **Remove recording**; filters for
+kind and "only texts without a recording". Changes are saved right away.
+
+Texts are matched ignoring case, spaces, quotes and the punctuation at
+their ends, so "Guten Morgen!" and "guten Morgen" share a recording. The
+library is stored in the option `dlms_audio_clips` (`key => [ 'text' => …,
+'media' => attachment ID ]`, key = the first 16 characters of the md5 of the
+normalised text) and can be changed with the filter of the same name.
+
+Without a recording the browser's own German voice is used. Most phones and
+Edge/Chrome have one; a device without a German voice shows a message
+(students can add one in their device's language settings).
 
 **Pictures: Courses → Noun pictures.** One picture per noun, used by every
 article question and noun card with that noun. For each noun choose an
@@ -525,7 +594,7 @@ Please open an issue on GitHub.
 | Course settings | `_dlms_linear_progression`, `_dlms_certificate_enabled`, `_dlms_certificate_title`, `_dlms_certificate_signer`, `_dlms_certificate_background` |
 | Section headings | Course meta `_dlms_section_headings`: list of `{ id, title, before }`, `before` = the lesson the heading stands above (0 = after the last lesson). Not steps: no progress, no page. In the student view a heading above a draft lesson moves down to the next published lesson |
 | Lesson setting | `_dlms_drip_days` (days after enrollment) |
-| Question bank | Post type `dlms_question` (admin only): `_dlms_question` (the question incl. its stable ID and correct answers; article questions: type `article`, answers `der`/`die`/`das`, `picture` = '' for the noun's own picture, or `icon:…`, `media:…` or another noun), `_dlms_question_key`, `_dlms_question_type`, `_dlms_question_ready` ('1' = complete). Taxonomies `dlms_question_category` (hierarchical), `dlms_question_difficulty`, `dlms_question_level` (one term each; defaults Leicht/Mittel/Schwer, A1–C2, option `dlms_question_terms_version`) |
+| Question bank | Post type `dlms_question` (admin only): `_dlms_question` (the question incl. its stable ID and correct answers; article questions: type `article`, answers `der`/`die`/`das`, `picture` = '' for the noun's own picture, or `icon:…`, `media:…` or another noun; listening questions: `listen` = German text, `audio` = audio attachment ID, both only stored when set), `_dlms_question_key`, `_dlms_question_type`, `_dlms_question_ready` ('1' = complete). Taxonomies `dlms_question_category` (hierarchical), `dlms_question_difficulty`, `dlms_question_level` (one term each; defaults Leicht/Mittel/Schwer, A1–C2, option `dlms_question_terms_version`) |
 | Quiz content | `_dlms_quiz_items`: ordered `{ kind: question, question: post ID }` and `{ kind: random, count, category, difficulty, level, type }`. Without it a quiz uses its own `_dlms_questions` (from before the bank; kept as a backup) |
 | Random draws | User meta `_dlms_quiz_draws`: canonical quiz ID => the questions drawn for the current attempt (removed after each attempt) |
 | Quiz settings | `_dlms_pass_mark`, `_dlms_attempts_limit`, `_dlms_show_answers`, `_dlms_time_limit` (minutes, 0 = none) |
@@ -533,6 +602,7 @@ Please open an issue on GitHub.
 | Enrollments | Table `{prefix}dlms_enrollments` (unique per user + course) |
 | Progress | Table `{prefix}dlms_progress` (one row per completed step, unique per user + step) |
 | Quiz attempts | Table `{prefix}dlms_quiz_attempts` (one row per attempt, with a graded snapshot of the answers, `started_at` and `late` for timed quizzes; resets mark rows `reset` instead of deleting them) |
+| Audio library | Option `dlms_audio_clips` (see [Audio](#audio-dlms_say-and-courses--audio)) |
 | Schema version | Option `dlms_db_version` (1.2.0); roles version `dlms_roles_version` (3) |
 
 Course order:
@@ -571,6 +641,7 @@ capabilities: `dlms_enroll_course` (course ID), `dlms_complete_step`
 | GET | `/questions` | `edit_dlms_questions`; params `search`, `type`, `category`, `difficulty`, `level`, `page`, `per_page` (max 50) |
 | GET | `/questions/count` | `edit_dlms_questions`; same filters, returns the number of complete published matches |
 | POST | `/noun-pictures` | `edit_dlms_questions`; body `{ "noun", "picture" }` with `icon:<name>` or `media:<attachment ID>`; an empty picture removes the noun's picture |
+| POST | `/audio-clips` | `edit_dlms_questions`; body `{ "text", "media" }` with an audio attachment ID; `media` 0 removes the text's recording |
 
 The `type` filter of `/questions` accepts `single`, `multiple`,
 `true_false`, `fill_blank`, `word_order` and `article`.
@@ -594,7 +665,7 @@ Filters: `dlms_step_access`, `dlms_course_is_enrollable`,
 `dlms_learner_roles`, `dlms_auto_append_content`, `dlms_locate_template`,
 `dlms_template_args`, `dlms_certificate_data`, `dlms_canonical_post_id`,
 `dlms_course_slug`, `dlms_course_archive_slug`, `dlms_lesson_slug`,
-`dlms_topic_slug`, `dlms_quiz_slug`, `dlms_noun_pictures`.
+`dlms_topic_slug`, `dlms_quiz_slug`, `dlms_noun_pictures`, `dlms_audio_clips`.
 
 Example: send a welcome email when a student enrolls.
 

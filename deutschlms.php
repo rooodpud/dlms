@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       DeutschLMS
  * Description:       A secure learning management system: courses, lessons, topics, enrollment and progress tracking.
- * Version:           0.3.0
+ * Version:           0.4.0
  * Requires at least: 6.5
  * Requires PHP:      8.1
  * Author:            Pradeep Hingorani
@@ -16,7 +16,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DLMS_VERSION', '0.3.0' );
+define( 'DLMS_VERSION', '0.4.0' );
 define( 'DLMS_FILE', __FILE__ );
 define( 'DLMS_PATH', plugin_dir_path( __FILE__ ) );
 define( 'DLMS_URL', plugin_dir_url( __FILE__ ) );

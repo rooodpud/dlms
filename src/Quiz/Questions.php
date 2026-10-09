@@ -7,6 +7,7 @@
 
 namespace DeutschLMS\Quiz;
 
+use DeutschLMS\Content\AudioClips;
 use DeutschLMS\Content\NounPictures;
 
 defined( 'ABSPATH' ) || exit;
@@ -27,6 +28,8 @@ defined( 'ABSPATH' ) || exit;
  *         'alternatives' => [ 'Other accepted sentence', … ], // word_order only
  *         'display'      => 'drag' | 'select',                // word_order only
  *         'picture'      => 'icon:armchair',                  // article only ('' = the noun's own picture)
+ *         'listen'       => 'Guten Morgen, Housekeeping!',     // optional: German text to listen to
+ *         'audio'        => 123,                               // optional: its recording (audio attachment)
  *       ],
  *       …
  *     ]
@@ -49,6 +52,13 @@ defined( 'ABSPATH' ) || exit;
  *   with its picture and pick a colour-coded article (der blue, die red, das
  *   green). The picture comes from the noun picture library; `picture` can
  *   name another one (an icon, an image or another noun, see NounPictures).
+ *
+ * - Listening questions: any question can carry `listen` (a German text the
+ *   student hears before answering) and/or `audio` (an audio file). The play
+ *   button plays the question's own file, else the text's recording from the
+ *   audio library, else the browser reads the text (see AudioClips). The
+ *   text is shown with the results when the quiz shows correct answers. Both
+ *   keys are only stored when set.
  *
  * Question and answer IDs survive edits, so stored attempts keep pointing at
  * the right answers.
@@ -146,6 +156,14 @@ final class Questions {
 			if ( self::TYPE_ARTICLE === $type ) {
 				$question['picture'] = self::picture_override( $item, $text );
 			}
+			$listen = self::clean_text( $item['listen'] ?? '', AudioClips::MAX_TEXT, false );
+			if ( '' !== $listen ) {
+				$question['listen'] = $listen;
+			}
+			$audio = absint( $item['audio'] ?? 0 );
+			if ( $audio && AudioClips::is_audio( $audio ) ) {
+				$question['audio'] = $audio;
+			}
 			$questions[] = $question;
 		}//end foreach
 
@@ -239,6 +257,38 @@ final class Questions {
 				return $question;
 			},
 			$questions
+		);
+	}
+
+	/**
+	 * Whether students listen to something before answering.
+	 *
+	 * @param array $question Question.
+	 * @return bool
+	 */
+	public static function has_audio( array $question ): bool {
+		return '' !== (string) ( $question['listen'] ?? '' ) || ! empty( $question['audio'] );
+	}
+
+	/**
+	 * Play button of a listening question ('' for other questions). With a
+	 * recording, the text stays out of the page.
+	 *
+	 * @param array $question Question.
+	 * @return string Safe markup.
+	 */
+	public static function audio_button( array $question ): string {
+		if ( ! self::has_audio( $question ) ) {
+			return '';
+		}
+		return AudioClips::button(
+			(string) ( $question['listen'] ?? '' ),
+			absint( $question['audio'] ?? 0 ),
+			array(
+				'label'     => __( 'Play the audio for this question', 'deutschlms' ),
+				'css_class' => 'dlms-play--question',
+				'hide_text' => true,
+			)
 		);
 	}
 

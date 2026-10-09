@@ -12,6 +12,10 @@
  * Article questions show the noun with its picture and three colour-coded
  * choices (der blue, die red, das green; see the --dlms-der/-die/-das colours).
  *
+ * Listening questions get a play button above the question
+ * (Questions::audio_button()); with the results, their text is shown when
+ * the quiz shows correct answers.
+ *
  * Course managers who aren't enrolled get a trial (mode "trial", then a
  * "result" with $trial set): the same form, posted back to the quiz page and
  * graded without saving anything.
@@ -276,6 +280,13 @@ $dlms_trial    = ! empty( $args['trial'] );
 									<?php endforeach; ?>
 								</ul>
 							<?php endif; ?>
+							<?php if ( '' !== ( $dlms_detail['listen'] ?? '' ) ) : ?>
+								<p class="dlms-quiz-result__listen">
+									<?php echo \DeutschLMS\Content\AudioClips::button( $dlms_detail['listen'], (int) ( $dlms_detail['audio'] ?? 0 ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in AudioClips::button(). ?>
+									<span class="dlms-quiz-result__tag"><?php esc_html_e( 'Audio text', 'deutschlms' ); ?></span>
+									<span lang="de"><?php echo esc_html( $dlms_detail['listen'] ); ?></span>
+								</p>
+							<?php endif; ?>
 							<?php if ( '' !== $dlms_detail['explanation'] ) : ?>
 								<p class="dlms-quiz-result__explanation"><?php echo nl2br( esc_html( $dlms_detail['explanation'] ) ); ?></p>
 							<?php endif; ?>
@@ -321,6 +332,13 @@ $dlms_trial    = ! empty( $args['trial'] );
 			<ol class="dlms-quiz__questions">
 				<?php foreach ( $args['questions'] as $dlms_index => $dlms_question ) : ?>
 					<li class="dlms-quiz__question dlms-quiz__question--<?php echo esc_attr( $dlms_question['type'] ); ?>">
+						<?php $dlms_audio = \DeutschLMS\Quiz\Questions::audio_button( $dlms_question ); ?>
+						<?php if ( '' !== $dlms_audio ) : ?>
+							<p class="dlms-quiz__listen">
+								<?php echo $dlms_audio; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in AudioClips::button(). ?>
+								<span class="dlms-quiz__listen-label"><?php esc_html_e( 'Listen first, then answer.', 'deutschlms' ); ?></span>
+							</p>
+						<?php endif; ?>
 						<?php if ( 'fill_blank' === $dlms_question['type'] ) : ?>
 							<fieldset>
 								<legend class="dlms-sr">

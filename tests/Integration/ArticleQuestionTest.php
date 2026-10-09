@@ -414,7 +414,7 @@ final class ArticleQuestionTest extends TestCase {
 	public function test_noun_shortcodes(): void {
 		$card = do_shortcode( '[dlms_noun der Tisch]' );
 		$this->assertStringContainsString( 'dlms-noun-card dlms-article--der', $card );
-		$this->assertStringContainsString( '<svg', $card );
+		$this->assertStringContainsString( 'dlms-noun-picture', $card );
 		$this->assertStringContainsString( '<strong class="dlms-noun-card__article">der</strong>', $card );
 
 		$inline = do_shortcode( '[dlms_noun der Tisch as="ein" style="inline"]' );
@@ -422,13 +422,13 @@ final class ArticleQuestionTest extends TestCase {
 
 		$no_picture = do_shortcode( '[dlms_noun article="die" word="Lampe" picture=""]' );
 		$this->assertStringContainsString( 'dlms-article--die', $no_picture );
-		$this->assertStringNotContainsString( '<svg', $no_picture );
+		$this->assertStringNotContainsString( 'dlms-noun-picture', $no_picture );
 
 		$other = do_shortcode( '[dlms_noun die Tischlampe picture="lampe"]' );
-		$this->assertStringContainsString( '<svg', $other );
+		$this->assertStringContainsString( 'dlms-noun-picture', $other );
 		$icon = do_shortcode( '[dlms_noun der Sessel picture="icon:armchair"]' );
-		$this->assertStringContainsString( '<svg', $icon );
-		$this->assertStringNotContainsString( '<svg', do_shortcode( '[dlms_noun das Sofa]' ), 'No picture in the library yet.' );
+		$this->assertStringContainsString( 'dlms-noun-picture', $icon );
+		$this->assertStringNotContainsString( 'dlms-noun-picture', do_shortcode( '[dlms_noun das Sofa]' ), 'No picture in the library yet.' );
 
 		$this->assertSame( '', do_shortcode( '[dlms_noun den Tisch]' ) );
 

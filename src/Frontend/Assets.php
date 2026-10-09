@@ -19,6 +19,7 @@ final class Assets {
 
 	public const STYLE  = 'dlms-frontend';
 	public const SCRIPT = 'dlms-frontend';
+	public const AUDIO  = 'dlms-audio';
 
 	/**
 	 * Registers hooks.
@@ -38,6 +39,17 @@ final class Assets {
 		wp_register_script(
 			self::SCRIPT,
 			DLMS_URL . 'assets/js/frontend.js',
+			array(),
+			DLMS_VERSION,
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
+		);
+
+		wp_register_script(
+			self::AUDIO,
+			DLMS_URL . 'assets/js/audio.js',
 			array(),
 			DLMS_VERSION,
 			array(
@@ -95,6 +107,34 @@ final class Assets {
 						/* translators: 1: a word or phrase, 2: its position in the sentence. */
 						'orderMoved'    => __( 'Moved “%1$s” to position %2$d.', 'deutschlms' ),
 						'timeOneMinute' => __( 'One minute left.', 'deutschlms' ),
+					),
+				)
+			) . ';',
+			'before'
+		);
+	}
+
+	/**
+	 * Enqueues the style and the play-button script (safe to call repeatedly).
+	 * Unlike enqueue(), also for visitors who are not logged in.
+	 */
+	public static function enqueue_audio(): void {
+		if ( ! wp_script_is( self::AUDIO, 'registered' ) ) {
+			return;
+		}
+		wp_enqueue_style( self::STYLE );
+		if ( wp_script_is( self::AUDIO, 'enqueued' ) ) {
+			return;
+		}
+		wp_enqueue_script( self::AUDIO );
+		wp_add_inline_script(
+			self::AUDIO,
+			'window.dlmsAudio = ' . wp_json_encode(
+				array(
+					'i18n' => array(
+						'noVoice'  => __( 'This device has no German voice. You can add one in the language or speech settings of your device.', 'deutschlms' ),
+						'noSpeech' => __( 'This browser cannot read texts aloud.', 'deutschlms' ),
+						'failed'   => __( 'The recording could not be played.', 'deutschlms' ),
 					),
 				)
 			) . ';',
