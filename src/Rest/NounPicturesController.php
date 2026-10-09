@@ -83,7 +83,7 @@ final class NounPicturesController extends RestController {
 
 		$raw     = trim( (string) $request['picture'] );
 		$picture = '' === $raw ? '' : NounPictures::sanitize_ref( $raw );
-		if ( '' !== $raw && ! ( str_starts_with( $picture, NounPictures::ICON ) || str_starts_with( $picture, NounPictures::MEDIA ) ) ) {
+		if ( '' !== $raw && ! NounPictures::is_picture( $picture ) ) {
 			return new WP_Error( 'dlms_invalid_picture', __( 'Choose an icon or an image.', 'deutschlms' ), array( 'status' => 400 ) );
 		}
 

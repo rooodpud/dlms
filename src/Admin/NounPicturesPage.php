@@ -96,7 +96,7 @@ final class NounPicturesPage {
 			return;
 		}
 		self::enqueue_picker();
-		wp_enqueue_script( self::SCRIPT . '-page', DLMS_URL . 'assets/admin/noun-pictures-page.js', array( self::SCRIPT ), DLMS_VERSION, true );
+		wp_enqueue_script( self::SCRIPT . '-page', DLMS_URL . 'assets/admin/noun-pictures-page.js', array( self::SCRIPT ), dlms_asset_version( 'assets/admin/noun-pictures-page.js' ), true );
 		wp_set_script_translations( self::SCRIPT . '-page', 'deutschlms', DLMS_PATH . 'languages' );
 	}
 
@@ -107,8 +107,8 @@ final class NounPicturesPage {
 		if ( current_user_can( 'upload_files' ) ) {
 			wp_enqueue_media();
 		}
-		wp_enqueue_style( self::SCRIPT, DLMS_URL . 'assets/admin/noun-pictures.css', array(), DLMS_VERSION );
-		wp_enqueue_script( self::SCRIPT, DLMS_URL . 'assets/admin/noun-pictures.js', array( 'wp-i18n', 'wp-a11y', 'wp-api-fetch' ), DLMS_VERSION, true );
+		wp_enqueue_style( self::SCRIPT, DLMS_URL . 'assets/admin/noun-pictures.css', array(), dlms_asset_version( 'assets/admin/noun-pictures.css' ) );
+		wp_enqueue_script( self::SCRIPT, DLMS_URL . 'assets/admin/noun-pictures.js', array( 'wp-i18n', 'wp-a11y', 'wp-api-fetch' ), dlms_asset_version( 'assets/admin/noun-pictures.js' ), true );
 		wp_set_script_translations( self::SCRIPT, 'deutschlms', DLMS_PATH . 'languages' );
 		$data                = NounPictures::editor_data();
 		$data['canUpload']   = current_user_can( 'upload_files' );

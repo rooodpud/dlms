@@ -10,16 +10,39 @@
  * lines one after the other. One sound at a time; clicking the playing
  * button stops it.
  *
- * No dependencies; works for visitors who are not logged in.
+ * The "slow" switches (.dlms-speed) make recordings and the browser's voice
+ * slower; the choice is kept in localStorage and applies to all switches.
+ *
+ * Messages follow the help language switch (help-language.js); works for
+ * visitors who are not logged in.
  */
 ( function () {
 	'use strict';
 
-	const i18n = ( window.dlmsAudio && window.dlmsAudio.i18n ) || {};
+	const strings = window.dlmsAudio || {};
+	const help = window.dlmsHelp;
+	const FALLBACK = {
+		noSpeech: 'Audio is not available.',
+		noVoice: 'No German voice.',
+		failed: 'The recording could not be played.',
+	};
 	const synth = window.speechSynthesis || null;
 
 	// Pause between the lines of a dialogue (milliseconds).
 	const PAUSE = 700;
+
+	// Playback speed of recordings and of the browser's voice when "slow" is on.
+	const SLOW_RATE = 0.75;
+	const SPEECH_RATE = 0.9;
+	const SLOW_SPEECH_RATE = 0.65;
+	const SLOW_KEY = 'dlmsSlow';
+
+	let slow = false;
+	try {
+		slow = '1' === window.localStorage.getItem( SLOW_KEY );
+	} catch {
+		slow = false;
+	}
 
 	// German voices whose names say whether they are a woman's or a man's
 	// (Windows, Edge, Chrome, macOS/iOS). Other voices count as unknown.
@@ -121,9 +144,23 @@
 		button.setAttribute( 'aria-pressed', playing ? 'true' : 'false' );
 	}
 
-	function notice( button, message ) {
+	/**
+	 * Shows why nothing plays, next to the button.
+	 *
+	 * @param {Element} button Play button.
+	 * @param {string}  key    Message key (noSpeech, noVoice, failed).
+	 */
+	function notice( button, key ) {
+		const fallback = FALLBACK[ key ] || key;
 		button.classList.add( 'is-unavailable' );
-		button.setAttribute( 'title', message );
+		if ( help ) {
+			help.attr( button, 'title', strings, key );
+		} else {
+			button.setAttribute(
+				'title',
+				( strings.i18n && strings.i18n[ key ] ) || fallback
+			);
+		}
 		// In a sentence or a dialogue the message goes below the text.
 		const box = button.closest(
 			'.dlms-say, .dlms-dialog__line, .dlms-dialog__bar'
@@ -139,7 +176,12 @@
 			note.setAttribute( 'role', 'status' );
 			parent.insertBefore( note, box ? null : button.nextSibling );
 		}
-		note.textContent = message;
+		if ( help ) {
+			help.put( note, strings, key );
+		} else {
+			note.textContent =
+				( strings.i18n && strings.i18n[ key ] ) || fallback;
+		}
 	}
 
 	/**
@@ -147,7 +189,7 @@
 	 *
 	 * @param {string}                                  text German text.
 	 * @param {string}                                  want 'female', 'male' or ''.
-	 * @param {(ok: boolean, message?: string) => void} end  Called with (true) at the end, or (false, message).
+	 * @param {(ok: boolean, message?: string) => void} end  Called with (true) at the end, or (false, message key).
 	 * @return {() => void} Stops the speech.
 	 */
 	function speak( text, want, end ) {
@@ -155,12 +197,12 @@
 			! synth ||
 			'undefined' === typeof window.SpeechSynthesisUtterance
 		) {
-			end( false, i18n.noSpeech || 'Audio is not available.' );
+			end( false, 'noSpeech' );
 			return function () {};
 		}
 		const chosen = voiceFor( want );
 		if ( ! chosen && synth.getVoices().length ) {
-			end( false, i18n.noVoice || 'No German voice.' );
+			end( false, 'noVoice' );
 			return function () {};
 		}
 		utterance = new window.SpeechSynthesisUtterance( text );
@@ -171,7 +213,7 @@
 		} else if ( 'male' === want ) {
 			utterance.pitch = 0.7;
 		}
-		utterance.rate = 0.9;
+		utterance.rate = slow ? SLOW_SPEECH_RATE : SPEECH_RATE;
 		utterance.onend = function () {
 			end( true );
 		};
@@ -220,6 +262,11 @@
 		}
 
 		const audio = new window.Audio( src );
+		audio.defaultPlaybackRate = slow ? SLOW_RATE : 1;
+		audio.playbackRate = audio.defaultPlaybackRate;
+		if ( 'preservesPitch' in audio ) {
+			audio.preservesPitch = true;
+		}
 		let fellBack = false;
 		const failed = function () {
 			if ( ! active || fellBack ) {
@@ -230,10 +277,7 @@
 			if ( text ) {
 				stopper = speak( text, want, end );
 			} else {
-				end(
-					false,
-					i18n.failed || 'The recording could not be played.'
-				);
+				end( false, 'failed' );
 			}
 		};
 		stopper = function () {
@@ -346,6 +390,35 @@
 		current = entry;
 		setPlaying( button, true );
 		next();
+	}
+
+	function showSpeed() {
+		document.querySelectorAll( '.dlms-speed' ).forEach( function ( item ) {
+			item.setAttribute( 'aria-pressed', slow ? 'true' : 'false' );
+		} );
+	}
+
+	document.addEventListener( 'click', function ( event ) {
+		const toggle = event.target.closest
+			? event.target.closest( '.dlms-speed' )
+			: null;
+		if ( ! toggle ) {
+			return;
+		}
+		event.preventDefault();
+		slow = ! slow;
+		try {
+			window.localStorage.setItem( SLOW_KEY, slow ? '1' : '0' );
+		} catch {
+			// Private mode: the choice lasts for this page only.
+		}
+		showSpeed();
+	} );
+
+	if ( 'loading' === document.readyState ) {
+		document.addEventListener( 'DOMContentLoaded', showSpeed );
+	} else {
+		showSpeed();
 	}
 
 	document.addEventListener( 'click', function ( event ) {

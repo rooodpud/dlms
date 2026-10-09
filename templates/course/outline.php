@@ -65,10 +65,10 @@ $dlms_sections = static function ( array $titles ) {
 $dlms_open = false;
 ?>
 <nav class="dlms-outline" aria-labelledby="<?php echo esc_attr( $dlms_heading_id ); ?>">
-	<h2 class="dlms-outline__heading" id="<?php echo esc_attr( $dlms_heading_id ); ?>"><?php esc_html_e( 'Course content', 'deutschlms' ); ?></h2>
+	<h2 class="dlms-outline__heading" id="<?php echo esc_attr( $dlms_heading_id ); ?>"><?php dlms_e( __( 'Course content', 'deutschlms' ) ); ?></h2>
 
 	<?php if ( empty( $args['lessons'] ) && empty( $args['quizzes'] ) ) : ?>
-		<p class="dlms-empty"><?php esc_html_e( 'This course has no lessons yet.', 'deutschlms' ); ?></p>
+		<p class="dlms-empty"><?php dlms_e( __( 'This course has no lessons yet.', 'deutschlms' ) ); ?></p>
 	<?php else : ?>
 		<?php foreach ( $args['lessons'] as $dlms_lesson ) : ?>
 			<?php if ( ! empty( $dlms_lesson['headings'] ) ) : ?>

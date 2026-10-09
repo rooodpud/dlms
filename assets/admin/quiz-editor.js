@@ -28,6 +28,11 @@
 	const isQuiz = 'question' !== root.getAttribute( 'data-mode' );
 	const canCreate = '0' !== root.getAttribute( 'data-can-create' );
 	const types = parseJson( root.getAttribute( 'data-types' ), {} );
+	// Languages of the help language switch: question translations.
+	const helpLanguages = parseJson(
+		root.getAttribute( 'data-help-languages' ),
+		[]
+	);
 	// Noun picture library and picker (noun-pictures.js).
 	const pictures = window.dlmsNounPictures || null;
 	const pictureFields = [];
@@ -1072,6 +1077,10 @@
 		);
 		body.appendChild( explanation );
 
+		if ( helpLanguages.length ) {
+			body.appendChild( translationFields( question, index, changed ) );
+		}
+
 		if ( isQuiz ) {
 			body.appendChild( termsRow( item, changed ) );
 		}
@@ -1084,6 +1093,91 @@
 			);
 		}
 		return card;
+	}
+
+	/**
+	 * Translations of the question text and the explanation, for courses with
+	 * help languages: learners see the German text with the translation in
+	 * the language they chose, and the explanation in that language.
+	 *
+	 * @param {Object}     question Question.
+	 * @param {number}     index    Card index.
+	 * @param {() => void} changed  Marks the item as changed.
+	 * @return {Element} Field group.
+	 */
+	function translationFields( question, index, changed ) {
+		const box = el( 'details', { className: 'dlms-qe__translations' } );
+		const filled = [ 'help', 'explanation_help' ].some( function ( key ) {
+			return (
+				question[ key ] &&
+				Object.keys( question[ key ] ).some( function ( code ) {
+					return question[ key ][ code ];
+				} )
+			);
+		} );
+		if ( filled ) {
+			box.open = true;
+		}
+		box.appendChild(
+			el( 'summary', {
+				text: __(
+					'Translations (for the help language switch)',
+					'deutschlms'
+				),
+			} )
+		);
+		[ 'help', 'explanation_help' ].forEach( function ( key ) {
+			helpLanguages.forEach( function ( language ) {
+				const id =
+					'dlms-qe-' +
+					key +
+					'-' +
+					language.code +
+					'-' +
+					index +
+					'-' +
+					question.id;
+				const input = el( 'textarea', {
+					id,
+					className: 'large-text',
+					rows: '2',
+					maxlength: '2000',
+					lang: language.code,
+				} );
+				input.value =
+					( question[ key ] && question[ key ][ language.code ] ) ||
+					'';
+				input.addEventListener( 'input', function () {
+					const values = Object.assign( {}, question[ key ] || {} );
+					values[ language.code ] = input.value;
+					question[ key ] = values;
+					changed();
+				} );
+				box.appendChild(
+					el( 'label', {
+						for: id,
+						className: 'dlms-qe__label',
+						text:
+							'help' === key
+								? sprintf(
+										/* translators: %s: language name. */
+										__(
+											'Question in %s (shown under the German text)',
+											'deutschlms'
+										),
+										language.name
+									)
+								: sprintf(
+										/* translators: %s: language name. */
+										__( 'Explanation in %s', 'deutschlms' ),
+										language.name
+									),
+					} )
+				);
+				box.appendChild( input );
+			} );
+		} );
+		return box;
 	}
 
 	/**

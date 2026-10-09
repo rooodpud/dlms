@@ -17,21 +17,19 @@
 defined( 'ABSPATH' ) || exit;
 
 $dlms_links = array(
-	'prev' => array( $args['previous'], __( 'Previous', 'deutschlms' ) ),
-	'next' => array( $args['next'], __( 'Next', 'deutschlms' ) ),
+	'prev' => array( $args['previous'], dlms_t( __( 'Previous', 'deutschlms' ) ) ),
+	'next' => array( $args['next'], dlms_t( __( 'Next', 'deutschlms' ) ) ),
 );
 ?>
-<nav class="dlms-step-nav" aria-label="<?php esc_attr_e( 'Course navigation', 'deutschlms' ); ?>">
+<nav class="dlms-step-nav" <?php echo dlms_attr( 'aria-label', __( 'Course navigation', 'deutschlms' ) ); ?>>
 	<p class="dlms-step-nav__course">
 		<a href="<?php echo esc_url( $args['course_url'] ); ?>">
 			<span class="dlms-arrow dlms-arrow--back" aria-hidden="true"></span>
 			<?php
-			echo esc_html(
-				sprintf(
-					/* translators: %s: course title. */
-					__( 'Back to %s', 'deutschlms' ),
-					wp_strip_all_tags( $args['course_title'] )
-				)
+			dlms_e(
+				/* translators: %s: course title. */
+				__( 'Back to %s', 'deutschlms' ),
+				wp_strip_all_tags( $args['course_title'] )
 			);
 			?>
 		</a>
@@ -47,14 +45,14 @@ $dlms_links = array(
 			?>
 			<?php if ( '' !== $dlms_target['url'] ) : ?>
 				<a class="dlms-step-nav__link dlms-step-nav__link--<?php echo esc_attr( $dlms_rel ); ?>" href="<?php echo esc_url( $dlms_target['url'] ); ?>" rel="<?php echo esc_attr( $dlms_rel ); ?>">
-					<span class="dlms-step-nav__dir"><?php echo esc_html( $dlms_label ); ?></span>
-					<span class="dlms-step-nav__title"><?php echo esc_html( $dlms_target['title'] ); ?></span>
+					<span class="dlms-step-nav__dir"><?php echo $dlms_label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped by dlms_t(). ?></span>
+					<span class="dlms-step-nav__title"><?php echo dlms_title( (int) ( $dlms_target['id'] ?? 0 ), $dlms_target['title'] ); ?></span>
 				</a>
 			<?php else : ?>
 				<span class="dlms-step-nav__link dlms-step-nav__link--<?php echo esc_attr( $dlms_rel ); ?> is-locked">
-					<span class="dlms-step-nav__dir"><?php echo esc_html( $dlms_label ); ?></span>
-					<span class="dlms-step-nav__title"><?php echo esc_html( $dlms_target['title'] ); ?></span>
-					<span class="dlms-sr"><?php esc_html_e( '(Locked)', 'deutschlms' ); ?></span>
+					<span class="dlms-step-nav__dir"><?php echo $dlms_label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped by dlms_t(). ?></span>
+					<span class="dlms-step-nav__title"><?php echo dlms_title( (int) ( $dlms_target['id'] ?? 0 ), $dlms_target['title'] ); ?></span>
+					<span class="dlms-sr"><?php dlms_e( __( '(Locked)', 'deutschlms' ) ); ?></span>
 				</span>
 			<?php endif; ?>
 		<?php endforeach; ?>

@@ -9,6 +9,7 @@ namespace DeutschLMS\Quiz;
 
 use DeutschLMS\Content\AudioClips;
 use DeutschLMS\Content\NounPictures;
+use DeutschLMS\Frontend\HelpLanguage;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -30,6 +31,8 @@ defined( 'ABSPATH' ) || exit;
  *         'picture'      => 'icon:armchair',                  // article only ('' = the noun's own picture)
  *         'listen'       => 'Guten Morgen, Housekeeping!',     // optional: German text to listen to
  *         'audio'        => 123,                               // optional: its recording (audio attachment)
+ *         'help'         => [ 'en' => '…', 'tl' => '…' ],       // optional: translations of the text
+ *         'explanation_help' => [ 'en' => '…', 'tl' => '…' ],   // optional: translations of the explanation
  *       ],
  *       …
  *     ]
@@ -164,6 +167,15 @@ final class Questions {
 			if ( $audio && AudioClips::is_audio( $audio ) ) {
 				$question['audio'] = $audio;
 			}
+			// Translations for the help language switch (HelpLanguage).
+			$help = HelpLanguage::sanitize_texts( $item['help'] ?? array(), 2000, true );
+			if ( $help ) {
+				$question['help'] = $help;
+			}
+			$explanation_help = HelpLanguage::sanitize_texts( $item['explanation_help'] ?? array(), 2000, true );
+			if ( $explanation_help ) {
+				$question['explanation_help'] = $explanation_help;
+			}
 			$questions[] = $question;
 		}//end foreach
 
@@ -231,7 +243,7 @@ final class Questions {
 	public static function public_view( array $questions ): array {
 		return array_map(
 			static function ( array $question ): array {
-				unset( $question['explanation'], $question['alternatives'] );
+				unset( $question['explanation'], $question['explanation_help'], $question['alternatives'] );
 
 				if ( self::TYPE_FILL_BLANK === $question['type'] ) {
 					$segments              = self::segments( $question['text'] );

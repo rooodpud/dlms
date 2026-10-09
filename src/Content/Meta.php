@@ -124,4 +124,21 @@ final class Meta {
 	 * Course setting: background image attachment ID.
 	 */
 	public const CERT_BACKGROUND = '_dlms_certificate_background';
+
+	/**
+	 * Course setting: help languages offered besides German (codes, e.g.
+	 * [ 'en', 'tl' ]; empty = no language switch). See HelpLanguage.
+	 */
+	public const HELP_LANGUAGES = '_dlms_help_languages';
+
+	/**
+	 * Course setting: the help language new learners start with ('de' default).
+	 */
+	public const HELP_DEFAULT = '_dlms_help_default';
+
+	/**
+	 * Course, lesson, topic or quiz: translations of the title shown with the
+	 * language switch (language => text, e.g. [ 'en' => 'Words' ]).
+	 */
+	public const TITLE_HELP = '_dlms_title_help';
 }

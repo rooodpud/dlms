@@ -5,7 +5,7 @@
  * window.dlmsNounPictures offers:
  * - keyFor( noun )          Library key of a noun (Kühlschrank → kuehlschrank).
  * - entry( key )            The library entry { noun, picture, url } or null.
- * - previewUrl( ref )       Preview of a picture reference (icon:…, media:…, key).
+ * - previewUrl( ref )       Preview of a picture reference (icon:…, emoji:…, key).
  * - chooseIcon( title )     Promise of an icon name (null when cancelled).
  * - chooseImage( title )    Promise of { id, url } from the Media Library (null when cancelled).
  * - save( noun, picture )   Saves a noun's picture ('' clears it); Promise of the entry.
@@ -116,6 +116,9 @@
 		ref = ref || '';
 		if ( 0 === ref.indexOf( 'icon:' ) ) {
 			return iconUrl( ref.slice( 5 ) );
+		}
+		if ( 0 === ref.indexOf( 'emoji:' ) && data.emojiBase ) {
+			return data.emojiBase + ref.slice( 6 ).toUpperCase() + '.svg';
 		}
 		const found = entry( keyFor( ref ) );
 		return found ? found.url : '';

@@ -27,11 +27,11 @@ $dlms_state = $args['state'];
 ?>
 <div class="dlms-enroll dlms-enroll--<?php echo esc_attr( $dlms_state ); ?>">
 	<?php if ( 'logged_out' === $dlms_state ) : ?>
-		<p class="dlms-enroll__text"><?php esc_html_e( 'Log in to enroll in this course. It is free.', 'deutschlms' ); ?></p>
+		<p class="dlms-enroll__text"><?php dlms_e( __( 'Log in to enroll in this course. It is free.', 'deutschlms' ) ); ?></p>
 		<p class="dlms-enroll__actions">
-			<a class="dlms-button" href="<?php echo esc_url( $args['login_url'] ); ?>"><?php esc_html_e( 'Log in to enroll', 'deutschlms' ); ?></a>
+			<a class="dlms-button" href="<?php echo esc_url( $args['login_url'] ); ?>"><?php dlms_e( __( 'Log in to enroll', 'deutschlms' ) ); ?></a>
 			<?php if ( '' !== $args['register_url'] ) : ?>
-				<a class="dlms-link" href="<?php echo esc_url( $args['register_url'] ); ?>"><?php esc_html_e( 'Create an account', 'deutschlms' ); ?></a>
+				<a class="dlms-link" href="<?php echo esc_url( $args['register_url'] ); ?>"><?php dlms_e( __( 'Create an account', 'deutschlms' ) ); ?></a>
 			<?php endif; ?>
 		</p>
 
@@ -40,16 +40,16 @@ $dlms_state = $args['state'];
 			<input type="hidden" name="action" value="dlms_enroll" />
 			<input type="hidden" name="course_id" value="<?php echo esc_attr( (string) $args['course_id'] ); ?>" />
 			<input type="hidden" name="dlms_nonce" value="<?php echo esc_attr( wp_create_nonce( $args['nonce_action'] ) ); ?>" />
-			<button type="submit" class="dlms-button"><?php esc_html_e( 'Enroll for free', 'deutschlms' ); ?></button>
+			<button type="submit" class="dlms-button"><?php dlms_e( __( 'Enroll for free', 'deutschlms' ) ); ?></button>
 			<p class="dlms-form-status" role="status" aria-live="polite"></p>
 		</form>
 
 	<?php elseif ( 'enrolled' === $dlms_state ) : ?>
-		<p class="dlms-enroll__text"><?php esc_html_e( 'You are enrolled in this course.', 'deutschlms' ); ?></p>
+		<p class="dlms-enroll__text"><?php dlms_e( __( 'You are enrolled in this course.', 'deutschlms' ) ); ?></p>
 		<?php if ( '' !== $args['continue_url'] ) : ?>
 			<p class="dlms-enroll__actions">
 				<a class="dlms-button" href="<?php echo esc_url( $args['continue_url'] ); ?>">
-					<?php echo $args['has_progress'] ? esc_html__( 'Continue learning', 'deutschlms' ) : esc_html__( 'Start course', 'deutschlms' ); ?>
+					<?php echo $args['has_progress'] ? dlms_t( __( 'Continue learning', 'deutschlms' ) ) : dlms_t( __( 'Start course', 'deutschlms' ) ); ?>
 				</a>
 			</p>
 		<?php endif; ?>
@@ -57,21 +57,21 @@ $dlms_state = $args['state'];
 	<?php elseif ( 'completed' === $dlms_state ) : ?>
 		<p class="dlms-enroll__text dlms-status--complete">
 			<span class="dlms-status-icon" aria-hidden="true"></span>
-			<?php esc_html_e( 'You have completed this course.', 'deutschlms' ); ?>
+			<?php dlms_e( __( 'You have completed this course.', 'deutschlms' ) ); ?>
 		</p>
 		<p class="dlms-enroll__actions">
 			<?php if ( '' !== $args['certificate_url'] ) : ?>
-				<a class="dlms-button" href="<?php echo esc_url( $args['certificate_url'] ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Download certificate (PDF)', 'deutschlms' ); ?></a>
+				<a class="dlms-button" href="<?php echo esc_url( $args['certificate_url'] ); ?>" target="_blank" rel="noopener"><?php dlms_e( __( 'Download certificate (PDF)', 'deutschlms' ) ); ?></a>
 			<?php endif; ?>
 			<?php if ( '' !== $args['first_step'] ) : ?>
-				<a class="dlms-link" href="<?php echo esc_url( $args['first_step'] ); ?>"><?php esc_html_e( 'Review the course', 'deutschlms' ); ?></a>
+				<a class="dlms-link" href="<?php echo esc_url( $args['first_step'] ); ?>"><?php dlms_e( __( 'Review the course', 'deutschlms' ) ); ?></a>
 			<?php endif; ?>
 		</p>
 
 	<?php elseif ( 'manager' === $dlms_state ) : ?>
-		<p class="dlms-enroll__text"><?php esc_html_e( 'You manage this course, so you can open every lesson without enrolling.', 'deutschlms' ); ?></p>
+		<p class="dlms-enroll__text"><?php dlms_e( __( 'You manage this course, so you can open every lesson without enrolling.', 'deutschlms' ) ); ?></p>
 
 	<?php else : ?>
-		<p class="dlms-enroll__text"><?php esc_html_e( 'Enrollment is not available for your account.', 'deutschlms' ); ?></p>
+		<p class="dlms-enroll__text"><?php dlms_e( __( 'Enrollment is not available for your account.', 'deutschlms' ) ); ?></p>
 	<?php endif; ?>
 </div>

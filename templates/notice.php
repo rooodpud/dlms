@@ -16,8 +16,8 @@
 defined( 'ABSPATH' ) || exit;
 ?>
 <div class="dlms-notice dlms-notice--<?php echo esc_attr( $args['type'] ); ?>" role="<?php echo 'error' === $args['type'] ? 'alert' : 'status'; ?>">
-	<?php echo esc_html( $args['message'] ); ?>
+	<?php echo dlms_t( $args['message'] ); ?>
 	<?php if ( ! empty( $args['certificate_url'] ) ) : ?>
-		<a class="dlms-link" href="<?php echo esc_url( $args['certificate_url'] ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Download your certificate (PDF)', 'deutschlms' ); ?></a>
+		<a class="dlms-link" href="<?php echo esc_url( $args['certificate_url'] ); ?>" target="_blank" rel="noopener"><?php dlms_e( __( 'Download your certificate (PDF)', 'deutschlms' ) ); ?></a>
 	<?php endif; ?>
 </div>

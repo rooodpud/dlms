@@ -540,22 +540,25 @@ final class QuizService {
 			}
 			$selected = array_map( 'strval', (array) ( $result['selected'] ?? array() ) );
 			$detail   = array(
-				'type'        => $question['type'],
-				'text'        => $question['text'],
-				'correct'     => ! empty( $result['correct'] ),
-				'points'      => (int) ( $result['points'] ?? 0 ),
-				'awarded'     => (int) ( $result['awarded'] ?? 0 ),
-				'answers'     => array(),
-				'segments'    => array(),
-				'gaps'        => array(),
-				'given'       => '',
-				'solution'    => '',
-				'picture'     => '',
-				'article'     => '',
-				'explanation' => $show ? $question['explanation'] : '',
+				'type'             => $question['type'],
+				'text'             => $question['text'],
+				'correct'          => ! empty( $result['correct'] ),
+				'points'           => (int) ( $result['points'] ?? 0 ),
+				'awarded'          => (int) ( $result['awarded'] ?? 0 ),
+				'answers'          => array(),
+				'segments'         => array(),
+				'gaps'             => array(),
+				'given'            => '',
+				'solution'         => '',
+				'picture'          => '',
+				'article'          => '',
+				'explanation'      => $show ? $question['explanation'] : '',
+				// Translations for the help language switch: of the text always, of the explanation with it.
+				'help'             => (array) ( $question['help'] ?? array() ),
+				'explanation_help' => $show ? (array) ( $question['explanation_help'] ?? array() ) : array(),
 				// Listening questions: the text heard, with the answers.
-				'listen'      => $show ? (string) ( $question['listen'] ?? '' ) : '',
-				'audio'       => $show ? (int) ( $question['audio'] ?? 0 ) : 0,
+				'listen'           => $show ? (string) ( $question['listen'] ?? '' ) : '',
+				'audio'            => $show ? (int) ( $question['audio'] ?? 0 ) : 0,
 			);
 
 			if ( Questions::TYPE_FILL_BLANK === $question['type'] ) {

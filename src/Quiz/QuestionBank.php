@@ -330,7 +330,7 @@ final class QuestionBank {
 
 	/**
 	 * Plain text the admin search looks through: question, answers, other
-	 * accepted orders and explanation.
+	 * accepted orders, explanation and their translations.
 	 *
 	 * @param array $question Sanitized question.
 	 * @return string
@@ -343,7 +343,9 @@ final class QuestionBank {
 			array( $question['text'] ),
 			$answers,
 			$question['alternatives'] ?? array(),
-			array( $question['explanation'] )
+			array( $question['explanation'] ),
+			array_values( (array) ( $question['help'] ?? array() ) ),
+			array_values( (array) ( $question['explanation_help'] ?? array() ) )
 		);
 		return implode( "\n", array_filter( array_map( 'strval', $lines ), static fn( $line ) => '' !== trim( $line ) ) );
 	}

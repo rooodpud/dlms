@@ -418,7 +418,7 @@ final class ArticleQuestionTest extends TestCase {
 		$this->assertStringContainsString( '<strong class="dlms-noun-card__article">der</strong>', $card );
 
 		$inline = do_shortcode( '[dlms_noun der Tisch as="ein" style="inline"]' );
-		$this->assertSame( '<span class="dlms dlms-noun dlms-article--der"><strong>ein</strong> Tisch</span>', $inline );
+		$this->assertSame( '<span class="dlms dlms-noun dlms-article--der" lang="de" translate="no"><strong>ein</strong> Tisch</span>', $inline );
 
 		$no_picture = do_shortcode( '[dlms_noun article="die" word="Lampe" picture=""]' );
 		$this->assertStringContainsString( 'dlms-article--die', $no_picture );

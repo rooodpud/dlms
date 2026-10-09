@@ -32,26 +32,24 @@ $dlms_labels = array(
 <span class="dlms-step-row">
 	<span class="dlms-status-icon" aria-hidden="true"></span>
 	<?php if ( 'dlms_quiz' === ( $dlms_item['type'] ?? '' ) ) : ?>
-		<span class="dlms-step-row__type"><?php esc_html_e( 'Quiz', 'deutschlms' ); ?></span>
+		<span class="dlms-step-row__type"><?php dlms_e( __( 'Quiz', 'deutschlms' ) ); ?></span>
 	<?php endif; ?>
 	<?php if ( '' !== $dlms_item['url'] ) : ?>
-		<a class="dlms-step-row__title" href="<?php echo esc_url( $dlms_item['url'] ); ?>"<?php echo $dlms_item['current'] ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $dlms_item['title'] ); ?></a>
+		<a class="dlms-step-row__title" href="<?php echo esc_url( $dlms_item['url'] ); ?>"<?php echo $dlms_item['current'] ? ' aria-current="page"' : ''; ?>><?php echo dlms_title( (int) $dlms_item['id'], $dlms_item['title'] ); ?></a>
 	<?php else : ?>
-		<span class="dlms-step-row__title"><?php echo esc_html( $dlms_item['title'] ); ?></span>
+		<span class="dlms-step-row__title"><?php echo dlms_title( (int) $dlms_item['id'], $dlms_item['title'] ); ?></span>
 	<?php endif; ?>
 	<?php if ( 'scheduled' === $dlms_item['status'] && '' !== ( $dlms_item['available_on'] ?? '' ) ) : ?>
 		<span class="dlms-step-row__date">
 			<?php
-			echo esc_html(
-				sprintf(
-					/* translators: %s: date. */
-					__( 'Available on %s', 'deutschlms' ),
-					$dlms_item['available_on']
-				)
+			dlms_e(
+				/* translators: %s: date. */
+				__( 'Available on %s', 'deutschlms' ),
+				$dlms_item['available_on']
 			);
 			?>
 		</span>
 	<?php elseif ( isset( $dlms_labels[ $dlms_item['status'] ] ) ) : ?>
-		<span class="dlms-sr"><?php echo esc_html( '(' . $dlms_labels[ $dlms_item['status'] ] . ')' ); ?></span>
+		<span class="dlms-sr">(<?php echo dlms_t( $dlms_labels[ $dlms_item['status'] ] ); ?>)</span>
 	<?php endif; ?>
 </span>

@@ -17,6 +17,8 @@ defined( 'ABSPATH' ) || exit;
  *                 MIT), printed inline with `currentColor`, so it takes the
  *                 colour of its article (blue/red/green for der/die/das);
  * - `media:123`   an image from the Media Library (attachment ID);
+ * - `emoji:1F44B` a colour picture of the bundled OpenMoji subset
+ *                 (assets/icons/openmoji/, CC BY-SA 4.0), shown as an image;
  * - `tisch`       a noun of the picture library: its picture is used.
  *
  * The library (Courses → Noun pictures) holds one picture per noun, so
@@ -34,6 +36,7 @@ final class NounPictures {
 
 	public const ICON  = 'icon:';
 	public const MEDIA = 'media:';
+	public const EMOJI = 'emoji:';
 
 	/**
 	 * Most entries in the library.
@@ -130,6 +133,10 @@ final class NounPictures {
 			$id = absint( substr( $ref, strlen( self::MEDIA ) ) );
 			return $id && wp_attachment_is_image( $id ) ? self::MEDIA . $id : '';
 		}
+		if ( str_starts_with( $ref, self::EMOJI ) ) {
+			$code = strtoupper( substr( $ref, strlen( self::EMOJI ) ) );
+			return self::emoji_exists( $code ) ? self::EMOJI . $code : '';
+		}
 		return self::key_for( $ref );
 	}
 
@@ -141,7 +148,7 @@ final class NounPictures {
 	 * @return string `icon:…`, `media:…` or ''.
 	 */
 	public static function resolve( string $ref ): string {
-		if ( str_starts_with( $ref, self::ICON ) || str_starts_with( $ref, self::MEDIA ) ) {
+		if ( self::is_picture( $ref ) ) {
 			return $ref;
 		}
 		$key = self::key_for( $ref );
@@ -161,6 +168,14 @@ final class NounPictures {
 		if ( str_starts_with( $picture, self::ICON ) ) {
 			$svg = self::icon_svg( substr( $picture, strlen( self::ICON ) ) );
 			return '' === $svg ? '' : str_replace( '%CLASS%', esc_attr( $css_class . ' dlms-noun-picture--icon' ), $svg );
+		}
+		if ( str_starts_with( $picture, self::EMOJI ) ) {
+			$url = self::emoji_url( substr( $picture, strlen( self::EMOJI ) ) );
+			return '' === $url ? '' : sprintf(
+				'<img src="%1$s" class="%2$s" alt="" width="72" height="72" loading="lazy" decoding="async">',
+				esc_url( $url ),
+				esc_attr( $css_class . ' dlms-noun-picture--emoji' )
+			);
 		}
 		if ( str_starts_with( $picture, self::MEDIA ) ) {
 			$id = absint( substr( $picture, strlen( self::MEDIA ) ) );
@@ -193,6 +208,9 @@ final class NounPictures {
 		if ( str_starts_with( $picture, self::ICON ) ) {
 			return self::icon_url( substr( $picture, strlen( self::ICON ) ) );
 		}
+		if ( str_starts_with( $picture, self::EMOJI ) ) {
+			return self::emoji_url( substr( $picture, strlen( self::EMOJI ) ) );
+		}
 		if ( str_starts_with( $picture, self::MEDIA ) ) {
 			$url = wp_get_attachment_image_url( absint( substr( $picture, strlen( self::MEDIA ) ) ), 'thumbnail' );
 			return $url ? (string) $url : '';
@@ -204,7 +222,7 @@ final class NounPictures {
 	 * What the admin scripts need: the library with previews, and where the
 	 * icons and their search index are.
 	 *
-	 * @return array{library: array, iconBase: string, iconIndex: string}
+	 * @return array{library: array, iconBase: string, emojiBase: string, iconIndex: string}
 	 */
 	public static function editor_data(): array {
 		$library = array();
@@ -218,7 +236,8 @@ final class NounPictures {
 		return array(
 			'library'   => $library,
 			'iconBase'  => DLMS_URL . 'assets/icons/tabler/outline/',
-			'iconIndex' => DLMS_URL . 'assets/icons/tabler/icons.json?ver=' . rawurlencode( DLMS_VERSION ),
+			'emojiBase' => DLMS_URL . 'assets/icons/openmoji/',
+			'iconIndex' => DLMS_URL . 'assets/icons/tabler/icons.json?ver=' . rawurlencode( dlms_asset_version( 'assets/icons/tabler/icons.json' ) ),
 		);
 	}
 
@@ -230,6 +249,37 @@ final class NounPictures {
 	 */
 	public static function icon_exists( string $name ): bool {
 		return 1 === preg_match( '/^[a-z0-9-]{1,80}$/', $name ) && is_readable( self::icon_file( $name ) );
+	}
+
+	/**
+	 * Whether a reference is a picture itself (an icon, an image or an
+	 * OpenMoji picture), not a library key.
+	 *
+	 * @param string $ref Reference.
+	 * @return bool
+	 */
+	public static function is_picture( string $ref ): bool {
+		return str_starts_with( $ref, self::ICON ) || str_starts_with( $ref, self::MEDIA ) || str_starts_with( $ref, self::EMOJI );
+	}
+
+	/**
+	 * Whether a bundled OpenMoji picture exists.
+	 *
+	 * @param string $code Hex code, e.g. "1F44B" or "1F1F5-1F1ED".
+	 * @return bool
+	 */
+	public static function emoji_exists( string $code ): bool {
+		return 1 === preg_match( '/^[0-9A-F]{4,6}(-[0-9A-F]{4,6}){0,7}$/', $code ) && is_readable( DLMS_PATH . 'assets/icons/openmoji/' . $code . '.svg' );
+	}
+
+	/**
+	 * URL of a bundled OpenMoji picture ('' when unknown).
+	 *
+	 * @param string $code Hex code.
+	 * @return string
+	 */
+	public static function emoji_url( string $code ): string {
+		return self::emoji_exists( $code ) ? DLMS_URL . 'assets/icons/openmoji/' . $code . '.svg' : '';
 	}
 
 	/**
@@ -285,8 +335,8 @@ final class NounPictures {
 			$noun    = mb_substr( $noun, 0, 100 );
 			$key     = self::key_for( $noun );
 			$picture = self::sanitize_ref( (string) ( $entry['picture'] ?? '' ) );
-			// Only icons and images: a library entry never points to another noun.
-			if ( '' === $key || ! ( str_starts_with( $picture, self::ICON ) || str_starts_with( $picture, self::MEDIA ) ) ) {
+			// Only pictures: a library entry never points to another noun.
+			if ( '' === $key || ! self::is_picture( $picture ) ) {
 				continue;
 			}
 			$library[ $key ] = array(

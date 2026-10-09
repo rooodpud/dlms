@@ -26,21 +26,19 @@ $dlms_percent = max( 0, min( 100, (int) $args['percent'] ) );
 		aria-valuemin="0"
 		aria-valuemax="100"
 		aria-valuenow="<?php echo esc_attr( (string) $dlms_percent ); ?>"
-		aria-label="<?php echo esc_attr( sprintf( /* translators: %s: course title. */ __( 'Progress in %s', 'deutschlms' ), wp_strip_all_tags( $args['course_title'] ) ) ); ?>"
+		<?php echo dlms_attr( 'aria-label', /* translators: %s: course title. */ __( 'Progress in %s', 'deutschlms' ), wp_strip_all_tags( $args['course_title'] ) ); ?>
 	>
 		<span class="dlms-progress__fill" style="width: <?php echo esc_attr( (string) $dlms_percent ); ?>%"></span>
 	</div>
 	<?php if ( ! empty( $args['show_label'] ) ) : ?>
 		<p class="dlms-progress__label">
 			<?php
-			echo esc_html(
-				sprintf(
-					/* translators: 1: percentage, 2: completed steps, 3: total steps. */
-					_n( '%1$d%% complete · %2$d of %3$d step', '%1$d%% complete · %2$d of %3$d steps', (int) $args['total'], 'deutschlms' ),
-					$dlms_percent,
-					(int) $args['completed'],
-					(int) $args['total']
-				)
+			dlms_e(
+				/* translators: 1: percentage, 2: completed steps, 3: total steps. */
+				_n( '%1$d%% complete · %2$d of %3$d step', '%1$d%% complete · %2$d of %3$d steps', (int) $args['total'], 'deutschlms' ),
+				$dlms_percent,
+				(int) $args['completed'],
+				(int) $args['total']
 			);
 			?>
 		</p>

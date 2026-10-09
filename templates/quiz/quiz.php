@@ -62,51 +62,43 @@ $dlms_trial    = ! empty( $args['trial'] );
 	<ul class="dlms-quiz__facts">
 		<li>
 			<?php
-			echo esc_html(
-				sprintf(
-					/* translators: %d: number of questions. */
-					_n( '%d question', '%d questions', count( $args['questions'] ), 'deutschlms' ),
-					count( $args['questions'] )
-				)
+			dlms_e(
+				/* translators: %d: number of questions. */
+				_n( '%d question', '%d questions', count( $args['questions'] ), 'deutschlms' ),
+				count( $args['questions'] )
 			);
 			?>
 		</li>
 		<li>
 			<?php
-			echo esc_html(
-				sprintf(
-					/* translators: %d: percentage. */
-					__( 'Pass mark: %d%%', 'deutschlms' ),
-					$args['pass_mark']
-				)
+			dlms_e(
+				/* translators: %d: percentage. */
+				__( 'Pass mark: %d%%', 'deutschlms' ),
+				$args['pass_mark']
 			);
 			?>
 		</li>
 		<li>
 			<?php
 			if ( $args['attempts_limit'] > 0 ) {
-				echo esc_html(
-					sprintf(
-						/* translators: 1: attempts used, 2: attempts allowed. */
-						__( 'Attempts: %1$d of %2$d used', 'deutschlms' ),
-						$args['attempts_used'],
-						$args['attempts_limit']
-					)
+				dlms_e(
+					/* translators: 1: attempts used, 2: attempts allowed. */
+					__( 'Attempts: %1$d of %2$d used', 'deutschlms' ),
+					$args['attempts_used'],
+					$args['attempts_limit']
 				);
 			} else {
-				esc_html_e( 'Unlimited attempts', 'deutschlms' );
+				dlms_e( __( 'Unlimited attempts', 'deutschlms' ) );
 			}
 			?>
 		</li>
 		<?php if ( ! empty( $args['time_limit'] ) ) : ?>
 			<li>
 				<?php
-				echo esc_html(
-					sprintf(
-						/* translators: %d: minutes. */
-						_n( 'Time limit: %d minute', 'Time limit: %d minutes', $args['time_limit'], 'deutschlms' ),
-						$args['time_limit']
-					)
+				dlms_e(
+					/* translators: %d: minutes. */
+					_n( 'Time limit: %d minute', 'Time limit: %d minutes', $args['time_limit'], 'deutschlms' ),
+					$args['time_limit']
 				);
 				?>
 			</li>
@@ -114,12 +106,10 @@ $dlms_trial    = ! empty( $args['trial'] );
 		<?php if ( null !== $args['best_percent'] ) : ?>
 			<li>
 				<?php
-				echo esc_html(
-					sprintf(
-						/* translators: %s: percentage. */
-						__( 'Best result: %s%%', 'deutschlms' ),
-						number_format_i18n( $args['best_percent'], 0 )
-					)
+				dlms_e(
+					/* translators: %s: percentage. */
+					__( 'Best result: %s%%', 'deutschlms' ),
+					number_format_i18n( $args['best_percent'], 0 )
 				);
 				?>
 			</li>
@@ -129,39 +119,37 @@ $dlms_trial    = ! empty( $args['trial'] );
 	<?php if ( $args['passed'] && 'result' !== $dlms_mode ) : ?>
 		<p class="dlms-quiz__passed dlms-status--complete">
 			<span class="dlms-status-icon" aria-hidden="true"></span>
-			<?php esc_html_e( 'You have passed this quiz.', 'deutschlms' ); ?>
+			<?php dlms_e( __( 'You have passed this quiz.', 'deutschlms' ) ); ?>
 			<?php if ( '' !== $args['next_url'] ) : ?>
-				<a class="dlms-link" href="<?php echo esc_url( $args['next_url'] ); ?>"><?php esc_html_e( 'Continue', 'deutschlms' ); ?></a>
+				<a class="dlms-link" href="<?php echo esc_url( $args['next_url'] ); ?>"><?php dlms_e( __( 'Continue', 'deutschlms' ) ); ?></a>
 			<?php endif; ?>
 		</p>
 	<?php endif; ?>
 
 	<?php if ( $dlms_trial ) : ?>
-		<p class="dlms-complete__status dlms-complete__status--preview dlms-quiz__trial"><?php esc_html_e( 'Test mode: you manage this course, so you can try the quiz. Your answers are checked but not saved.', 'deutschlms' ); ?></p>
+		<p class="dlms-complete__status dlms-complete__status--preview dlms-quiz__trial"><?php dlms_e( __( 'Test mode: you manage this course, so you can try the quiz. Your answers are checked but not saved.', 'deutschlms' ) ); ?></p>
 	<?php endif; ?>
 
 	<?php if ( 'result' === $dlms_mode && $args['attempt'] ) : ?>
 		<?php $dlms_attempt = $args['attempt']; ?>
 		<section class="dlms-quiz-result <?php echo $dlms_attempt['passed'] ? 'is-passed' : 'is-failed'; ?>" aria-labelledby="dlms-quiz-result-heading" tabindex="-1">
 			<h2 id="dlms-quiz-result-heading" class="dlms-quiz-result__heading">
-				<?php echo $dlms_attempt['passed'] ? esc_html__( 'Passed!', 'deutschlms' ) : esc_html__( 'Not passed yet', 'deutschlms' ); ?>
+				<?php echo $dlms_attempt['passed'] ? dlms_t( __( 'Passed!', 'deutschlms' ) ) : dlms_t( __( 'Not passed yet', 'deutschlms' ) ); ?>
 			</h2>
 			<p class="dlms-quiz-result__score">
 				<?php
-				echo esc_html(
-					sprintf(
-						/* translators: 1: points scored, 2: points possible, 3: percentage, 4: pass mark. */
-						__( 'You scored %1$d of %2$d points (%3$s%%). Pass mark: %4$d%%.', 'deutschlms' ),
-						$dlms_attempt['score'],
-						$dlms_attempt['max_score'],
-						number_format_i18n( $dlms_attempt['percent'], 0 ),
-						$args['pass_mark']
-					)
+				dlms_e(
+					/* translators: 1: points scored, 2: points possible, 3: percentage, 4: pass mark. */
+					__( 'You scored %1$d of %2$d points (%3$s%%). Pass mark: %4$d%%.', 'deutschlms' ),
+					$dlms_attempt['score'],
+					$dlms_attempt['max_score'],
+					number_format_i18n( $dlms_attempt['percent'], 0 ),
+					$args['pass_mark']
 				);
 				?>
 			</p>
 			<?php if ( ! empty( $dlms_attempt['late'] ) ) : ?>
-				<p class="dlms-quiz-result__late"><?php esc_html_e( 'Time exceeded: your answers arrived after the time limit, so this attempt counts as not passed.', 'deutschlms' ); ?></p>
+				<p class="dlms-quiz-result__late"><?php dlms_e( __( 'Time exceeded: your answers arrived after the time limit, so this attempt counts as not passed.', 'deutschlms' ) ); ?></p>
 			<?php endif; ?>
 
 			<?php if ( ! empty( $args['details'] ) ) : ?>
@@ -170,7 +158,7 @@ $dlms_trial    = ! empty( $args['trial'] );
 						<?php $dlms_type = $dlms_detail['type'] ?? 'single'; ?>
 						<li class="dlms-quiz-result__question <?php echo $dlms_detail['correct'] ? 'is-correct' : 'is-wrong'; ?>">
 							<?php if ( 'fill_blank' === $dlms_type ) : ?>
-								<p class="dlms-quiz-result__text dlms-quiz-result__cloze">
+								<p class="dlms-quiz-result__text dlms-quiz-result__cloze" translate="no">
 									<?php
 									$dlms_last = count( $dlms_detail['segments'] ) - 1;
 									foreach ( $dlms_detail['segments'] as $dlms_index => $dlms_segment ) {
@@ -182,13 +170,13 @@ $dlms_trial    = ! empty( $args['trial'] );
 										printf(
 											'<span class="dlms-gap-result %1$s"><span class="dlms-sr">%2$s</span>%3$s</span>',
 											$dlms_gap['is_correct'] ? 'is-right' : 'is-wrong',
-											$dlms_gap['is_correct'] ? esc_html__( 'Your answer (correct):', 'deutschlms' ) : esc_html__( 'Your answer (incorrect):', 'deutschlms' ),
+											$dlms_gap['is_correct'] ? dlms_t( __( 'Your answer (correct):', 'deutschlms' ) ) : dlms_t( __( 'Your answer (incorrect):', 'deutschlms' ) ),
 											esc_html( '' !== $dlms_gap['given'] ? $dlms_gap['given'] : '—' )
 										);
 										if ( ! $dlms_gap['is_correct'] && '' !== $dlms_gap['solution'] ) {
 											printf(
 												'<span class="dlms-gap-result__solution"><span class="dlms-sr">%1$s</span>%2$s</span>',
-												esc_html__( 'Correct answer:', 'deutschlms' ),
+												dlms_t( __( 'Correct answer:', 'deutschlms' ) ),
 												esc_html( $dlms_gap['solution'] )
 											);
 										}
@@ -207,19 +195,19 @@ $dlms_trial    = ! empty( $args['trial'] );
 									</span>
 								</p>
 							<?php else : ?>
-								<p class="dlms-quiz-result__text"><?php echo nl2br( esc_html( $dlms_detail['text'] ) ); ?></p>
+								<p class="dlms-quiz-result__text"><span<?php echo \DeutschLMS\Frontend\HelpLanguage::is_active() ? ' translate="no"' : ''; ?>><?php echo nl2br( esc_html( $dlms_detail['text'] ) ); ?></span><?php echo \DeutschLMS\Frontend\HelpLanguage::question_help( $dlms_detail ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in HelpLanguage. ?></p>
 							<?php endif; ?>
 							<p class="dlms-quiz-result__verdict">
-								<?php echo $dlms_detail['correct'] ? esc_html__( 'Correct', 'deutschlms' ) : esc_html__( 'Incorrect', 'deutschlms' ); ?>
+								<?php echo $dlms_detail['correct'] ? dlms_t( __( 'Correct', 'deutschlms' ) ) : dlms_t( __( 'Incorrect', 'deutschlms' ) ); ?>
 							</p>
 							<?php if ( 'word_order' === $dlms_type ) : ?>
 								<p class="dlms-quiz-result__sentence">
-									<span class="dlms-quiz-result__tag"><?php esc_html_e( 'Your answer', 'deutschlms' ); ?></span>
+									<span class="dlms-quiz-result__tag"><?php dlms_e( __( 'Your answer', 'deutschlms' ) ); ?></span>
 									<?php echo esc_html( '' !== $dlms_detail['given'] ? $dlms_detail['given'] : '—' ); ?>
 								</p>
 								<?php if ( ! $dlms_detail['correct'] && '' !== $dlms_detail['solution'] ) : ?>
 									<p class="dlms-quiz-result__sentence">
-										<span class="dlms-quiz-result__tag dlms-quiz-result__tag--right"><?php esc_html_e( 'Correct answer', 'deutschlms' ); ?></span>
+										<span class="dlms-quiz-result__tag dlms-quiz-result__tag--right"><?php dlms_e( __( 'Correct answer', 'deutschlms' ) ); ?></span>
 										<?php echo esc_html( $dlms_detail['solution'] ); ?>
 									</p>
 								<?php endif; ?>
@@ -240,10 +228,10 @@ $dlms_trial    = ! empty( $args['trial'] );
 								?>
 								<dl class="dlms-article-answers">
 									<div class="dlms-article-answers__row">
-										<dt><?php esc_html_e( 'Your answer', 'deutschlms' ); ?>:</dt>
+										<dt><?php dlms_e( __( 'Your answer', 'deutschlms' ) ); ?>:</dt>
 										<dd>
 											<?php if ( '' === $dlms_given ) : ?>
-												<span class="dlms-article-pill is-wrong"><?php esc_html_e( 'No answer', 'deutschlms' ); ?></span>
+												<span class="dlms-article-pill is-wrong"><?php dlms_e( __( 'No answer', 'deutschlms' ) ); ?></span>
 											<?php else : ?>
 												<span class="dlms-article-pill <?php echo $dlms_detail['correct'] ? 'is-filled dlms-article--' . esc_attr( $dlms_given ) : 'is-wrong'; ?>"><?php echo esc_html( $dlms_given ); ?></span>
 											<?php endif; ?>
@@ -251,7 +239,7 @@ $dlms_trial    = ! empty( $args['trial'] );
 									</div>
 									<?php if ( ! $dlms_detail['correct'] && '' !== $dlms_right ) : ?>
 										<div class="dlms-article-answers__row">
-											<dt><?php esc_html_e( 'Correct answer', 'deutschlms' ); ?>:</dt>
+											<dt><?php dlms_e( __( 'Correct answer', 'deutschlms' ) ); ?>:</dt>
 											<dd><span class="dlms-article-pill is-filled dlms-article--<?php echo esc_attr( $dlms_right ); ?>"><?php echo esc_html( $dlms_right ); ?></span></dd>
 										</div>
 									<?php endif; ?>
@@ -269,12 +257,12 @@ $dlms_trial    = ! empty( $args['trial'] );
 										}
 										?>
 										<li class="<?php echo esc_attr( implode( ' ', $dlms_classes ) ); ?>">
-											<?php echo esc_html( $dlms_answer['label'] ); ?>
+											<?php echo 'true_false' === $dlms_type ? dlms_t( $dlms_answer['label'] ) : esc_html( $dlms_answer['label'] ); ?>
 											<?php if ( $dlms_answer['selected'] ) : ?>
-												<span class="dlms-quiz-result__tag"><?php esc_html_e( 'Your answer', 'deutschlms' ); ?></span>
+												<span class="dlms-quiz-result__tag"><?php dlms_e( __( 'Your answer', 'deutschlms' ) ); ?></span>
 											<?php endif; ?>
 											<?php if ( true === $dlms_answer['is_correct'] ) : ?>
-												<span class="dlms-quiz-result__tag dlms-quiz-result__tag--right"><?php esc_html_e( 'Correct answer', 'deutschlms' ); ?></span>
+												<span class="dlms-quiz-result__tag dlms-quiz-result__tag--right"><?php dlms_e( __( 'Correct answer', 'deutschlms' ) ); ?></span>
 											<?php endif; ?>
 										</li>
 									<?php endforeach; ?>
@@ -283,12 +271,13 @@ $dlms_trial    = ! empty( $args['trial'] );
 							<?php if ( '' !== ( $dlms_detail['listen'] ?? '' ) ) : ?>
 								<p class="dlms-quiz-result__listen">
 									<?php echo \DeutschLMS\Content\AudioClips::button( $dlms_detail['listen'], (int) ( $dlms_detail['audio'] ?? 0 ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in AudioClips::button(). ?>
-									<span class="dlms-quiz-result__tag"><?php esc_html_e( 'Audio text', 'deutschlms' ); ?></span>
+									<span class="dlms-quiz-result__tag"><?php dlms_e( __( 'Audio text', 'deutschlms' ) ); ?></span>
 									<span lang="de"><?php echo esc_html( $dlms_detail['listen'] ); ?></span>
 								</p>
 							<?php endif; ?>
-							<?php if ( '' !== $dlms_detail['explanation'] ) : ?>
-								<p class="dlms-quiz-result__explanation"><?php echo nl2br( esc_html( $dlms_detail['explanation'] ) ); ?></p>
+							<?php $dlms_explanation = \DeutschLMS\Frontend\HelpLanguage::explanation( $dlms_detail['explanation'], (array) ( $dlms_detail['explanation_help'] ?? array() ) ); ?>
+							<?php if ( '' !== $dlms_explanation ) : ?>
+								<p class="dlms-quiz-result__explanation"><?php echo $dlms_explanation; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in HelpLanguage::explanation(). ?></p>
 							<?php endif; ?>
 						</li>
 					<?php endforeach; ?>
@@ -297,26 +286,26 @@ $dlms_trial    = ! empty( $args['trial'] );
 
 			<p class="dlms-quiz-result__actions">
 				<?php if ( '' !== $args['next_url'] ) : ?>
-					<a class="dlms-button" href="<?php echo esc_url( $args['next_url'] ); ?>"><?php esc_html_e( 'Continue', 'deutschlms' ); ?></a>
+					<a class="dlms-button" href="<?php echo esc_url( $args['next_url'] ); ?>"><?php dlms_e( __( 'Continue', 'deutschlms' ) ); ?></a>
 				<?php endif; ?>
 				<?php if ( $args['can_retake'] ) : ?>
-					<a class="dlms-button<?php echo $dlms_attempt['passed'] ? ' dlms-button--secondary' : ''; ?>" href="<?php echo esc_url( $args['retake_url'] ); ?>"><?php esc_html_e( 'Try again', 'deutschlms' ); ?></a>
+					<a class="dlms-button<?php echo $dlms_attempt['passed'] ? ' dlms-button--secondary' : ''; ?>" href="<?php echo esc_url( $args['retake_url'] ); ?>"><?php dlms_e( __( 'Try again', 'deutschlms' ) ); ?></a>
 				<?php elseif ( ! $dlms_attempt['passed'] ) : ?>
-					<span class="dlms-quiz__closed"><?php echo esc_html( $args['closed_message'] ); ?></span>
+					<span class="dlms-quiz__closed"><?php echo dlms_t( $args['closed_message'] ); ?></span>
 				<?php endif; ?>
-				<a class="dlms-link" href="<?php echo esc_url( $args['course_url'] ); ?>"><?php esc_html_e( 'Back to the course', 'deutschlms' ); ?></a>
+				<a class="dlms-link" href="<?php echo esc_url( $args['course_url'] ); ?>"><?php dlms_e( __( 'Back to the course', 'deutschlms' ) ); ?></a>
 			</p>
 		</section>
 
 	<?php elseif ( 'closed' === $dlms_mode ) : ?>
-		<p class="dlms-quiz__closed"><?php echo esc_html( $args['closed_message'] ); ?></p>
+		<p class="dlms-quiz__closed"><?php echo dlms_t( $args['closed_message'] ); ?></p>
 
 	<?php elseif ( empty( $args['questions'] ) ) : ?>
-		<p class="dlms-empty"><?php esc_html_e( 'This quiz has no questions yet.', 'deutschlms' ); ?></p>
+		<p class="dlms-empty"><?php dlms_e( __( 'This quiz has no questions yet.', 'deutschlms' ) ); ?></p>
 
 	<?php else : ?>
 		<?php if ( $dlms_disabled ) : ?>
-			<p class="dlms-complete__status dlms-complete__status--preview"><?php esc_html_e( 'Preview: you can see this because you manage the course. Only enrolled students can submit answers.', 'deutschlms' ); ?></p>
+			<p class="dlms-complete__status dlms-complete__status--preview"><?php dlms_e( __( 'Preview: you can see this because you manage the course. Only enrolled students can submit answers.', 'deutschlms' ) ); ?></p>
 		<?php endif; ?>
 		<?php $dlms_timed = isset( $args['time_remaining'] ) && null !== $args['time_remaining']; ?>
 		<?php if ( $dlms_trial ) : ?>
@@ -336,7 +325,7 @@ $dlms_trial    = ! empty( $args['trial'] );
 						<?php if ( '' !== $dlms_audio ) : ?>
 							<p class="dlms-quiz__listen">
 								<?php echo $dlms_audio; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in AudioClips::button(). ?>
-								<span class="dlms-quiz__listen-label"><?php esc_html_e( 'Listen first, then answer.', 'deutschlms' ); ?></span>
+								<span class="dlms-quiz__listen-label"><?php echo dlms_instruction( __( 'Listen first, then answer.', 'deutschlms' ) ); ?></span>
 							</p>
 						<?php endif; ?>
 						<?php if ( 'fill_blank' === $dlms_question['type'] ) : ?>
@@ -344,16 +333,15 @@ $dlms_trial    = ! empty( $args['trial'] );
 								<legend class="dlms-sr">
 									<?php
 									// The question text has "…" for each gap.
-									echo esc_html(
-										sprintf(
-											/* translators: %d: question number. */
-											__( 'Question %d:', 'deutschlms' ),
-											$dlms_index + 1
-										) . ' ' . $dlms_question['text']
+									dlms_e(
+										/* translators: %d: question number. */
+										__( 'Question %d:', 'deutschlms' ),
+										$dlms_index + 1
 									);
+									echo ' ' . esc_html( $dlms_question['text'] );
 									?>
 								</legend>
-								<p class="dlms-quiz__text dlms-quiz__cloze">
+								<p class="dlms-quiz__text dlms-quiz__cloze" translate="no">
 									<?php
 									// Printed without whitespace, so a gap can sit right after a word stem (blau…).
 									$dlms_gap_count = count( $dlms_question['segments'] ) - 1;
@@ -361,16 +349,15 @@ $dlms_trial    = ! empty( $args['trial'] );
 										echo nl2br( esc_html( $dlms_segment ) );
 										if ( $dlms_segment_index < $dlms_gap_count ) {
 											printf(
-												'<input type="text" class="dlms-gap" name="%1$s" size="%2$s" maxlength="100" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="%3$s"%4$s />',
+												'<input type="text" class="dlms-gap" name="%1$s" size="%2$s" maxlength="100" autocomplete="off" autocapitalize="off" spellcheck="false" %3$s%4$s />',
 												esc_attr( 'dlms_answers[' . $dlms_question['id'] . '][]' ),
 												esc_attr( (string) ( $dlms_question['gap_sizes'][ $dlms_segment_index ] ?? 12 ) ),
-												esc_attr(
-													sprintf(
-														/* translators: 1: gap number, 2: number of gaps. */
-														__( 'Gap %1$d of %2$d', 'deutschlms' ),
-														$dlms_segment_index + 1,
-														$dlms_gap_count
-													)
+												dlms_attr(
+													'aria-label',
+													/* translators: 1: gap number, 2: number of gaps. */
+													__( 'Gap %1$d of %2$d', 'deutschlms' ),
+													$dlms_segment_index + 1,
+													$dlms_gap_count
 												),
 												disabled( $dlms_disabled, true, false ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Fixed attribute string from core.
 											);
@@ -378,6 +365,7 @@ $dlms_trial    = ! empty( $args['trial'] );
 									}
 									?>
 								</p>
+								<?php echo \DeutschLMS\Frontend\HelpLanguage::question_help( $dlms_question ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in HelpLanguage. ?>
 							</fieldset>
 						<?php elseif ( 'word_order' === $dlms_question['type'] ) : ?>
 							<?php $dlms_display = \DeutschLMS\Quiz\Questions::display( $dlms_question ); ?>
@@ -389,34 +377,31 @@ $dlms_trial    = ! empty( $args['trial'] );
 								<legend class="dlms-quiz__text">
 									<span class="dlms-sr">
 										<?php
-										echo esc_html(
-											sprintf(
-												/* translators: %d: question number. */
-												__( 'Question %d:', 'deutschlms' ),
-												$dlms_index + 1
-											)
+										dlms_e(
+											/* translators: %d: question number. */
+											__( 'Question %d:', 'deutschlms' ),
+											$dlms_index + 1
 										);
 										?>
 									</span>
 									<?php echo nl2br( esc_html( $dlms_question['text'] ) ); ?>
+									<?php echo \DeutschLMS\Frontend\HelpLanguage::question_help( $dlms_question ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in HelpLanguage. ?>
 								</legend>
-								<p class="dlms-quiz__hint" data-dlms-order-hint><?php esc_html_e( 'Choose the word for each position.', 'deutschlms' ); ?></p>
+								<p class="dlms-quiz__hint" data-dlms-order-hint><?php echo dlms_instruction( __( 'Choose the word for each position.', 'deutschlms' ) ); ?></p>
 								<ol class="dlms-order__slots">
 									<?php foreach ( array_keys( $dlms_question['answers'] ) as $dlms_position ) : ?>
 										<li>
 											<label>
 												<span class="dlms-sr">
 													<?php
-													echo esc_html(
-														sprintf(
-															/* translators: %d: position in the sentence. */
-															__( 'Position %d', 'deutschlms' ),
-															$dlms_position + 1
-														)
+													dlms_e(
+														/* translators: %d: position in the sentence. */
+														__( 'Position %d', 'deutschlms' ),
+														$dlms_position + 1
 													);
 													?>
 												</span>
-												<select name="dlms_answers[<?php echo esc_attr( $dlms_question['id'] ); ?>][]" <?php disabled( $dlms_disabled ); ?>>
+												<select name="dlms_answers[<?php echo esc_attr( $dlms_question['id'] ); ?>][]" translate="no" <?php disabled( $dlms_disabled ); ?>>
 													<option value="">—</option>
 													<?php
 													// The first position starts the sentence, the last one ends it.
@@ -442,19 +427,20 @@ $dlms_trial    = ! empty( $args['trial'] );
 								<legend class="dlms-quiz__text dlms-article-q__noun">
 									<span class="dlms-sr">
 										<?php
-										echo esc_html(
-											sprintf(
-												/* translators: %d: question number. */
-												__( 'Question %d:', 'deutschlms' ),
-												$dlms_index + 1
-											) . ' ' . __( 'Which article?', 'deutschlms' )
+										dlms_e(
+											/* translators: %d: question number. */
+											__( 'Question %d:', 'deutschlms' ),
+											$dlms_index + 1
 										);
+										echo ' ';
+										dlms_e( __( 'Which article?', 'deutschlms' ) );
 										?>
 									</span>
 									<?php echo \DeutschLMS\Content\NounPictures::render( \DeutschLMS\Quiz\Questions::picture( $dlms_question ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icon filtered by wp_kses(), image from wp_get_attachment_image(). ?>
-									<span class="dlms-article-q__word"><?php echo esc_html( $dlms_question['text'] ); ?></span>
+									<span class="dlms-article-q__word" lang="de" translate="no"><?php echo esc_html( $dlms_question['text'] ); ?></span>
+									<?php echo \DeutschLMS\Frontend\HelpLanguage::question_help( $dlms_question ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in HelpLanguage. ?>
 								</legend>
-								<p class="dlms-quiz__hint" aria-hidden="true"><?php esc_html_e( 'Which article?', 'deutschlms' ); ?></p>
+								<p class="dlms-quiz__hint" aria-hidden="true"><?php echo dlms_instruction( __( 'Which article?', 'deutschlms' ) ); ?></p>
 								<div class="dlms-article-q__choices">
 									<?php foreach ( $dlms_question['answers'] as $dlms_answer ) : ?>
 										<label class="dlms-article-choice dlms-article--<?php echo esc_attr( $dlms_answer['id'] ); ?>">
@@ -475,19 +461,18 @@ $dlms_trial    = ! empty( $args['trial'] );
 								<legend class="dlms-quiz__text">
 									<span class="dlms-sr">
 										<?php
-										echo esc_html(
-											sprintf(
-												/* translators: %d: question number. */
-												__( 'Question %d:', 'deutschlms' ),
-												$dlms_index + 1
-											)
+										dlms_e(
+											/* translators: %d: question number. */
+											__( 'Question %d:', 'deutschlms' ),
+											$dlms_index + 1
 										);
 										?>
 									</span>
-									<?php echo nl2br( esc_html( $dlms_question['text'] ) ); ?>
+									<span<?php echo \DeutschLMS\Frontend\HelpLanguage::is_active() ? ' translate="no"' : ''; ?>><?php echo nl2br( esc_html( $dlms_question['text'] ) ); ?></span>
+									<?php echo \DeutschLMS\Frontend\HelpLanguage::question_help( $dlms_question ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in HelpLanguage. ?>
 								</legend>
 								<?php if ( 'multiple' === $dlms_question['type'] ) : ?>
-									<p class="dlms-quiz__hint"><?php esc_html_e( 'Select all correct answers.', 'deutschlms' ); ?></p>
+									<p class="dlms-quiz__hint"><?php echo dlms_instruction( __( 'Select all correct answers.', 'deutschlms' ) ); ?></p>
 								<?php endif; ?>
 								<?php foreach ( $dlms_question['answers'] as $dlms_answer ) : ?>
 									<label class="dlms-quiz__answer">
@@ -497,7 +482,11 @@ $dlms_trial    = ! empty( $args['trial'] );
 											value="<?php echo esc_attr( $dlms_answer['id'] ); ?>"
 											<?php disabled( $dlms_disabled ); ?>
 										/>
-										<span><?php echo esc_html( $dlms_answer['text'] ); ?></span>
+										<?php if ( 'true_false' === $dlms_question['type'] ) : ?>
+											<span><?php echo dlms_t( $dlms_answer['text'] ); ?></span>
+										<?php else : ?>
+											<span<?php echo \DeutschLMS\Frontend\HelpLanguage::is_active() ? ' translate="no"' : ''; ?>><?php echo esc_html( $dlms_answer['text'] ); ?></span>
+										<?php endif; ?>
 									</label>
 								<?php endforeach; ?>
 							</fieldset>
@@ -508,24 +497,22 @@ $dlms_trial    = ! empty( $args['trial'] );
 			<div class="dlms-dock">
 			<?php if ( $dlms_timed ) : ?>
 				<p class="dlms-timer" data-dlms-timer hidden>
-					<span class="dlms-timer__label"><?php esc_html_e( 'Time left:', 'deutschlms' ); ?></span>
+					<span class="dlms-timer__label"><?php dlms_e( __( 'Time left:', 'deutschlms' ) ); ?></span>
 					<span class="dlms-timer__clock" role="timer" data-dlms-timer-clock></span>
 				</p>
 			<?php endif; ?>
 			<?php if ( in_array( 'fill_blank', array_column( $args['questions'], 'type' ), true ) ) : ?>
 				<div class="dlms-chars" data-dlms-chars hidden>
-					<span class="dlms-chars__label"><?php esc_html_e( 'Special characters:', 'deutschlms' ); ?></span>
+					<span class="dlms-chars__label"><?php dlms_e( __( 'Special characters:', 'deutschlms' ) ); ?></span>
 					<?php foreach ( array( 'ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü' ) as $dlms_char ) : ?>
 						<button type="button" class="dlms-chars__key" data-char="<?php echo esc_attr( $dlms_char ); ?>" <?php disabled( $dlms_disabled ); ?>>
 							<span aria-hidden="true"><?php echo esc_html( $dlms_char ); ?></span>
 							<span class="dlms-sr">
 								<?php
-								echo esc_html(
-									sprintf(
-										/* translators: %s: a character such as ä. */
-										__( 'Insert %s', 'deutschlms' ),
-										$dlms_char
-									)
+								dlms_e(
+									/* translators: %s: a character such as ä. */
+									__( 'Insert %s', 'deutschlms' ),
+									$dlms_char
 								);
 								?>
 							</span>
@@ -535,26 +522,23 @@ $dlms_trial    = ! empty( $args['trial'] );
 			<?php endif; ?>
 			</div>
 			<?php if ( ! $dlms_disabled ) : ?>
-				<button type="submit" class="dlms-button"><?php esc_html_e( 'Submit answers', 'deutschlms' ); ?></button>
+				<button type="submit" class="dlms-button"><?php dlms_e( __( 'Submit answers', 'deutschlms' ) ); ?></button>
 				<p class="dlms-form-status" role="status" aria-live="polite"></p>
 			<?php endif; ?>
 			<?php if ( $dlms_timed ) : ?>
 				<dialog class="dlms-timeup" data-dlms-timeup aria-labelledby="dlms-timeup-heading-<?php echo esc_attr( (string) $args['quiz_id'] ); ?>">
-					<h2 class="dlms-timeup__heading" id="dlms-timeup-heading-<?php echo esc_attr( (string) $args['quiz_id'] ); ?>"><?php esc_html_e( 'Time is up', 'deutschlms' ); ?></h2>
+					<h2 class="dlms-timeup__heading" id="dlms-timeup-heading-<?php echo esc_attr( (string) $args['quiz_id'] ); ?>"><?php dlms_e( __( 'Time is up', 'deutschlms' ) ); ?></h2>
 					<p>
 						<?php
-						echo esc_html(
-							sprintf(
-								/* translators: %d: seconds. */
-								__( 'Please click "Submit answers" so your answers are checked. If you do not submit within %d seconds, your answers are submitted automatically.', 'deutschlms' ),
-								$args['time_up_seconds']
-							)
+						dlms_e(
+							/* translators: %d: seconds. */
+							__( 'Please click "Submit answers" so your answers are checked. If you do not submit within %d seconds, your answers are submitted automatically.', 'deutschlms' ),
+							$args['time_up_seconds']
 						);
 						?>
 					</p>
-					<?php /* translators: %d: seconds. Keep the %d: the page replaces it every second. */ ?>
-					<p class="dlms-timeup__countdown" data-dlms-timeup-countdown data-template="<?php echo esc_attr( __( 'Automatic submission in %d seconds.', 'deutschlms' ) ); ?>"></p>
-					<button type="submit" class="dlms-button"><?php esc_html_e( 'Submit answers', 'deutschlms' ); ?></button>
+					<p class="dlms-timeup__countdown" data-dlms-timeup-countdown></p>
+					<button type="submit" class="dlms-button"><?php dlms_e( __( 'Submit answers', 'deutschlms' ) ); ?></button>
 				</dialog>
 			<?php endif; ?>
 		</form>

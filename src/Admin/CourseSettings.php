@@ -9,12 +9,14 @@ namespace DeutschLMS\Admin;
 
 use DeutschLMS\Content\Meta;
 use DeutschLMS\Content\PostTypes;
+use DeutschLMS\Frontend\HelpLanguage;
 use WP_Post;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Per-course settings: linear progression and the completion certificate.
+ * Per-course settings: linear progression, the help languages (language
+ * switch) and the completion certificate.
  */
 final class CourseSettings {
 
@@ -58,6 +60,9 @@ final class CourseSettings {
 		$signer     = (string) get_post_meta( $post->ID, Meta::CERT_SIGNER, true );
 		$background = absint( get_post_meta( $post->ID, Meta::CERT_BACKGROUND, true ) );
 		$preview    = $background ? wp_get_attachment_image_url( $background, 'medium' ) : '';
+		$languages  = HelpLanguage::languages();
+		$offered    = HelpLanguage::course_languages( $post->ID );
+		$default    = HelpLanguage::course_default( $post->ID );
 		?>
 		<p>
 			<label>
@@ -68,6 +73,29 @@ final class CourseSettings {
 		<p class="description">
 			<?php esc_html_e( 'Students must finish each lesson, topic and quiz in order before the next one unlocks.', 'deutschlms' ); ?>
 		</p>
+
+		<hr />
+
+		<fieldset>
+			<legend><strong><?php esc_html_e( 'Help languages', 'deutschlms' ); ?></strong></legend>
+			<p class="description"><?php esc_html_e( 'Learners can choose the language of instructions, buttons and help texts; the German course content stays German. German is always offered.', 'deutschlms' ); ?></p>
+			<?php foreach ( HelpLanguage::translation_codes() as $dlms_code ) : ?>
+				<p>
+					<label>
+						<input type="checkbox" name="dlms_help_languages[]" value="<?php echo esc_attr( $dlms_code ); ?>" <?php checked( in_array( $dlms_code, $offered, true ) ); ?> />
+						<?php echo esc_html( $languages[ $dlms_code ]['name'] ); ?>
+					</label>
+				</p>
+			<?php endforeach; ?>
+			<p>
+				<label for="dlms-help-default"><?php esc_html_e( 'New learners start with', 'deutschlms' ); ?></label>
+				<select id="dlms-help-default" name="dlms_help_default" class="widefat">
+					<?php foreach ( $languages as $dlms_code => $dlms_language ) : ?>
+						<option value="<?php echo esc_attr( $dlms_code ); ?>" <?php selected( $default, $dlms_code ); ?>><?php echo esc_html( $dlms_language['name'] ); ?></option>
+					<?php endforeach; ?>
+				</select>
+			</p>
+		</fieldset>
 
 		<hr />
 
@@ -111,6 +139,11 @@ final class CourseSettings {
 		}
 
 		update_post_meta( $post_id, Meta::LINEAR, ! empty( $_POST['dlms_linear_progression'] ) );
+
+		$languages = HelpLanguage::sanitize_codes( isset( $_POST['dlms_help_languages'] ) ? array_map( 'sanitize_key', (array) wp_unslash( $_POST['dlms_help_languages'] ) ) : array() );
+		update_post_meta( $post_id, Meta::HELP_LANGUAGES, $languages );
+		$default = isset( $_POST['dlms_help_default'] ) ? sanitize_key( wp_unslash( $_POST['dlms_help_default'] ) ) : '';
+		update_post_meta( $post_id, Meta::HELP_DEFAULT, in_array( $default, $languages, true ) ? $default : HelpLanguage::GERMAN );
 		update_post_meta( $post_id, Meta::CERT_ENABLED, ! empty( $_POST['dlms_certificate_enabled'] ) );
 
 		if ( isset( $_POST['dlms_certificate_title'] ) ) {
@@ -144,7 +177,7 @@ final class CourseSettings {
 		}
 
 		wp_enqueue_media();
-		wp_enqueue_script( self::SCRIPT, DLMS_URL . 'assets/admin/course-settings.js', array( 'wp-i18n', 'media-editor' ), DLMS_VERSION, true );
+		wp_enqueue_script( self::SCRIPT, DLMS_URL . 'assets/admin/course-settings.js', array( 'wp-i18n', 'media-editor' ), dlms_asset_version( 'assets/admin/course-settings.js' ), true );
 		wp_set_script_translations( self::SCRIPT, 'deutschlms', DLMS_PATH . 'languages' );
 	}
 }

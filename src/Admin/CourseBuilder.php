@@ -74,12 +74,12 @@ final class CourseBuilder {
 			return;
 		}
 
-		wp_enqueue_style( self::SCRIPT, DLMS_URL . 'assets/admin/course-builder.css', array(), DLMS_VERSION );
+		wp_enqueue_style( self::SCRIPT, DLMS_URL . 'assets/admin/course-builder.css', array(), dlms_asset_version( 'assets/admin/course-builder.css' ) );
 		wp_enqueue_script(
 			self::SCRIPT,
 			DLMS_URL . 'assets/admin/course-builder.js',
 			array( 'jquery', 'jquery-ui-sortable', 'wp-api-fetch', 'wp-i18n', 'wp-a11y' ),
-			DLMS_VERSION,
+			dlms_asset_version( 'assets/admin/course-builder.js' ),
 			true
 		);
 		wp_set_script_translations( self::SCRIPT, 'deutschlms', DLMS_PATH . 'languages' );

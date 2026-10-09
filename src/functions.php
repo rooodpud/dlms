@@ -83,3 +83,78 @@ function dlms_get_template_html( string $template, array $args = array() ): stri
 function dlms_template( string $template, array $args = array() ): void {
 	echo \DeutschLMS\Frontend\Templates::render( $template, $args ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Templates escape their own output.
 }
+
+/**
+ * An exercise instruction as escaped HTML: German, and its translation in
+ * the learner's help language under it (HelpLanguage::instruction()).
+ * Keep the gettext call inside: dlms_instruction( __( '…', 'deutschlms' ) ).
+ *
+ * @param string $translated Text from __(), _x() or _n().
+ * @param mixed  ...$args    Values for the placeholders (escaped).
+ * @return string
+ */
+function dlms_instruction( string $translated, ...$args ): string {
+	return \DeutschLMS\Frontend\HelpLanguage::instruction( $translated, ...$args );
+}
+
+/**
+ * Version of a plugin file for its URL (?ver=): the plugin version and the
+ * file's modification time, so browsers load a changed file at once
+ * instead of an old cached copy with the same plugin version.
+ *
+ * @param string $path Path inside the plugin, e.g. 'assets/js/frontend.js'.
+ * @return string
+ */
+function dlms_asset_version( string $path ): string {
+	$time = @filemtime( DLMS_PATH . $path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- A missing file just keeps the plugin version.
+	return false === $time ? DLMS_VERSION : DLMS_VERSION . '.' . $time;
+}
+
+/**
+ * A translated DeutschLMS string as escaped HTML, in every help language of
+ * the course (see \DeutschLMS\Frontend\HelpLanguage); without a choice of
+ * languages simply the escaped text. Keep the gettext call inside, so the
+ * string is found for translation: dlms_t( __( 'Next', 'deutschlms' ) ).
+ *
+ * @param string $translated Text from __(), _x() or _n().
+ * @param mixed  ...$args    Values for the placeholders (escaped).
+ * @return string
+ */
+function dlms_t( string $translated, ...$args ): string {
+	return \DeutschLMS\Frontend\HelpLanguage::text( $translated, ...$args );
+}
+
+/**
+ * Prints dlms_t().
+ *
+ * @param string $translated Text from __(), _x() or _n().
+ * @param mixed  ...$args    Values for the placeholders (escaped).
+ */
+function dlms_e( string $translated, ...$args ): void {
+	echo \DeutschLMS\Frontend\HelpLanguage::text( $translated, ...$args ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in HelpLanguage::text().
+}
+
+/**
+ * An attribute (aria-label or title) with a translated DeutschLMS string,
+ * kept in the learner's help language: aria-label="…".
+ *
+ * @param string $name       Attribute.
+ * @param string $translated Text from __(), _x() or _n().
+ * @param mixed  ...$args    Values for the placeholders.
+ * @return string Attribute markup (no leading space).
+ */
+function dlms_attr( string $name, string $translated, ...$args ): string {
+	return \DeutschLMS\Frontend\HelpLanguage::attr( $name, $translated, ...$args );
+}
+
+/**
+ * A course, lesson, topic or quiz title as escaped HTML, with its
+ * translation in the learner's help language.
+ *
+ * @param int         $post_id Post ID.
+ * @param string|null $title   Title (default: the post's).
+ * @return string
+ */
+function dlms_title( int $post_id, ?string $title = null ): string {
+	return \DeutschLMS\Frontend\HelpLanguage::title( $post_id, $title );
+}

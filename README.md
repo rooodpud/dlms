@@ -6,10 +6,11 @@ their progress and hand out PDF certificates. It was built for teaching
 German, so its quizzes include gap-fill and word-order questions with
 an ä/ö/ü/ß keyboard bar, but it works for any subject.
 
-- **Version:** 0.4.0
+- **Version:** 0.5.0
 - **Requires:** WordPress 6.5 or newer, PHP 8.1 or newer
 - **License:** GPL-2.0-or-later (see [License](#license))
-- **Languages:** English, plus a full German translation
+- **Languages:** English, plus full German and Tagalog translations
+- **Changes:** see [CHANGELOG.md](CHANGELOG.md)
 
 > **Status: early but in production.** DeutschLMS runs a live German
 > course with 30 lessons and about 2,400 questions. Version numbers stay
@@ -33,12 +34,14 @@ an ä/ö/ü/ß keyboard bar, but it works for any subject.
 - [Blocks and shortcodes](#blocks-and-shortcodes)
 - [Customising the look](#customising-the-look)
 - [Translations and multilingual sites](#translations-and-multilingual-sites)
+- [Help language switch](#help-language-switch)
 - [Your data: what is stored, and uninstalling](#your-data-what-is-stored-and-uninstalling)
 - [FAQ and troubleshooting](#faq-and-troubleshooting)
 - [Developer reference](#developer-reference)
 - [Development](#development)
 - [Roadmap](#roadmap)
 - [License](#license)
+- [Changelog](CHANGELOG.md)
 
 ---
 
@@ -90,6 +93,29 @@ an ä/ö/ü/ß keyboard bar, but it works for any subject.
   file from the Media Library), used by every play button with that text.
   Until a text has a recording, the student's browser reads it aloud with a
   German voice (Web Speech API; nothing is sent anywhere by the plugin).
+
+**Word cards and flashcards** (new in 0.5.0)
+- Cards show the word's meaning in other languages (English, Tagalog,
+  Cebuano, Hindi: one line each).
+- Word cards (`[dlms_word]`) for any word or phrase: greetings, verbs,
+  numbers.
+- Flashcard decks (`[dlms_flashcards]`): one card at a time, turn over,
+  next, back, shuffle; picture first or German first.
+- A **Slow speech** check box (German: Langsam sprechen) plays recordings
+  and the browser's voice more slowly; dialogues and decks have it too.
+  While it is on, the box shows a tick.
+- Colour pictures from a bundled subset of [OpenMoji](https://openmoji.org)
+  (`emoji:1F44B`), next to the Tabler icons.
+
+**Help language switch** (new in 0.5.0)
+- A course can let learners choose the language of everything that is not
+  German course content: buttons, messages, headings, instructions, help
+  texts, title translations, question translations and explanations.
+  German is always offered; English and Tagalog ship with the plugin.
+- Switching needs no reload (a quiz in progress keeps its answers). The
+  choice is kept in the learner's account and in the browser.
+- German learning texts carry `translate="no"`, so browser translation
+  (e.g. Google Translate) leaves them German and translates the rest.
 
 **Certificates**
 - A PDF certificate when a student completes a course, made on demand
@@ -400,6 +426,32 @@ the colour is never the only signal.
 Noun cards have a play button that says the noun with its article ("der
 Tisch"); `audio="no"` leaves it out. Inline nouns have none.
 
+### Word cards, meanings and flashcards (0.5.0)
+
+| Shortcode | Shows |
+| --- | --- |
+| `[dlms_noun der Tisch en="table" tl="mesa"]` | A noun card with its meanings, one line per language (`en`, `tl`, `ceb`, `hi`, in that order; each line has its `lang`) |
+| `[dlms_word Guten Morgen en="Good morning" tl="Magandang umaga"]` | A card for any word or phrase, in the accent colour (no article). The words before the attributes are the card's text, or use `word="…"` |
+| `[dlms_word 21 say="einundzwanzig"]` | The play button speaks another text than the card shows |
+| `[dlms_word Hallo picture="emoji:1F44B"]` | A picture as for nouns (`icon:`, `emoji:`, `media:`, a noun key, `picture=""` for none); without `picture` the word's library picture, if any |
+| `[dlms_flashcards title="Grüße"]` `[dlms_word …]` `[dlms_noun …]` … `[/dlms_flashcards]` | A flashcard deck (see below); `front="german"` starts with the German side |
+| `[dlms_speed]` | The **Slow speech** check box on its own |
+
+**Flashcard decks** show one card at a time with **Umdrehen** (turn over),
+**Zurück**, **Weiter**, **Mischen** (shuffle), a choice of the front side
+(**Zuerst das Bild**: picture and meanings; **Zuerst Deutsch**: the German
+word and its play button) and **Alle Karten zeigen** (the grid). Turning a
+picture card over plays the word. On the picture side a noun card has the
+accent colour, so the colour doesn't give the article away. Keys: ← and →
+change the card, the space bar or Enter turns it over. Without JavaScript the
+deck is a grid of cards. Script: `assets/js/flashcards.js`.
+
+**Slow playback.** The **Slow speech** check box (Langsam sprechen; in
+`[dlms_speed]`, in every dialogue and every deck) plays recordings at 75 %
+speed (pitch kept) and the browser's voice slower; while it is on it is
+filled and shows a tick. All switches on a page change together; the
+choice is kept in the browser (`localStorage`, key `dlmsSlow`).
+
 ### Audio: `[dlms_say]` and Courses → Audio
 
 | Shortcode | Shows |
@@ -422,7 +474,10 @@ Amina: Guten Morgen, Marco!
 ```
 
 One line per speaker, starting with the name and a colon; inline HTML and
-inline nouns are allowed. `voices` gives each speaker a voice (`male`/`m`/
+inline nouns are allowed. A line first plays the speaker's own recording,
+saved in the audio library under "Name: text" (e.g. `Joel: Guten Abend!`),
+and only then the recording of the text itself, so a line that is also a
+word card keeps the speaker's voice. `voices` gives each speaker a voice (`male`/`m`/
 `Mann`, `female`/`f`/`w`/`Frau`); speakers without one get the browser's best
 German voice.
 
@@ -433,7 +488,8 @@ one German voice, the man's lines are read lower. Recordings are one per text
 and are used for every voice.
 
 **Courses → Audio** lists every text with a play button: `[dlms_say]` texts,
-dialogue lines and noun cards in course content, the texts of listening questions, and
+dialogue lines (as "Name: text" when the speaker has an own recording),
+noun cards and word cards in course content, the texts of listening questions, and
 recordings whose text is no longer used. For each text: play it, **Add
 recording** (Media Library, audio files), **Remove recording**; filters for
 kind and "only texts without a recording". Changes are saved right away.
@@ -449,7 +505,10 @@ Edge/Chrome have one; a device without a German voice shows a message
 (students can add one in their device's language settings).
 
 **Pictures: Courses → Noun pictures.** One picture per noun, used by every
-article question and noun card with that noun. For each noun choose an
+article question and noun card with that noun. Besides the references
+below, `emoji:<hexcode>` names a colour picture of the bundled OpenMoji
+subset (`assets/icons/openmoji/<hexcode>.svg`, shown as an image); only the
+pictures a course uses are bundled. For each noun choose an
 **icon** from the bundled [Tabler Icons](https://tabler.io/icons) set
 (5,000+ line icons, MIT licence; search in English, e.g. *bed*, *chair*,
 *fridge*) or **upload or choose an image** from the Media Library. Icons take
@@ -460,7 +519,7 @@ right away. Nouns are matched in lower case with umlauts as ae/oe/ue
 (`Kühlschrank` → `kuehlschrank`).
 
 The library is stored in the option `dlms_noun_pictures`
-(`key => [ 'noun' => 'Kühlschrank', 'picture' => 'icon:fridge' | 'media:123' ]`)
+(`key => [ 'noun' => 'Kühlschrank', 'picture' => 'icon:fridge' | 'media:123' | 'emoji:1F9CA' ]`)
 and can be changed with the filter of the same name:
 
 ```php
@@ -529,6 +588,60 @@ body .dlms {
 - **WPML / Polylang:** enrollments, progress and attempts are stored against
   the default-language course, so they count across all translations.
   `wpml-config.xml` copies the structure and settings to translations.
+- A **Tagalog** translation of the texts students see
+  (`languages/deutschlms-tl.po`) is used by the help language switch.
+
+---
+
+## Help language switch
+
+For beginners who can't read German instructions yet. **Courses → edit
+course → Course settings → Help languages**: tick English and/or Tagalog
+and choose the language new learners start with. Every course, lesson,
+topic and quiz page then starts with a bar **Instructions and help in:
+Deutsch · English · Tagalog**.
+
+The switch also stays on screen while the learner scrolls (printed once in
+the footer): on wide screens (from 1480 px, room beside the content) as a
+panel at the right edge; on smaller screens as a tab at the right edge
+(🌐 and the current language, e.g. EN) that opens the panel with a tap or
+a swipe to the left. A choice, a swipe to the right, Escape or a tap
+elsewhere closes it again.
+
+What follows the switch:
+
+| | Deutsch | English | Tagalog |
+| --- | --- | --- | --- |
+| Buttons, messages, quiz texts (the plugin's own) | German | English | Tagalog (else English) |
+| Exercise instructions (quiz hints, word-order hints, flashcard hint; `dlms_instruction()`) | German | German + English below | German + Tagalog below |
+| Titles with a translation (box **Title translations**) | German | German + (English) | German + (Tagalog) |
+| Question translations (question editor → **Translations**) | – | under the German text | under the German text |
+| Explanations | German | English (else German) | Tagalog (else English, German) |
+| `[dlms_t]` texts, `[dlms_lang]` content | as written for each language | | |
+
+German texts, word cards, dialogues and meanings never change.
+
+Content shortcodes (see [Blocks and shortcodes](#blocks-and-shortcodes)):
+
+    [dlms_t de="Hören und nachsprechen" en="Listen and repeat" tl="Makinig at ulitin"]
+    [dlms_lang en]Shown in English[/dlms_lang][dlms_lang tl]Sa Tagalog[/dlms_lang]
+    [dlms_lang en de]An explanation for English and German[/dlms_lang]
+    [dlms_flashcards title="Lernkarten" title_en="Flashcards" title_tl="Mga flashcard"]…[/dlms_flashcards]
+
+A paragraph with the class `dlms-help-lines` shows its `[dlms_lang]` parts
+as lines (put `<br>` between them for pages without the switch).
+
+How it works: each text is printed once per language
+(`<span class="dlms-l" data-dlms-l="en">`); a rule in the page head shows
+only the language in `<html data-dlms-help="…">`. `help-language.js` handles
+the buttons, saves the choice (localStorage `dlmsHelpLanguage`; logged-in
+learners also `POST /dlms/v1/help-language`, user meta
+`dlms_help_language`) and keeps aria-labels and titles in the chosen
+language. Plugin strings keep their gettext calls and are wrapped:
+`dlms_t( __( 'Next', 'deutschlms' ) )` (also `dlms_e()`, `dlms_attr()`,
+`dlms_title()`); the other languages are read from
+`languages/deutschlms-<locale>.mo`. More languages: filter
+`dlms_help_languages` (code => name, locale, translation file).
 
 ---
 
@@ -591,10 +704,12 @@ Please open an issue on GitHub.
 | --- | --- |
 | Course / Lesson / Topic / Quiz | Post types `dlms_course`, `dlms_lesson`, `dlms_topic`, `dlms_quiz` |
 | Hierarchy | Post meta `_dlms_course_id` (lessons, topics, quizzes), `_dlms_lesson_id` (topics), `_dlms_parent_id` (quizzes: lesson/topic ID, or 0 = whole course); order = `menu_order` |
-| Course settings | `_dlms_linear_progression`, `_dlms_certificate_enabled`, `_dlms_certificate_title`, `_dlms_certificate_signer`, `_dlms_certificate_background` |
+| Course settings | `_dlms_linear_progression`, `_dlms_certificate_enabled`, `_dlms_certificate_title`, `_dlms_certificate_signer`, `_dlms_certificate_background`, `_dlms_help_languages` (codes besides German, e.g. `[ 'en', 'tl' ]`; empty = no switch), `_dlms_help_default` |
+| Title translations | `_dlms_title_help` on courses, lessons, topics and quizzes: `[ 'en' => '…', 'tl' => '…' ]` |
+| Help language | User meta `dlms_help_language` (the learner's choice) |
 | Section headings | Course meta `_dlms_section_headings`: list of `{ id, title, before }`, `before` = the lesson the heading stands above (0 = after the last lesson). Not steps: no progress, no page. In the student view a heading above a draft lesson moves down to the next published lesson |
 | Lesson setting | `_dlms_drip_days` (days after enrollment) |
-| Question bank | Post type `dlms_question` (admin only): `_dlms_question` (the question incl. its stable ID and correct answers; article questions: type `article`, answers `der`/`die`/`das`, `picture` = '' for the noun's own picture, or `icon:…`, `media:…` or another noun; listening questions: `listen` = German text, `audio` = audio attachment ID, both only stored when set), `_dlms_question_key`, `_dlms_question_type`, `_dlms_question_ready` ('1' = complete). Taxonomies `dlms_question_category` (hierarchical), `dlms_question_difficulty`, `dlms_question_level` (one term each; defaults Leicht/Mittel/Schwer, A1–C2, option `dlms_question_terms_version`) |
+| Question bank | Post type `dlms_question` (admin only): `_dlms_question` (the question incl. its stable ID and correct answers; article questions: type `article`, answers `der`/`die`/`das`, `picture` = '' for the noun's own picture, or `icon:…`, `media:…` or another noun; listening questions: `listen` = German text, `audio` = audio attachment ID, both only stored when set; translations for the help language switch: `help` and `explanation_help` = `[ 'en' => '…', 'tl' => '…' ]`, only stored when set), `_dlms_question_key`, `_dlms_question_type`, `_dlms_question_ready` ('1' = complete). Taxonomies `dlms_question_category` (hierarchical), `dlms_question_difficulty`, `dlms_question_level` (one term each; defaults Leicht/Mittel/Schwer, A1–C2, option `dlms_question_terms_version`) |
 | Quiz content | `_dlms_quiz_items`: ordered `{ kind: question, question: post ID }` and `{ kind: random, count, category, difficulty, level, type }`. Without it a quiz uses its own `_dlms_questions` (from before the bank; kept as a backup) |
 | Random draws | User meta `_dlms_quiz_draws`: canonical quiz ID => the questions drawn for the current attempt (removed after each attempt) |
 | Quiz settings | `_dlms_pass_mark`, `_dlms_attempts_limit`, `_dlms_show_answers`, `_dlms_time_limit` (minutes, 0 = none) |
@@ -642,6 +757,7 @@ capabilities: `dlms_enroll_course` (course ID), `dlms_complete_step`
 | GET | `/questions/count` | `edit_dlms_questions`; same filters, returns the number of complete published matches |
 | POST | `/noun-pictures` | `edit_dlms_questions`; body `{ "noun", "picture" }` with `icon:<name>` or `media:<attachment ID>`; an empty picture removes the noun's picture |
 | POST | `/audio-clips` | `edit_dlms_questions`; body `{ "text", "media" }` with an audio attachment ID; `media` 0 removes the text's recording |
+| POST | `/help-language` | logged in; body `{ "language": "en" }` (a known help language) saves the learner's choice |
 
 The `type` filter of `/questions` accepts `single`, `multiple`,
 `true_false`, `fill_blank`, `word_order` and `article`.
@@ -761,6 +877,9 @@ you to choose.
 Bundled libraries keep their own licenses: Dompdf (LGPL-2.1),
 php-font-lib (LGPL-2.1-or-later), php-svg-lib (LGPL-3.0-or-later),
 masterminds/html5 and sabberworm/php-css-parser (MIT), Tabler Icons
-(MIT, `assets/icons/tabler/LICENSE`).
+(MIT, `assets/icons/tabler/LICENSE`). The OpenMoji pictures in
+`assets/icons/openmoji/` are by OpenMoji – the open-source emoji and icon
+project, licensed **CC BY-SA 4.0** (`assets/icons/openmoji/LICENSE.txt`);
+pages that show them should credit OpenMoji.
 
 Copyright © 2026 Pradeep Hingorani.

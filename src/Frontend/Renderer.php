@@ -505,6 +505,7 @@ final class Renderer {
 				'course_title'   => $course_id ? get_the_title( $course_id ) : '',
 				'course_url'     => $course_id ? get_permalink( $course_id ) : '',
 				'login_url'      => wp_login_url( (string) get_permalink( $step_id ) ),
+				'blocking_id'    => (int) $blocking,
 				'blocking_title' => $blocking ? get_the_title( $blocking ) : '',
 				'blocking_url'   => $blocking ? get_permalink( $blocking ) : '',
 				'available_on'   => $result->available_at ? $this->format_date( $result->available_at ) : '',
@@ -743,11 +744,12 @@ final class Renderer {
 	 *
 	 * @param int $user_id User ID.
 	 * @param int $step_id Step ID.
-	 * @return array{title: string, url: string, locked: bool}
+	 * @return array{id: int, title: string, url: string, locked: bool}
 	 */
 	private function nav_item( int $user_id, int $step_id ): array {
 		$can_view = $this->access->can_view( $user_id, $step_id );
 		return array(
+			'id'     => $step_id,
 			'title'  => get_the_title( $step_id ),
 			'url'    => $can_view ? (string) get_permalink( $step_id ) : '',
 			'locked' => ! $can_view,

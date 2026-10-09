@@ -92,8 +92,8 @@ final class AudioPage {
 			wp_enqueue_media();
 		}
 		Assets::enqueue_audio();
-		wp_enqueue_style( NounPicturesPage::SCRIPT, DLMS_URL . 'assets/admin/noun-pictures.css', array(), DLMS_VERSION );
-		wp_enqueue_script( self::SCRIPT, DLMS_URL . 'assets/admin/audio-page.js', array( 'wp-i18n', 'wp-a11y', 'wp-api-fetch' ), DLMS_VERSION, true );
+		wp_enqueue_style( NounPicturesPage::SCRIPT, DLMS_URL . 'assets/admin/noun-pictures.css', array(), dlms_asset_version( 'assets/admin/noun-pictures.css' ) );
+		wp_enqueue_script( self::SCRIPT, DLMS_URL . 'assets/admin/audio-page.js', array( 'wp-i18n', 'wp-a11y', 'wp-api-fetch' ), dlms_asset_version( 'assets/admin/audio-page.js' ), true );
 		wp_set_script_translations( self::SCRIPT, 'deutschlms', DLMS_PATH . 'languages' );
 		wp_add_inline_script(
 			self::SCRIPT,
@@ -221,8 +221,9 @@ final class AudioPage {
 
 	/**
 	 * Texts with play buttons in post content: [dlms_say] and the lines of
-	 * [dlms_dialog] (kind "sentence") and noun cards (kind "word", said as
-	 * "der Tisch").
+	 * [dlms_dialog] (kind "sentence"; a line with the speaker's own
+	 * recording as "Name: text"), noun cards (kind "word", said as
+	 * "der Tisch") and word cards (kind "word", their text or say="…").
 	 *
 	 * @param string $content Post content.
 	 * @return array<int, array{text: string, kind: string}>
@@ -232,7 +233,7 @@ final class AudioPage {
 		if ( ! str_contains( $content, '[dlms_' ) ) {
 			return $found;
 		}
-		preg_match_all( '/' . get_shortcode_regex( array( 'dlms_say', 'dlms_dialog', 'dlms_noun' ) ) . '/s', $content, $matches, PREG_SET_ORDER );
+		preg_match_all( '/' . get_shortcode_regex( array( 'dlms_say', 'dlms_dialog', 'dlms_noun', 'dlms_word' ) ) . '/s', $content, $matches, PREG_SET_ORDER );
 		foreach ( $matches as $match ) {
 			// [[escaped]] shortcodes are not shortcodes.
 			if ( '[' === $match[1] && ']' === $match[6] ) {
@@ -242,9 +243,29 @@ final class AudioPage {
 			$atts = is_array( $atts ) ? $atts : array();
 			if ( 'dlms_dialog' === $match[2] ) {
 				foreach ( AudioClips::dialog_lines( $match[5] ) as $line ) {
+					$text    = do_shortcode( $line['html'] );
+					$own     = '' !== $line['speaker'] ? $line['speaker'] . ': ' . AudioClips::clean_text( $text ) : '';
 					$found[] = array(
-						'text' => do_shortcode( $line['html'] ),
+						'text' => '' !== $own && AudioClips::media_for( $own ) ? $own : $text,
 						'kind' => 'sentence',
+					);
+				}
+				continue;
+			}
+			if ( 'dlms_word' === $match[2] ) {
+				$positional = array();
+				foreach ( $atts as $att_key => $value ) {
+					if ( is_int( $att_key ) ) {
+						$positional[] = (string) $value;
+					}
+				}
+				$say   = trim( (string) ( $atts['say'] ?? '' ) );
+				$text  = '' !== $say ? $say : trim( (string) ( $atts['word'] ?? implode( ' ', $positional ) ) );
+				$audio = strtolower( (string) ( $atts['audio'] ?? 'yes' ) );
+				if ( '' !== $text && in_array( $audio, array( '1', 'yes', 'true', 'on' ), true ) ) {
+					$found[] = array(
+						'text' => $text,
+						'kind' => 'word',
 					);
 				}
 				continue;

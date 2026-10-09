@@ -29,8 +29,8 @@ $dlms_state = $args['state'];
 			<button type="submit" class="dlms-button">
 				<?php
 				echo 'dlms_topic' === $args['step_type']
-					? esc_html__( 'Mark topic complete', 'deutschlms' )
-					: esc_html__( 'Mark lesson complete', 'deutschlms' );
+					? dlms_t( __( 'Mark topic complete', 'deutschlms' ) )
+					: dlms_t( __( 'Mark lesson complete', 'deutschlms' ) );
 				?>
 			</button>
 			<p class="dlms-form-status" role="status" aria-live="polite"></p>
@@ -39,23 +39,23 @@ $dlms_state = $args['state'];
 	<?php elseif ( 'completed' === $dlms_state ) : ?>
 		<p class="dlms-complete__status dlms-status--complete">
 			<span class="dlms-status-icon" aria-hidden="true"></span>
-			<?php esc_html_e( 'Completed', 'deutschlms' ); ?>
+			<?php dlms_e( __( 'Completed', 'deutschlms' ) ); ?>
 		</p>
 
 	<?php elseif ( 'auto' === $dlms_state ) : ?>
 		<p class="dlms-complete__status">
 			<?php
 			if ( 'dlms_topic' === $args['step_type'] ) {
-				esc_html_e( 'This topic is completed automatically when you pass its quiz.', 'deutschlms' );
+				dlms_e( __( 'This topic is completed automatically when you pass its quiz.', 'deutschlms' ) );
 			} elseif ( ! empty( $args['has_topics'] ) ) {
-				esc_html_e( 'This lesson is completed automatically when you finish all of its topics and quizzes.', 'deutschlms' );
+				dlms_e( __( 'This lesson is completed automatically when you finish all of its topics and quizzes.', 'deutschlms' ) );
 			} else {
-				esc_html_e( 'This lesson is completed automatically when you pass its quiz.', 'deutschlms' );
+				dlms_e( __( 'This lesson is completed automatically when you pass its quiz.', 'deutschlms' ) );
 			}
 			?>
 		</p>
 
 	<?php else : ?>
-		<p class="dlms-complete__status dlms-complete__status--preview"><?php esc_html_e( 'Preview: you can see this because you manage the course. Progress is only tracked for enrolled students.', 'deutschlms' ); ?></p>
+		<p class="dlms-complete__status dlms-complete__status--preview"><?php dlms_e( __( 'Preview: you can see this because you manage the course. Progress is only tracked for enrolled students.', 'deutschlms' ) ); ?></p>
 	<?php endif; ?>
 </div>

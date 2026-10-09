@@ -18,6 +18,7 @@ use DeutschLMS\Admin\QuestionList;
 use DeutschLMS\Admin\QuizEditor;
 use DeutschLMS\Admin\QuizResults;
 use DeutschLMS\Admin\StepMetaBoxes;
+use DeutschLMS\Admin\TitleTranslations;
 use DeutschLMS\Admin\UserQuizAttempts;
 use DeutschLMS\Blocks\Blocks;
 use DeutschLMS\Certificates\CertificateController;
@@ -33,6 +34,7 @@ use DeutschLMS\Enrollment\EnrollmentService;
 use DeutschLMS\Frontend\Assets;
 use DeutschLMS\Frontend\ContentGate;
 use DeutschLMS\Frontend\FormHandler;
+use DeutschLMS\Frontend\HelpLanguage;
 use DeutschLMS\Frontend\Renderer;
 use DeutschLMS\Frontend\Shortcodes;
 use DeutschLMS\Integrations\Multilingual;
@@ -45,6 +47,7 @@ use DeutschLMS\Quiz\QuizService;
 use DeutschLMS\Rest\AudioClipsController;
 use DeutschLMS\Rest\CourseBuilderController;
 use DeutschLMS\Rest\EnrollmentController;
+use DeutschLMS\Rest\HelpLanguageController;
 use DeutschLMS\Rest\NounPicturesController;
 use DeutschLMS\Rest\ProgressController;
 use DeutschLMS\Rest\QuestionBankController;
@@ -198,6 +201,7 @@ final class Plugin {
 		( new Multilingual() )->register_hooks();
 		$this->bank->register_hooks();
 		( new Assets() )->register_hooks();
+		( new HelpLanguage() )->register_hooks();
 		( new ContentGate( $this->access, $this->renderer ) )->register_hooks();
 		( new FormHandler( $this->enrollments, $this->progress, $this->quizzes ) )->register_hooks();
 		( new CertificateController( $this->certificates ) )->register_hooks();
@@ -220,6 +224,7 @@ final class Plugin {
 			( new UserQuizAttempts( $this->quizzes ) )->register_hooks();
 			( new QuizResults( $this->quizzes ) )->register_hooks();
 			( new StepMetaBoxes( $this->structure, $this->structure_editor ) )->register_hooks();
+			( new TitleTranslations() )->register_hooks();
 			( new ListTables( $this->structure ) )->register_hooks();
 		}
 	}
@@ -242,6 +247,7 @@ final class Plugin {
 		( new QuestionBankController( $this->bank ) )->register_routes();
 		( new NounPicturesController() )->register_routes();
 		( new AudioClipsController() )->register_routes();
+		( new HelpLanguageController() )->register_routes();
 	}
 
 	/**

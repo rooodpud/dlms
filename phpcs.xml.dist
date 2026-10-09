@@ -60,4 +60,16 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<exclude-pattern>/tests/*</exclude-pattern>
 	</rule>
+
+	<!-- Help language helpers (src/functions.php) return escaped HTML. -->
+	<rule ref="WordPress.Security.EscapeOutput">
+		<properties>
+			<property name="customAutoEscapedFunctions" type="array">
+				<element value="dlms_t"/>
+				<element value="dlms_attr"/>
+				<element value="dlms_title"/>
+				<element value="dlms_instruction"/>
+			</property>
+		</properties>
+	</rule>
 </ruleset>

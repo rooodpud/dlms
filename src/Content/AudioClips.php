@@ -220,11 +220,15 @@ final class AudioClips {
 		}
 		Assets::enqueue_audio();
 
-		$label = '' !== $args['label'] ? $args['label'] : sprintf(
-			/* translators: %s: German text. */
-			__( 'Listen: %s', 'deutschlms' ),
-			$source['text']
-		);
+		// Labels follow the help language (HelpLanguage); a given label is used as it is.
+		$label = '' !== $args['label']
+			? dlms_attr( 'aria-label', $args['label'] )
+			: dlms_attr(
+				'aria-label',
+				/* translators: %s: German text. */
+				__( 'Listen: %s', 'deutschlms' ),
+				$source['text']
+			);
 		$data = '' !== $source['src']
 			? ' data-dlms-src="' . esc_url( $source['src'] ) . '"'
 			: '';
@@ -236,13 +240,29 @@ final class AudioClips {
 			$data .= ' data-dlms-voice="' . $voice . '"';
 		}
 		return sprintf(
-			'<button type="button" class="dlms-play%1$s"%2$s aria-label="%3$s" title="%4$s">%5$s</button>',
+			'<button type="button" class="dlms-play%1$s"%2$s %3$s %4$s>%5$s</button>',
 			'' !== $args['css_class'] ? ' ' . esc_attr( $args['css_class'] ) : '',
 			// Escaped above.
 			$data,
-			esc_attr( $label ),
-			esc_attr__( 'Listen', 'deutschlms' ),
+			$label,
+			dlms_attr( 'title', __( 'Listen', 'deutschlms' ) ),
 			self::icon()
+		);
+	}
+
+	/**
+	 * The "slow speech" switch, a check box: while it is ticked, recordings
+	 * and the browser's voice play slower (audio.js; the choice is
+	 * remembered in the browser).
+	 *
+	 * @return string Safe markup.
+	 */
+	public static function speed_button(): string {
+		Assets::enqueue_audio();
+		return sprintf(
+			'<button type="button" class="dlms-speed" aria-pressed="false" %1$s><span class="dlms-speed__box" aria-hidden="true"><svg class="dlms-speed__check" viewBox="0 0 16 16" focusable="false"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>%2$s</span></button>',
+			dlms_attr( 'title', __( 'Tick to hear the recordings and the voice more slowly', 'deutschlms' ) ),
+			dlms_t( __( 'Slow speech', 'deutschlms' ) )
 		);
 	}
 

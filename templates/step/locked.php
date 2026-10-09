@@ -28,11 +28,11 @@ $dlms_course = wp_strip_all_tags( $args['course_title'] );
 		<span class="dlms-lock-icon" aria-hidden="true"></span>
 		<?php
 		if ( 'locked' === $dlms_reason || 'drip' === $dlms_reason ) {
-			esc_html_e( 'Not unlocked yet', 'deutschlms' );
+			dlms_e( __( 'Not unlocked yet', 'deutschlms' ) );
 		} elseif ( in_array( $dlms_reason, array( 'not_logged_in', 'not_enrolled' ), true ) ) {
-			esc_html_e( 'This content is for enrolled students', 'deutschlms' );
+			dlms_e( __( 'This content is for enrolled students', 'deutschlms' ) );
 		} else {
-			esc_html_e( 'This content is not available', 'deutschlms' );
+			dlms_e( __( 'This content is not available', 'deutschlms' ) );
 		}
 		?>
 	</p>
@@ -40,41 +40,35 @@ $dlms_course = wp_strip_all_tags( $args['course_title'] );
 	<?php if ( 'drip' === $dlms_reason && '' !== $args['available_on'] ) : ?>
 		<p>
 			<?php
-			echo esc_html(
-				sprintf(
-					/* translators: %s: date. */
-					__( 'This lesson opens on %s. Come back then!', 'deutschlms' ),
-					$args['available_on']
-				)
+			dlms_e(
+				/* translators: %s: date. */
+				__( 'This lesson opens on %s. Come back then!', 'deutschlms' ),
+				$args['available_on']
 			);
 			?>
 		</p>
 	<?php elseif ( 'locked' === $dlms_reason && '' !== $args['blocking_title'] ) : ?>
 		<p>
-			<?php esc_html_e( 'This course unlocks its lessons in order. Please finish this step first:', 'deutschlms' ); ?>
-			<a href="<?php echo esc_url( $args['blocking_url'] ); ?>"><?php echo esc_html( $args['blocking_title'] ); ?></a>
+			<?php dlms_e( __( 'This course unlocks its lessons in order. Please finish this step first:', 'deutschlms' ) ); ?>
+			<a href="<?php echo esc_url( $args['blocking_url'] ); ?>"><?php echo dlms_title( (int) ( $args['blocking_id'] ?? 0 ), $args['blocking_title'] ); ?></a>
 		</p>
 	<?php elseif ( 'not_logged_in' === $dlms_reason && '' !== $dlms_course ) : ?>
 		<p>
 			<?php
-			echo esc_html(
-				sprintf(
-					/* translators: %s: course title. */
-					__( 'Log in and enroll in “%s” to continue.', 'deutschlms' ),
-					$dlms_course
-				)
+			dlms_e(
+				/* translators: %s: course title. */
+				__( 'Log in and enroll in “%s” to continue.', 'deutschlms' ),
+				$dlms_course
 			);
 			?>
 		</p>
 	<?php elseif ( 'not_enrolled' === $dlms_reason && '' !== $dlms_course ) : ?>
 		<p>
 			<?php
-			echo esc_html(
-				sprintf(
-					/* translators: %s: course title. */
-					__( 'Enroll in “%s” to open this lesson.', 'deutschlms' ),
-					$dlms_course
-				)
+			dlms_e(
+				/* translators: %s: course title. */
+				__( 'Enroll in “%s” to open this lesson.', 'deutschlms' ),
+				$dlms_course
 			);
 			?>
 		</p>
@@ -84,7 +78,7 @@ $dlms_course = wp_strip_all_tags( $args['course_title'] );
 		<p class="dlms-locked__back">
 			<a class="dlms-link" href="<?php echo esc_url( $args['course_url'] ); ?>">
 				<span class="dlms-arrow dlms-arrow--back" aria-hidden="true"></span>
-				<?php esc_html_e( 'Go to the course overview', 'deutschlms' ); ?>
+				<?php dlms_e( __( 'Go to the course overview', 'deutschlms' ) ); ?>
 			</a>
 		</p>
 	<?php endif; ?>

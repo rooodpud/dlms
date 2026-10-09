@@ -90,7 +90,7 @@ final class AudioTest extends TestCase {
 		$this->assertStringContainsString( 'class="dlms dlms-say"', $html );
 		$this->assertStringContainsString( 'data-dlms-say="Guten Morgen, Housekeeping!"', $html );
 		$this->assertStringNotContainsString( 'data-dlms-src', $html );
-		$this->assertStringContainsString( '<span class="dlms-say__text" lang="de">Guten Morgen, <strong>Housekeeping</strong>!</span>', $html );
+		$this->assertStringContainsString( '<span class="dlms-say__text" lang="de" translate="no">Guten Morgen, <strong>Housekeeping</strong>!</span>', $html );
 		$this->assertTrue( wp_script_is( 'dlms-audio', 'enqueued' ), 'The play script loads, also for visitors.' );
 
 		AudioClips::save( 'Guten Morgen, Housekeeping', $this->audio_file() );
@@ -130,7 +130,7 @@ final class AudioTest extends TestCase {
 		$this->assertSame( 1, substr_count( $html, 'class="dlms-play-all"' ) );
 		$this->assertSame( 3, substr_count( $html, '<li class="dlms-dialog__line' ) );
 		$this->assertStringContainsString( '<li class="dlms-dialog__line dlms-dialog__line--male"><button type="button" class="dlms-play" data-dlms-say="Guten Morgen, Amina!" data-dlms-voice="male"', $html );
-		$this->assertStringContainsString( '<strong class="dlms-dialog__speaker">Marco:</strong> <span class="dlms-say__text" lang="de">Guten Morgen, Amina!</span>', $html );
+		$this->assertStringContainsString( '<strong class="dlms-dialog__speaker">Marco:</strong> <span class="dlms-say__text" lang="de" translate="no">Guten Morgen, Amina!</span>', $html );
 		$this->assertStringContainsString( 'data-dlms-say="Danke, der Gast!" data-dlms-voice="female"', $html );
 		$this->assertStringContainsString( 'dlms-article--der', $html, 'Inline nouns work in a line.' );
 		$this->assertStringContainsString( '<li class="dlms-dialog__line"><button type="button" class="dlms-play" data-dlms-say="Alles klar."', $html, 'A line without a speaker.' );

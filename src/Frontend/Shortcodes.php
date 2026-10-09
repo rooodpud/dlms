@@ -58,7 +58,46 @@ defined( 'ABSPATH' ) || exit;
  * [/dlms_dialog]
  *
  * A button plays the text's recording from the audio library (Courses →
- * Audio); without one, the browser reads the text with a German voice.
+ * Audio); without one, the browser reads the text with a German voice. A
+ * dialogue line first looks for the speaker's own recording, saved under
+ * "Name: text" (e.g. "Joel: Guten Abend!").
+ *
+ * Meanings, word cards and flashcards:
+ *
+ * [dlms_noun der Tisch en="table" tl="mesa"]   A noun card with its meanings
+ *                                            (en, tl, ceb, hi: a line each).
+ * [dlms_word Guten Morgen en="Good morning" tl="Magandang umaga"]
+ *                                            A card for any word or phrase
+ *                                            (verbs, numbers, greetings …),
+ *                                            picture as for nouns; say="…"
+ *                                            speaks another text (21 →
+ *                                            einundzwanzig).
+ * [dlms_flashcards] [dlms_noun …] [dlms_word …] … [/dlms_flashcards]
+ *                                            A flashcard deck: one card at a
+ *                                            time, flip, next, back, shuffle;
+ *                                            front="german" shows the German
+ *                                            side first. A grid without JS.
+ * [dlms_speed]                               The "slow" switch: recordings and
+ *                                            the browser's voice play slower.
+ *                                            Dialogues and decks have it too.
+ *
+ * Texts for the help language switch (courses with help languages, see
+ * HelpLanguage); without help languages German, or everything:
+ *
+ * [dlms_t de="Hören und nachsprechen" en="Listen and repeat" tl="Makinig at ulitin"]
+ *                                            A short text in the learner's
+ *                                            language (headings, labels).
+ * [dlms_lang en]English <strong>help</strong>[/dlms_lang]
+ *                                            Content shown only in these
+ *                                            languages ([dlms_lang en de] =
+ *                                            English and German); inline
+ *                                            HTML and shortcodes allowed;
+ *                                            block="yes" for a <div>.
+ * [dlms_flashcards title="Lernkarten" title_en="Flashcards"]
+ *                                            Deck titles in every language.
+ *
+ * German learning texts (cards, sentences, dialogues) carry translate="no",
+ * so browser translation (e.g. Google Translate) leaves them German.
  */
 final class Shortcodes {
 
@@ -66,6 +105,16 @@ final class Shortcodes {
 	 * Shortcodes that lay out the course UI themselves (see ContentGate).
 	 */
 	public const LAYOUT = array( 'course_outline', 'progress_bar', 'enroll_button', 'mark_complete', 'course_grid', 'student_dashboard' );
+
+	/**
+	 * Meaning lines on cards: attribute => lang code, in the order shown.
+	 */
+	public const MEANINGS = array(
+		'en'  => 'en',
+		'tl'  => 'tl',
+		'ceb' => 'ceb',
+		'hi'  => 'hi',
+	);
 
 	/**
 	 * Renderer.
@@ -105,6 +154,11 @@ final class Shortcodes {
 		add_shortcode( 'dlms_article_legend', array( $this, 'article_legend' ) );
 		add_shortcode( 'dlms_say', array( $this, 'say' ) );
 		add_shortcode( 'dlms_dialog', array( $this, 'dialog' ) );
+		add_shortcode( 'dlms_word', array( $this, 'word' ) );
+		add_shortcode( 'dlms_flashcards', array( $this, 'flashcards' ) );
+		add_shortcode( 'dlms_t', array( $this, 'text' ) );
+		add_shortcode( 'dlms_lang', array( $this, 'lang' ) );
+		add_shortcode( 'dlms_speed', array( $this, 'speed' ) );
 	}
 
 	/**
@@ -222,7 +276,7 @@ final class Shortcodes {
 				'as'      => '',
 				'style'   => 'card',
 				'audio'   => 'yes',
-			),
+			) + array_fill_keys( array_keys( self::MEANINGS ), '' ),
 			$atts,
 			'dlms_noun'
 		);
@@ -237,7 +291,7 @@ final class Shortcodes {
 
 		if ( 'inline' === $args['style'] ) {
 			return sprintf(
-				'<span class="dlms dlms-noun dlms-article--%1$s"><strong>%2$s</strong> %3$s</span>',
+				'<span class="dlms dlms-noun dlms-article--%1$s" lang="de" translate="no"><strong>%2$s</strong> %3$s</span>',
 				esc_attr( $article ),
 				esc_html( $shown ),
 				esc_html( $word )
@@ -247,15 +301,208 @@ final class Shortcodes {
 		$picture = null === $args['picture'] ? NounPictures::key_for( $word ) : NounPictures::sanitize_ref( (string) $args['picture'] );
 		$button  = $this->flag( $args['audio'] ) ? AudioClips::button( $article . ' ' . $word, 0, array( 'css_class' => 'dlms-noun-card__play' ) ) : '';
 		return sprintf(
-			'<span class="dlms-noun-card dlms-article--%1$s%5$s" role="listitem">%2$s<span class="dlms-noun-card__text"><strong class="dlms-noun-card__article">%3$s</strong> <span class="dlms-noun-card__word">%4$s</span></span>%6$s</span>',
+			'<span class="dlms-card dlms-noun-card dlms-article--%1$s%5$s" role="listitem">%2$s<span class="dlms-card__text dlms-noun-card__text" lang="de" translate="no"><strong class="dlms-noun-card__article">%3$s</strong> <span class="dlms-noun-card__word">%4$s</span></span>%7$s%6$s</span>',
 			esc_attr( $article ),
 			NounPictures::render( $picture, 'dlms-noun-picture dlms-noun-card__picture' ),
 			esc_html( $shown ),
 			esc_html( $word ),
 			'' !== $button ? ' has-audio' : '',
 			// Safe markup from AudioClips::button().
-			$button
+			$button,
+			// Escaped in meanings().
+			$this->meanings( $args )
 		);
+	}
+
+	/**
+	 * [dlms_word]: a card for any German word or phrase, without an article
+	 * colour: picture, the word, its meanings and a play button.
+	 *
+	 * @param array|string $atts Attributes (positional: the word, may be
+	 *                           several words): word, picture, say, audio,
+	 *                           en, tl, ceb, hi.
+	 * @return string
+	 */
+	public function word( $atts ): string {
+		$atts       = is_array( $atts ) ? $atts : array();
+		$positional = array();
+		foreach ( $atts as $key => $value ) {
+			if ( is_int( $key ) ) {
+				$positional[] = (string) $value;
+			}
+		}
+		$args = shortcode_atts(
+			array(
+				'word'    => implode( ' ', $positional ),
+				'picture' => null,
+				'say'     => '',
+				'audio'   => 'yes',
+			) + array_fill_keys( array_keys( self::MEANINGS ), '' ),
+			$atts,
+			'dlms_word'
+		);
+		$word = trim( (string) $args['word'] );
+		if ( '' === $word ) {
+			return '';
+		}
+		Assets::enqueue();
+		$picture = null === $args['picture'] ? NounPictures::key_for( $word ) : NounPictures::sanitize_ref( (string) $args['picture'] );
+		$say     = trim( (string) $args['say'] );
+		$say     = '' !== $say ? $say : $word;
+		$button  = $this->flag( $args['audio'] ) ? AudioClips::button( $say, 0, array( 'css_class' => 'dlms-noun-card__play' ) ) : '';
+		return sprintf(
+			'<span class="dlms-card dlms-word-card%3$s" role="listitem">%1$s<span class="dlms-card__text dlms-word-card__text" lang="de" translate="no">%2$s</span>%5$s%4$s</span>',
+			NounPictures::render( $picture, 'dlms-noun-picture dlms-noun-card__picture' ),
+			esc_html( $word ),
+			'' !== $button ? ' has-audio' : '',
+			// Safe markup from AudioClips::button().
+			$button,
+			// Escaped in meanings().
+			$this->meanings( $args )
+		);
+	}
+
+	/**
+	 * [dlms_flashcards]: the cards inside as a deck, one at a time, with
+	 * flip, next, back and shuffle (flashcards.js). A grid without JavaScript.
+	 *
+	 * @param array|string $atts    Attributes: front (picture|german), title,
+	 *                              title_en, title_tl … (title in a help language).
+	 * @param string|null  $content [dlms_noun] and [dlms_word] shortcodes.
+	 * @return string
+	 */
+	public function flashcards( $atts, $content = null ): string {
+		$args = shortcode_atts(
+			array(
+				'front' => 'picture',
+				'title' => '',
+			),
+			$atts,
+			'dlms_flashcards'
+		);
+		// Drop the line breaks and paragraphs wpautop() put between the cards.
+		$content = (string) preg_replace( '#<br\s*/?>|</?p>#i', '', (string) $content );
+		$cards   = trim( do_shortcode( $content ) );
+		if ( '' === $cards ) {
+			return '';
+		}
+		Assets::enqueue();
+		Assets::enqueue_flashcards();
+		$title  = trim( (string) $args['title'] );
+		$titles = array();
+		if ( '' !== $title ) {
+			$titles = array( HelpLanguage::GERMAN => $title ) + $this->translations( $atts, 'title_' );
+		}
+		return sprintf(
+			'<div class="dlms dlms-flashcards" data-front="%1$s"><div class="dlms-flashcards__head">%2$s%4$s</div><div class="dlms-flashcards__cards dlms-nouns" role="list">%3$s</div></div>',
+			'german' === $args['front'] ? 'german' : 'picture',
+			'<p class="dlms-flashcards__title"><strong>' . ( $titles ? HelpLanguage::texts( $titles ) : dlms_t( __( 'Flashcards', 'deutschlms' ) ) ) . '</strong></p>',
+			// Built by the card shortcodes from escaped parts.
+			$cards,
+			AudioClips::speed_button()
+		);
+	}
+
+	/**
+	 * [dlms_t de="…" en="…" tl="…"]: a short text in the learner's help
+	 * language (German without help languages).
+	 *
+	 * @param array|string $atts Attributes: de and the help languages' codes.
+	 * @return string
+	 */
+	public function text( $atts ): string {
+		$atts  = is_array( $atts ) ? $atts : array();
+		$texts = array( HelpLanguage::GERMAN => trim( (string) ( $atts[ HelpLanguage::GERMAN ] ?? '' ) ) ) + $this->translations( $atts, '' );
+		return HelpLanguage::texts( $texts );
+	}
+
+	/**
+	 * [dlms_lang en tl]…[/dlms_lang]: content shown only in these help
+	 * languages. Without help languages on the page it is always shown.
+	 *
+	 * @param array|string $atts    Language codes (positional or languages="en tl"); block="yes" for a div.
+	 * @param string|null  $content Content (inline HTML, shortcodes).
+	 * @return string
+	 */
+	public function lang( $atts, $content = null ): string {
+		$atts  = is_array( $atts ) ? $atts : array();
+		$block = $this->flag( $atts['block'] ?? 'no' );
+		$codes = array();
+		foreach ( $atts as $key => $value ) {
+			if ( is_int( $key ) ) {
+				$codes[] = (string) $value;
+			} elseif ( 'languages' === $key ) {
+				$codes = array_merge( $codes, preg_split( '/[\s,]+/', (string) $value, -1, PREG_SPLIT_NO_EMPTY ) );
+			}
+		}
+		$known = array_keys( HelpLanguage::languages() );
+		// In the author's order: the first one is the content's language.
+		$codes = array_values( array_unique( array_intersect( array_map( 'strtolower', $codes ), $known ) ) );
+		$html  = do_shortcode( (string) $content );
+		if ( ! $block ) {
+			// Drop the paragraphs wpautop() may wrap around inline content.
+			$html = (string) preg_replace( '#^\s*</p>|<p>\s*$#i', '', $html );
+		}
+		if ( ! $codes || ! HelpLanguage::is_active() ) {
+			return $html;
+		}
+		return sprintf(
+			'<%1$s class="dlms-l" data-dlms-l="%2$s" lang="%3$s">%4$s</%1$s>',
+			$block ? 'div' : 'span',
+			esc_attr( implode( ' ', $codes ) ),
+			esc_attr( $codes[0] ),
+			// Post content, filtered like the rest of the post.
+			$html
+		);
+	}
+
+	/**
+	 * Translations from shortcode attributes: help language code => text, for
+	 * attributes named <prefix><code> (title_en, title_tl; or en, tl).
+	 *
+	 * @param mixed  $atts   Attributes.
+	 * @param string $prefix Attribute prefix.
+	 * @return array<string, string>
+	 */
+	private function translations( $atts, string $prefix ): array {
+		$texts = array();
+		if ( ! is_array( $atts ) ) {
+			return $texts;
+		}
+		foreach ( HelpLanguage::translation_codes() as $code ) {
+			$value = trim( (string) ( $atts[ $prefix . $code ] ?? '' ) );
+			if ( '' !== $value ) {
+				$texts[ $code ] = $value;
+			}
+		}
+		return $texts;
+	}
+
+	/**
+	 * [dlms_speed]: the switch for slower playback.
+	 *
+	 * @return string
+	 */
+	public function speed(): string {
+		Assets::enqueue();
+		return '<span class="dlms dlms-speed-bar">' . AudioClips::speed_button() . '</span>';
+	}
+
+	/**
+	 * Meaning lines of a card ('' when there are none).
+	 *
+	 * @param array $args Shortcode attributes (en, tl, ceb, hi).
+	 * @return string
+	 */
+	private function meanings( array $args ): string {
+		$lines = '';
+		foreach ( self::MEANINGS as $attribute => $lang ) {
+			$text = trim( (string) ( $args[ $attribute ] ?? '' ) );
+			if ( '' !== $text ) {
+				$lines .= sprintf( '<span class="dlms-card__meaning dlms-card__meaning--%1$s" lang="%1$s">%2$s</span>', esc_attr( $lang ), esc_html( $text ) );
+			}
+		}
+		return '' === $lines ? '' : '<span class="dlms-card__meanings">' . $lines . '</span>';
 	}
 
 	/**
@@ -286,16 +533,17 @@ final class Shortcodes {
 	public function article_legend(): string {
 		Assets::enqueue();
 		$genders = array(
-			'der' => __( 'masculine', 'deutschlms' ),
-			'die' => __( 'feminine', 'deutschlms' ),
-			'das' => __( 'neuter', 'deutschlms' ),
+			'der' => dlms_t( __( 'masculine', 'deutschlms' ) ),
+			'die' => dlms_t( __( 'feminine', 'deutschlms' ) ),
+			'das' => dlms_t( __( 'neuter', 'deutschlms' ) ),
 		);
 		$items   = '';
 		foreach ( $genders as $article => $gender ) {
 			$items .= sprintf(
-				'<span class="dlms-legend__item dlms-article--%1$s" role="listitem"><strong>%1$s</strong> <span>%2$s</span></span>',
+				'<span class="dlms-legend__item dlms-article--%1$s" role="listitem"><strong lang="de" translate="no">%1$s</strong> <span>%2$s</span></span>',
 				esc_attr( $article ),
-				esc_html( $gender )
+				// Escaped by dlms_t().
+				$gender
 			);
 		}
 		return '<span class="dlms dlms-legend" role="list">' . $items . '</span>';
@@ -340,7 +588,7 @@ final class Shortcodes {
 		if ( ! $show ) {
 			return '<span class="dlms dlms-say dlms-say--button">' . $button . '</span>';
 		}
-		return '<span class="dlms dlms-say">' . $button . '<span class="dlms-say__text" lang="de">' . wp_kses_post( $html ) . '</span></span>';
+		return '<span class="dlms dlms-say">' . $button . '<span class="dlms-say__text" lang="de" translate="no">' . wp_kses_post( $html ) . '</span></span>';
 	}
 
 	/**
@@ -361,11 +609,14 @@ final class Shortcodes {
 			if ( '' === $text ) {
 				continue;
 			}
-			$voice  = $voices[ mb_strtolower( $line['speaker'] ) ] ?? '';
+			$voice = $voices[ mb_strtolower( $line['speaker'] ) ] ?? '';
+			// The speaker's own recording ("Joel: Guten Abend!") comes first, so
+			// a line that is also a word card or a phrase keeps its voice.
+			$media  = '' !== $line['speaker'] ? AudioClips::media_for( $line['speaker'] . ': ' . $text ) : 0;
 			$items .= sprintf(
-				'<li class="dlms-dialog__line%1$s">%2$s<span class="dlms-dialog__text">%3$s<span class="dlms-say__text" lang="de">%4$s</span></span></li>',
+				'<li class="dlms-dialog__line%1$s">%2$s<span class="dlms-dialog__text">%3$s<span class="dlms-say__text" lang="de" translate="no">%4$s</span></span></li>',
 				'' !== $voice ? ' dlms-dialog__line--' . $voice : '',
-				AudioClips::button( $text, 0, array( 'voice' => $voice ) ),
+				AudioClips::button( $text, $media, array( 'voice' => $voice ) ),
 				'' !== $line['speaker'] ? '<strong class="dlms-dialog__speaker">' . esc_html( $line['speaker'] ) . ':</strong> ' : '',
 				wp_kses_post( $html )
 			);
@@ -374,11 +625,12 @@ final class Shortcodes {
 			return '';
 		}
 		return sprintf(
-			'<div class="dlms dlms-dialog"><div class="dlms-dialog__bar"><button type="button" class="dlms-play-all" aria-pressed="false">%1$s<span>%2$s</span></button></div><ul class="dlms-dialog__lines">%3$s</ul></div>',
+			'<div class="dlms dlms-dialog"><div class="dlms-dialog__bar"><button type="button" class="dlms-play-all" aria-pressed="false">%1$s<span>%2$s</span></button>%4$s</div><ul class="dlms-dialog__lines">%3$s</ul></div>',
 			AudioClips::icon(),
-			esc_html__( 'Play the whole dialogue', 'deutschlms' ),
+			dlms_t( __( 'Play the whole dialogue', 'deutschlms' ) ),
 			// Built above from escaped parts.
-			$items
+			$items,
+			AudioClips::speed_button()
 		);
 	}
 

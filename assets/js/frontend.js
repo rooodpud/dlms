@@ -2,7 +2,7 @@
  * DeutschLMS front end: submits the enroll, mark-complete and quiz forms
  * through the REST API (dlms/v1) instead of a full admin-post.php round trip.
  * Without JavaScript, or if this script fails to load, the forms still work as
- * plain POST forms.
+ * plain POST forms. Texts follow the help language switch (help-language.js).
  */
 ( function () {
 	'use strict';
@@ -54,8 +54,66 @@
 		return answers;
 	}
 
-	function format( text, value ) {
-		return String( text ).replace( '%s', value );
+	const help = window.dlmsHelp;
+
+	function format( text, args ) {
+		let next = 0;
+		return String( text || '' ).replace(
+			/%(?:(\d+)\$)?[sd]/g,
+			function ( match, position ) {
+				const value = position ? args[ position - 1 ] : args[ next++ ];
+				return undefined === value ? '' : String( value );
+			}
+		);
+	}
+
+	/**
+	 * Puts a text into an element, in every help language of the course.
+	 *
+	 * @param {Element} element Element.
+	 * @param {string}  key     Key in config.i18n.
+	 * @param {Array}   args    Values for the placeholders.
+	 */
+	function say( element, key, args ) {
+		if ( help ) {
+			help.put( element, config, key, args || [] );
+		} else {
+			element.textContent = format( config.i18n[ key ], args || [] );
+		}
+	}
+
+	/**
+	 * Puts an exercise instruction into an element: German, and under it the
+	 * translation in the current help language.
+	 *
+	 * @param {Element} element Element.
+	 * @param {string}  key     Key in config.i18n.
+	 */
+	function instruct( element, key ) {
+		if ( help && help.instruction ) {
+			help.instruction( element, config, key, [] );
+		} else {
+			say( element, key );
+		}
+	}
+
+	/**
+	 * Sets an attribute, kept in the current help language.
+	 *
+	 * @param {Element} element Element.
+	 * @param {string}  name    Attribute.
+	 * @param {string}  key     Key in config.i18n.
+	 * @param {Array}   args    Values for the placeholders.
+	 */
+	function labelled( element, name, key, args ) {
+		if ( help ) {
+			help.attr( element, name, config, key, args || [] );
+		} else {
+			element.setAttribute(
+				name,
+				format( config.i18n[ key ], args || [] )
+			);
+		}
 	}
 
 	/**
@@ -189,7 +247,7 @@
 
 		const hint = fieldset.querySelector( '[data-dlms-order-hint]' );
 		if ( hint ) {
-			hint.textContent = config.i18n.orderHintPick;
+			instruct( hint, 'orderHintPick' );
 		}
 		fieldset.addEventListener( 'change', function ( event ) {
 			if ( 'SELECT' === event.target.tagName ) {
@@ -226,11 +284,11 @@
 		const answer = doc.createElement( 'div' );
 		answer.className = 'dlms-order__answer';
 		answer.setAttribute( 'role', 'group' );
-		answer.setAttribute( 'aria-label', config.i18n.orderSentence );
+		labelled( answer, 'aria-label', 'orderSentence' );
 		const bank = doc.createElement( 'div' );
 		bank.className = 'dlms-order__bank';
 		bank.setAttribute( 'role', 'group' );
-		bank.setAttribute( 'aria-label', config.i18n.orderWords );
+		labelled( bank, 'aria-label', 'orderWords' );
 		const live = doc.createElement( 'p' );
 		live.className = 'dlms-sr';
 		live.setAttribute( 'aria-live', 'polite' );
@@ -291,12 +349,11 @@
 			button.textContent = shown( id, inSentence );
 			button.disabled = disabled;
 			button.setAttribute( 'data-id', id );
-			button.setAttribute(
+			labelled(
+				button,
 				'aria-label',
-				format(
-					inSentence ? config.i18n.orderRemove : config.i18n.orderAdd,
-					textOf( id )
-				)
+				inSentence ? 'orderRemove' : 'orderAdd',
+				[ textOf( id ) ]
 			);
 			button.addEventListener( 'click', function () {
 				if ( suppressClick ) {
@@ -308,10 +365,7 @@
 				if ( inSentence ) {
 					index = placed.indexOf( id );
 					placed.splice( index, 1 );
-					live.textContent = format(
-						config.i18n.orderRemoved,
-						textOf( id )
-					);
+					say( live, 'orderRemoved', [ textOf( id ) ] );
 					focusIn = placed.length ? answer : bank;
 				} else {
 					index = blocks
@@ -323,10 +377,7 @@
 						} )
 						.indexOf( id );
 					placed.push( id );
-					live.textContent = format(
-						config.i18n.orderAdded,
-						textOf( id )
-					);
+					say( live, 'orderAdded', [ textOf( id ) ] );
 					focusIn = placed.length < blocks.length ? bank : answer;
 					if ( focusIn === answer ) {
 						index = placed.length - 1;
@@ -364,7 +415,7 @@
 			if ( ! placed.length ) {
 				const empty = doc.createElement( 'span' );
 				empty.className = 'dlms-order__empty';
-				empty.textContent = config.i18n.orderEmpty;
+				say( empty, 'orderEmpty' );
 				answer.appendChild( empty );
 			}
 			placed.forEach( function ( id ) {
@@ -520,17 +571,12 @@
 					placed.splice( from, 1 );
 				}
 				placed.splice( index, 0, current.id );
-				live.textContent = config.i18n.orderMoved
-					.replace( '%1$s', textOf( current.id ) )
-					.replace( '%2$d', String( index + 1 ) );
+				say( live, 'orderMoved', [ textOf( current.id ), index + 1 ] );
 				update();
 				focusTile( answer, index );
 			} else if ( area === bank && current.fromSentence ) {
 				placed.splice( placed.indexOf( current.id ), 1 );
-				live.textContent = format(
-					config.i18n.orderRemoved,
-					textOf( current.id )
-				);
+				say( live, 'orderRemoved', [ textOf( current.id ) ] );
 				update();
 				focusTile(
 					bank,
@@ -553,7 +599,7 @@
 
 		const hint = fieldset.querySelector( '[data-dlms-order-hint]' );
 		if ( hint ) {
-			hint.textContent = config.i18n.orderHint;
+			instruct( hint, 'orderHint' );
 		}
 		slots.hidden = true;
 		slots.parentNode.insertBefore( answer, slots );
@@ -612,7 +658,7 @@
 			}
 			if ( left <= 60 && left > 0 && ! warned ) {
 				warned = true;
-				announce.textContent = config.i18n.timeOneMinute;
+				say( announce, 'timeOneMinute' );
 			}
 		}
 
@@ -632,7 +678,7 @@
 			}
 			submitting = true;
 			window.clearInterval( autoSubmit );
-			countdown.textContent = config.i18n.working;
+			say( countdown, 'working' );
 			const button = dialog.querySelector( '[type="submit"]' );
 			if ( form.requestSubmit ) {
 				form.requestSubmit( button );
@@ -647,8 +693,7 @@
 			show( 0 );
 			lock();
 			let left = graceSeconds;
-			const template = countdown.getAttribute( 'data-template' ) || '%d';
-			countdown.textContent = template.replace( '%d', left );
+			say( countdown, 'timeUpIn', [ left ] );
 			if ( dialog.showModal ) {
 				dialog.showModal();
 			} else {
@@ -660,7 +705,7 @@
 					submit();
 					return;
 				}
-				countdown.textContent = template.replace( '%d', left );
+				say( countdown, 'timeUpIn', [ left ] );
 			}, 1000 );
 		}
 
@@ -684,7 +729,7 @@
 			window.clearInterval( ticker );
 			window.clearInterval( autoSubmit );
 			if ( timeUp ) {
-				countdown.textContent = config.i18n.working;
+				say( countdown, 'working' );
 				dialog
 					.querySelectorAll( '[type="submit"]' )
 					.forEach( function ( button ) {
@@ -695,7 +740,11 @@
 		form.addEventListener( 'dlms:submit-failed', function ( event ) {
 			submitting = false;
 			if ( timeUp ) {
-				countdown.textContent = event.detail || config.i18n.error;
+				if ( event.detail ) {
+					countdown.textContent = event.detail;
+				} else {
+					say( countdown, 'error' );
+				}
 				dialog
 					.querySelectorAll( '[type="submit"]' )
 					.forEach( function ( button ) {
@@ -798,7 +847,7 @@
 			button.setAttribute( 'aria-busy', 'true' );
 		}
 		if ( status ) {
-			status.textContent = config.i18n.working;
+			say( status, 'working' );
 		}
 
 		const request = {
@@ -819,9 +868,7 @@
 			.then( function ( response ) {
 				return response.json().then( function ( data ) {
 					if ( ! response.ok ) {
-						throw new Error(
-							( data && data.message ) || config.i18n.error
-						);
+						throw new Error( ( data && data.message ) || '' );
 					}
 					return data;
 				} );
@@ -834,14 +881,18 @@
 				}
 			} )
 			.catch( function ( error ) {
-				const message =
-					error && error.message ? error.message : config.i18n.error;
+				// The server's message, else "Something went wrong" in the help language.
+				const message = error && error.message ? error.message : '';
 				if ( button ) {
 					button.disabled = false;
 					button.removeAttribute( 'aria-busy' );
 				}
 				if ( status ) {
-					status.textContent = message;
+					if ( message ) {
+						status.textContent = message;
+					} else {
+						say( status, 'error' );
+					}
 				}
 				form.dispatchEvent(
 					new window.CustomEvent( 'dlms:submit-failed', {

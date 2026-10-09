@@ -75,7 +75,7 @@ final class ContentGate {
 			if ( $this->should_append( $post ) ) {
 				$content .= $this->renderer->course_overview( $post->ID );
 			}
-			return $content;
+			return $this->page_top( $post ) . $content;
 		}
 
 		if ( ! PostTypes::is_step( $post ) ) {
@@ -85,8 +85,9 @@ final class ContentGate {
 		$result = $this->access->check( get_current_user_id(), $post->ID );
 		if ( ! $result->allowed ) {
 			// Replace, never append: protected content must not reach the page.
-			return $this->renderer->locked_message( $result, $post->ID );
+			return $this->page_top( $post ) . $this->renderer->locked_message( $result, $post->ID );
 		}
+		$content = $this->page_top( $post ) . $content;
 
 		// A quiz page always gets its form: without it the quiz can't be taken.
 		$is_quiz = PostTypes::QUIZ === $post->post_type;
@@ -101,6 +102,20 @@ final class ContentGate {
 		}
 
 		return $content;
+	}
+
+	/**
+	 * Top of a course or step page in a course with help languages: the
+	 * title's translation (under the page heading) and the language switch.
+	 *
+	 * @param WP_Post $post Course or step.
+	 * @return string
+	 */
+	private function page_top( WP_Post $post ): string {
+		if ( ! $this->is_main_view( $post ) || ! HelpLanguage::is_active() ) {
+			return '';
+		}
+		return HelpLanguage::subtitle( $post->ID ) . HelpLanguage::switcher();
 	}
 
 	/**

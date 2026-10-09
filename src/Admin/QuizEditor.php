@@ -11,6 +11,7 @@ use DeutschLMS\Content\CourseStructure;
 use DeutschLMS\Content\Meta;
 use DeutschLMS\Content\PostTypes;
 use DeutschLMS\Content\StructureEditor;
+use DeutschLMS\Frontend\HelpLanguage;
 use DeutschLMS\Quiz\QuestionBank;
 use DeutschLMS\Quiz\Questions;
 use DeutschLMS\Quiz\QuizService;
@@ -114,14 +115,32 @@ final class QuizEditor {
 	public static function print_mount( string $mode, string $bank_url ): void {
 		$type = get_post_type_object( PostTypes::QUESTION );
 		printf(
-			'<div id="dlms-quiz-editor" class="dlms-quiz-editor" data-mode="%s" data-types="%s" data-terms="%s" data-bank-url="%s" data-can-create="%s"><p>%s</p></div><noscript><p>%s</p></noscript>',
+			'<div id="dlms-quiz-editor" class="dlms-quiz-editor" data-mode="%s" data-types="%s" data-terms="%s" data-bank-url="%s" data-can-create="%s" data-help-languages="%s"><p>%s</p></div><noscript><p>%s</p></noscript>',
 			esc_attr( $mode ),
 			esc_attr( (string) wp_json_encode( Questions::types() ) ),
 			esc_attr( (string) wp_json_encode( QuestionBank::term_options() ) ),
 			esc_url( $bank_url ),
 			$type && current_user_can( $type->cap->create_posts ) ? '1' : '0',
+			// Languages of question translations (the language switch, see HelpLanguage).
+			esc_attr( (string) wp_json_encode( self::help_languages() ) ),
 			esc_html__( 'Loading questions…', 'deutschlms' ),
 			esc_html__( 'The question editor needs JavaScript.', 'deutschlms' )
+		);
+	}
+
+	/**
+	 * Languages questions can be translated into: [ { code, name } ].
+	 *
+	 * @return array[]
+	 */
+	private static function help_languages(): array {
+		$languages = HelpLanguage::languages();
+		return array_map(
+			static fn( $code ) => array(
+				'code' => $code,
+				'name' => $languages[ $code ]['name'],
+			),
+			HelpLanguage::translation_codes()
 		);
 	}
 
@@ -246,9 +265,9 @@ final class QuizEditor {
 	 * The editor's script and styles (shared with the question screen).
 	 */
 	public static function enqueue_assets(): void {
-		wp_enqueue_style( self::SCRIPT, DLMS_URL . 'assets/admin/quiz-editor.css', array(), DLMS_VERSION );
+		wp_enqueue_style( self::SCRIPT, DLMS_URL . 'assets/admin/quiz-editor.css', array(), dlms_asset_version( 'assets/admin/quiz-editor.css' ) );
 		NounPicturesPage::enqueue_picker();
-		wp_enqueue_script( self::SCRIPT, DLMS_URL . 'assets/admin/quiz-editor.js', array( 'wp-i18n', 'wp-a11y', 'wp-data', 'wp-api-fetch', NounPicturesPage::SCRIPT ), DLMS_VERSION, true );
+		wp_enqueue_script( self::SCRIPT, DLMS_URL . 'assets/admin/quiz-editor.js', array( 'wp-i18n', 'wp-a11y', 'wp-data', 'wp-api-fetch', NounPicturesPage::SCRIPT ), dlms_asset_version( 'assets/admin/quiz-editor.js' ), true );
 		wp_set_script_translations( self::SCRIPT, 'deutschlms', DLMS_PATH . 'languages' );
 	}
 

@@ -18,11 +18,11 @@ defined( 'ABSPATH' ) || exit;
 
 $dlms_heading_id = wp_unique_id( 'dlms-topics-' );
 $dlms_heading    = 'dlms_topic' === $args['step_type']
-	? __( 'Quiz for this topic', 'deutschlms' )
-	: __( 'In this lesson', 'deutschlms' );
+	? dlms_t( __( 'Exercises for this topic', 'deutschlms' ) )
+	: dlms_t( __( 'In this lesson', 'deutschlms' ) );
 ?>
 <section class="dlms-topics" aria-labelledby="<?php echo esc_attr( $dlms_heading_id ); ?>">
-	<h2 class="dlms-topics__heading" id="<?php echo esc_attr( $dlms_heading_id ); ?>"><?php echo esc_html( $dlms_heading ); ?></h2>
+	<h2 class="dlms-topics__heading" id="<?php echo esc_attr( $dlms_heading_id ); ?>"><?php echo $dlms_heading; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped by dlms_t(). ?></h2>
 	<ol class="dlms-topics__list">
 		<?php foreach ( $args['topics'] as $dlms_topic ) : ?>
 			<li class="dlms-topics__item dlms-status--<?php echo esc_attr( $dlms_topic['status'] ); ?>">
