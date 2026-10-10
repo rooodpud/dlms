@@ -1,0 +1,93 @@
+/* Courses → Arrange courses */
+
+.dlms-arrange__list {
+	max-width: 52rem;
+	margin: 1.25rem 0;
+	padding: 0;
+	list-style: none;
+}
+
+.dlms-arrange__item {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin: 0 0 0.5rem;
+	padding: 0.5rem 0.75rem;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	background: #fff;
+}
+
+.dlms-arrange__item.ui-sortable-helper {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dlms-arrange__placeholder {
+	height: 3.5rem;
+	margin: 0 0 0.5rem;
+	border: 2px dashed #2271b1;
+	border-radius: 4px;
+	background: #f0f6fc;
+}
+
+.dlms-arrange__handle {
+	flex: none;
+	color: #787c82;
+	cursor: grab;
+}
+
+.dlms-arrange__item.ui-sortable-helper .dlms-arrange__handle {
+	cursor: grabbing;
+}
+
+.dlms-arrange__thumb {
+	display: flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	width: 64px;
+	height: 40px;
+	overflow: hidden;
+	border-radius: 3px;
+	background: #f0f0f1;
+}
+
+.dlms-arrange__thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.dlms-arrange__title {
+	flex: 1;
+	min-width: 0;
+	font-weight: 600;
+}
+
+.dlms-arrange__status {
+	display: inline-block;
+	margin-inline-start: 0.5em;
+	padding: 0.1em 0.6em;
+	border-radius: 999px;
+	background: #f0f0f1;
+	color: #50575e;
+	font-size: 12px;
+	font-weight: 400;
+}
+
+.dlms-arrange__level select {
+	min-width: 7rem;
+}
+
+.dlms-arrange__buttons {
+	display: flex;
+	flex: none;
+	gap: 0.25rem;
+}
+
+.dlms-arrange__buttons .button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 0.25rem;
+}

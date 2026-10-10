@@ -137,6 +137,12 @@ final class Meta {
 	public const HELP_DEFAULT = '_dlms_help_default';
 
 	/**
+	 * Course setting: CEFR level shown as the group heading in the course grid
+	 * ('A1' … 'C2'; empty = no level). See CourseOrder.
+	 */
+	public const LEVEL = '_dlms_level';
+
+	/**
 	 * Course, lesson, topic or quiz: translations of the title shown with the
 	 * language switch (language => text, e.g. [ 'en' => 'Words' ]).
 	 */

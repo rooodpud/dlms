@@ -7,6 +7,7 @@
 
 namespace DeutschLMS\Admin;
 
+use DeutschLMS\Content\CourseOrder;
 use DeutschLMS\Content\Meta;
 use DeutschLMS\Content\PostTypes;
 use DeutschLMS\Frontend\HelpLanguage;
@@ -54,6 +55,7 @@ final class CourseSettings {
 	 */
 	public function render( WP_Post $post ): void {
 		wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD );
+		$level      = CourseOrder::level_for( $post->ID );
 		$linear     = (bool) get_post_meta( $post->ID, Meta::LINEAR, true );
 		$cert       = (bool) get_post_meta( $post->ID, Meta::CERT_ENABLED, true );
 		$title      = (string) get_post_meta( $post->ID, Meta::CERT_TITLE, true );
@@ -72,6 +74,21 @@ final class CourseSettings {
 		</p>
 		<p class="description">
 			<?php esc_html_e( 'Students must finish each lesson, topic and quiz in order before the next one unlocks.', 'deutschlms' ); ?>
+		</p>
+
+		<hr />
+
+		<p>
+			<label for="dlms-course-level"><strong><?php esc_html_e( 'Level', 'deutschlms' ); ?></strong></label>
+			<select id="dlms-course-level" name="dlms_course_level" class="widefat">
+				<option value=""><?php esc_html_e( 'No level', 'deutschlms' ); ?></option>
+				<?php foreach ( CourseOrder::LEVELS as $dlms_level ) : ?>
+					<option value="<?php echo esc_attr( $dlms_level ); ?>" <?php selected( $level, $dlms_level ); ?>><?php echo esc_html( $dlms_level ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		</p>
+		<p class="description">
+			<?php esc_html_e( 'The heading the course appears under in the course grid with group_by="level". The order of the courses is set under Courses → Arrange courses.', 'deutschlms' ); ?>
 		</p>
 
 		<hr />
@@ -139,6 +156,13 @@ final class CourseSettings {
 		}
 
 		update_post_meta( $post_id, Meta::LINEAR, ! empty( $_POST['dlms_linear_progression'] ) );
+
+		$level = CourseOrder::sanitize_level( isset( $_POST['dlms_course_level'] ) ? sanitize_text_field( wp_unslash( $_POST['dlms_course_level'] ) ) : '' );
+		if ( '' === $level ) {
+			delete_post_meta( $post_id, Meta::LEVEL );
+		} else {
+			update_post_meta( $post_id, Meta::LEVEL, $level );
+		}
 
 		$languages = HelpLanguage::sanitize_codes( isset( $_POST['dlms_help_languages'] ) ? array_map( 'sanitize_key', (array) wp_unslash( $_POST['dlms_help_languages'] ) ) : array() );
 		update_post_meta( $post_id, Meta::HELP_LANGUAGES, $languages );

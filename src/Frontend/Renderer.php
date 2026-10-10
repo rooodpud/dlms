@@ -10,6 +10,7 @@ namespace DeutschLMS\Frontend;
 use DeutschLMS\Access\AccessControl;
 use DeutschLMS\Access\AccessResult;
 use DeutschLMS\Certificates\CertificateService;
+use DeutschLMS\Content\CourseOrder;
 use DeutschLMS\Content\CourseStructure;
 use DeutschLMS\Content\PostTypes;
 use DeutschLMS\Enrollment\EnrollmentRepository;
@@ -522,28 +523,49 @@ final class Renderer {
 	/**
 	 * Grid of published courses.
 	 *
-	 * @param array $args { columns: int, per_page: int, orderby: string, show_progress: bool }.
+	 * `orderby` 'menu_order' is the arrangement from Courses → Arrange courses
+	 * (courses without a position follow, by title). `ids` shows only those
+	 * courses, in that order. `group_by` 'level' puts a heading per level
+	 * (A1, A2 …) above its courses.
+	 *
+	 * @param array $args {
+	 *     columns: int, per_page: int, orderby: string (menu_order|title|date),
+	 *     order: string (ASC|DESC|'' = the natural order of orderby),
+	 *     ids: int[], group_by: string ('level'|''), show_progress: bool
+	 * }.
 	 * @return string
 	 */
 	public function course_grid( array $args ): string {
 		Assets::enqueue();
 
 		$columns  = max( 1, min( 4, (int) ( $args['columns'] ?? 3 ) ) );
-		$per_page = max( 1, min( 48, (int) ( $args['per_page'] ?? 12 ) ) );
-		$orderby  = in_array( $args['orderby'] ?? 'date', array( 'date', 'title', 'menu_order' ), true ) ? $args['orderby'] : 'date';
+		$per_page = max( 1, min( 48, (int) ( $args['per_page'] ?? 48 ) ) );
+		$orderby  = in_array( $args['orderby'] ?? 'menu_order', array( 'date', 'title', 'menu_order' ), true ) ? $args['orderby'] : 'menu_order';
+		$order    = strtoupper( (string) ( $args['order'] ?? '' ) );
+		$order    = in_array( $order, array( 'ASC', 'DESC' ), true ) ? $order : ( 'date' === $orderby ? 'DESC' : 'ASC' );
+		$ids      = array_values( array_filter( array_map( 'absint', (array) ( $args['ids'] ?? array() ) ) ) );
+		$group_by = 'level' === ( $args['group_by'] ?? '' ) ? 'level' : '';
 		$user_id  = get_current_user_id();
 
-		$query = new WP_Query(
-			array(
-				'post_type'           => PostTypes::COURSE,
-				'post_status'         => 'publish',
-				'posts_per_page'      => $per_page,
-				'orderby'             => $orderby,
-				'order'               => 'date' === $orderby ? 'DESC' : 'ASC',
-				'no_found_rows'       => true,
-				'ignore_sticky_posts' => true,
-			)
+		$query_args = array(
+			'post_type'           => PostTypes::COURSE,
+			'post_status'         => 'publish',
+			'posts_per_page'      => $per_page,
+			'no_found_rows'       => true,
+			'ignore_sticky_posts' => true,
 		);
+		if ( $ids ) {
+			$query_args['post__in'] = $ids;
+			$query_args['orderby']  = 'post__in';
+		} elseif ( 'menu_order' === $orderby ) {
+			$query_args['orderby'] = array(
+				'menu_order' => $order,
+				'title'      => 'ASC',
+			);
+		} else {
+			$query_args['orderby'] = array( $orderby => $order );
+		}
+		$query = new WP_Query( $query_args );
 
 		$courses = array();
 		foreach ( $query->posts as $course ) {
@@ -558,6 +580,7 @@ final class Renderer {
 				'lesson_count'   => count( $this->structure->get_lessons( $course->ID ) ),
 				'enrolled'       => $enrolled,
 				'percent'        => $summary ? $summary['percent'] : null,
+				'level'          => CourseOrder::level_for( $course->ID ),
 			);
 		}
 
@@ -565,9 +588,53 @@ final class Renderer {
 			'course/grid.php',
 			array(
 				'courses' => $courses,
+				'groups'  => $this->course_groups( $courses, $group_by ),
 				'columns' => $columns,
 			)
 		);
+	}
+
+	/**
+	 * The course grid's groups: one unlabelled group, or one per level.
+	 *
+	 * @param array[] $courses  Courses in display order.
+	 * @param string  $group_by 'level' or ''.
+	 * @return array<int, array{label: string, courses: array[]}>
+	 */
+	private function course_groups( array $courses, string $group_by ): array {
+		if ( ! $courses ) {
+			return array();
+		}
+		if ( 'level' !== $group_by ) {
+			return array(
+				array(
+					'label'   => '',
+					'courses' => $courses,
+				),
+			);
+		}
+
+		$groups = array();
+		$levels = CourseOrder::group_by_level( $courses );
+		foreach ( $levels as $group ) {
+			if ( '' !== $group['level'] ) {
+				/**
+				 * Filters a level group's heading in the course grid.
+				 *
+				 * @param string $label Heading, e.g. "A1".
+				 * @param string $level The level.
+				 */
+				$label = (string) apply_filters( 'dlms_course_level_label', $group['level'], $group['level'] );
+			} else {
+				// Courses without a level only get a heading next to leveled groups.
+				$label = count( $levels ) > 1 ? __( 'Other courses', 'deutschlms' ) : '';
+			}
+			$groups[] = array(
+				'label'   => $label,
+				'courses' => $group['courses'],
+			);
+		}
+		return $groups;
 	}
 
 	/**

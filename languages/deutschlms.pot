@@ -3127,3 +3127,57 @@ msgstr ""
 msgctxt "block keyword"
 msgid "account"
 msgstr ""
+
+#: src/Frontend/Renderer.php
+msgid "Other courses"
+msgstr ""
+
+#: src/Admin/CourseArrange.php
+msgid "Arrange courses"
+msgstr ""
+
+#: src/Admin/CourseArrange.php
+#. translators: 1: course title, 2: new position, 3: number of courses.
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr ""
+
+#: src/Admin/CourseArrange.php
+msgid "The order and levels are saved."
+msgstr ""
+
+#: src/Admin/CourseArrange.php
+msgid "Drag the courses into the order you want them to appear in on the Kurse page, or use the arrow buttons. Choose a level for every course: with grouping by level, the course grid shows a heading (A1, A2 …) above each group and keeps this order inside the group. Draft courses are listed too; the course grid shows published ones only."
+msgstr ""
+
+#: src/Admin/CourseArrange.php
+msgid "There are no courses yet."
+msgstr ""
+
+#: src/Admin/CourseArrange.php
+msgid "Level"
+msgstr ""
+
+#: src/Admin/CourseArrange.php
+msgid "No level"
+msgstr ""
+
+#: src/Admin/CourseArrange.php
+msgid "Move up"
+msgstr ""
+
+#: src/Admin/CourseArrange.php
+msgid "Move down"
+msgstr ""
+
+#: src/Admin/CourseArrange.php
+msgid "Save order and levels"
+msgstr ""
+
+#: src/Admin/CourseArrange.php
+#. translators: %s: shortcode.
+msgid "Show the courses on a page with %s. Without group_by the courses follow this order without headings."
+msgstr ""
+
+#: src/Admin/CourseSettings.php
+msgid "The heading the course appears under in the course grid with group_by=\"level\". The order of the courses is set under Courses → Arrange courses."
+msgstr ""

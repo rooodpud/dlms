@@ -3,6 +3,31 @@
 All notable changes to DeutschLMS. Newest first. Versions stay below 1.0
 while features are still being added (see the [README](README.md)).
 
+## 0.5.1 – 2026-10-10
+
+Arrange the course grid yourself, with A1 / A2 headings.
+
+**Added**
+- **Courses → Arrange courses:** a drag-and-drop screen (with arrow
+  buttons for the keyboard) for the order of the courses, and a level
+  (A1 … C2) per course. The order is saved as each course's `menu_order`,
+  the level as the `_dlms_level` meta; the level can also be chosen in the
+  course's **Course settings** box.
+- **`[dlms_course_grid]` attributes:** `group_by="level"` (a heading per
+  level; courses without a level follow under "Other courses"), `order`
+  (ASC/DESC) and `ids` (only these courses, in that order).
+- Filter `dlms_course_level_label` for the heading text.
+
+**Changed**
+- The course grid now defaults to the arrangement (`orderby="menu_order"`,
+  ties by title) instead of newest first, and shows up to 48 courses
+  (was 12) so none is cut off. `orderby="date"` still gives newest first.
+- `templates/course/grid.php` receives `groups`; older overrides that only
+  know `courses` still work.
+
+**Tests**
+- `CourseOrderTest`: order, levels, headings, `ids`, saving (202 tests pass).
+
 ## 0.5.0 – 2026-10-10
 
 Word cards, flashcards and a help language switch for beginners who can't

@@ -9,6 +9,7 @@ namespace DeutschLMS;
 
 use DeutschLMS\Access\AccessControl;
 use DeutschLMS\Admin\AudioPage;
+use DeutschLMS\Admin\CourseArrange;
 use DeutschLMS\Admin\CourseBuilder;
 use DeutschLMS\Admin\CourseSettings;
 use DeutschLMS\Admin\ListTables;
@@ -216,6 +217,7 @@ final class Plugin {
 		if ( is_admin() ) {
 			( new CourseBuilder() )->register_hooks();
 			( new CourseSettings() )->register_hooks();
+			( new CourseArrange() )->register_hooks();
 			( new QuizEditor( $this->structure, $this->structure_editor, $this->bank ) )->register_hooks();
 			( new QuestionEditor( $this->bank ) )->register_hooks();
 			( new QuestionList( $this->structure, $this->bank ) )->register_hooks();

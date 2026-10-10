@@ -6,7 +6,7 @@ their progress and hand out PDF certificates. It was built for teaching
 German, so its quizzes include gap-fill and word-order questions with
 an ä/ö/ü/ß keyboard bar, but it works for any subject.
 
-- **Version:** 0.5.0
+- **Version:** 0.5.1
 - **Requires:** WordPress 6.5 or newer, PHP 8.1 or newer
 - **License:** GPL-2.0-or-later (see [License](#license))
 - **Languages:** English, plus full German and Tagalog translations
@@ -256,6 +256,26 @@ To list your courses on a page, add the **Course grid** block (or
 `[dlms_course_grid]`). For a "My courses" page, add the **Student dashboard**
 block (or `[dlms_student_dashboard]`).
 
+### Arranging the course grid
+
+The grid shows the published courses in the order you set on
+**Courses → Arrange courses**: drag the courses (or use the arrow buttons),
+choose a level (A1 … C2) for each and save. Courses without a position
+come first, by title. The level can also be set in a course's own
+**Course settings** box.
+
+| Attribute | Values | Effect |
+| --- | --- | --- |
+| `orderby` | `menu_order` (default), `title`, `date` | `menu_order` is the arrangement; `date` is newest first |
+| `order` | `ASC`, `DESC` | Flips the direction (empty = natural order) |
+| `ids` | `"12,5,9"` | Only these courses, in this order |
+| `group_by` | `level` | A heading (A1, A2 …) above each level's courses; courses without a level follow under "Other courses" |
+| `per_page` | 1–48 (default 48) | Most courses shown |
+
+Example: `[dlms_course_grid columns="3" group_by="level"]`. The heading text
+can be changed with the `dlms_course_level_label` filter. The **Course grid**
+block keeps its own options (date, title or menu order, without groups).
+
 ---
 
 ## The question bank
@@ -398,7 +418,7 @@ quiz.
 | Progress bar | `[dlms_progress_bar course_id="" show_label="yes"]` | The student's progress in a course |
 | Enroll button | `[dlms_enroll_button course_id=""]` | Enroll / Continue / Certificate button |
 | Mark complete | `[dlms_mark_complete step_id=""]` | The "Mark complete" button for a lesson or topic |
-| Course grid | `[dlms_course_grid columns="3" per_page="12" orderby="date" show_progress="yes"]` | A grid of courses |
+| Course grid | `[dlms_course_grid columns="3" per_page="48" orderby="menu_order" order="" ids="" group_by="" show_progress="yes"]` | A grid of courses, see [Arranging the course grid](#arranging-the-course-grid) |
 | Student dashboard | `[dlms_student_dashboard show_completed="yes"]` | The student's courses, progress and certificates |
 
 An empty `course_id` / `step_id` means "the course or step of the current

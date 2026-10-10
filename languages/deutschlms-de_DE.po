@@ -3126,3 +3126,57 @@ msgstr "meine kurse"
 msgctxt "block keyword"
 msgid "account"
 msgstr "konto"
+
+#: src/Frontend/Renderer.php
+msgid "Other courses"
+msgstr "Weitere Kurse"
+
+#: src/Admin/CourseArrange.php
+msgid "Arrange courses"
+msgstr "Kurse anordnen"
+
+#: src/Admin/CourseArrange.php
+#. translators: 1: course title, 2: new position, 3: number of courses.
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "%1$s wurde an Position %2$d von %3$d verschoben."
+
+#: src/Admin/CourseArrange.php
+msgid "The order and levels are saved."
+msgstr "Die Reihenfolge und die Niveaus sind gespeichert."
+
+#: src/Admin/CourseArrange.php
+msgid "Drag the courses into the order you want them to appear in on the Kurse page, or use the arrow buttons. Choose a level for every course: with grouping by level, the course grid shows a heading (A1, A2 …) above each group and keeps this order inside the group. Draft courses are listed too; the course grid shows published ones only."
+msgstr "Ziehen Sie die Kurse in die Reihenfolge, in der sie auf der Seite „Kurse“ erscheinen sollen, oder nutzen Sie die Pfeiltasten. Wählen Sie für jeden Kurs ein Niveau: Bei der Gruppierung nach Niveau zeigt die Kursübersicht über jeder Gruppe eine Überschrift (A1, A2 …) und behält diese Reihenfolge innerhalb der Gruppe bei. Entwürfe werden ebenfalls aufgeführt; die Kursübersicht zeigt nur veröffentlichte Kurse."
+
+#: src/Admin/CourseArrange.php
+msgid "There are no courses yet."
+msgstr "Es gibt noch keine Kurse."
+
+#: src/Admin/CourseArrange.php
+msgid "Level"
+msgstr "Niveau"
+
+#: src/Admin/CourseArrange.php
+msgid "No level"
+msgstr "Kein Niveau"
+
+#: src/Admin/CourseArrange.php
+msgid "Move up"
+msgstr "Nach oben"
+
+#: src/Admin/CourseArrange.php
+msgid "Move down"
+msgstr "Nach unten"
+
+#: src/Admin/CourseArrange.php
+msgid "Save order and levels"
+msgstr "Reihenfolge und Niveaus speichern"
+
+#: src/Admin/CourseArrange.php
+#. translators: %s: shortcode.
+msgid "Show the courses on a page with %s. Without group_by the courses follow this order without headings."
+msgstr "Zeigen Sie die Kurse auf einer Seite mit %s an. Ohne group_by folgen die Kurse dieser Reihenfolge ohne Überschriften."
+
+#: src/Admin/CourseSettings.php
+msgid "The heading the course appears under in the course grid with group_by=\"level\". The order of the courses is set under Courses → Arrange courses."
+msgstr "Die Überschrift, unter der der Kurs in der Kursübersicht mit group_by=\"level\" erscheint. Die Reihenfolge der Kurse legen Sie unter Kurse → Kurse anordnen fest."

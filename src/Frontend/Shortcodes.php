@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
  * [dlms_progress_bar course_id="" show_label="yes"]
  * [dlms_enroll_button course_id=""]
  * [dlms_mark_complete step_id=""]
- * [dlms_course_grid columns="3" per_page="12" orderby="date" show_progress="yes"]
+ * [dlms_course_grid columns="3" per_page="48" orderby="menu_order" order="" ids="" group_by="" show_progress="yes"]
  * [dlms_student_dashboard show_completed="yes"]
  *
  * An empty course_id/step_id means "the current course/step".
@@ -221,7 +221,13 @@ final class Shortcodes {
 	}
 
 	/**
-	 * [dlms_course_grid].
+	 * [dlms_course_grid]: published courses.
+	 *
+	 * Attributes: orderby is menu_order (default: the arrangement from Courses →
+	 * Arrange courses), title or date (newest first); order is ASC or DESC (empty
+	 * = the natural order of orderby); ids ("12,5,9") shows only those courses,
+	 * in that order; group_by="level" puts a heading per level (A1, A2 …) above
+	 * its courses.
 	 *
 	 * @param array|string $atts Attributes.
 	 * @return string
@@ -230,8 +236,11 @@ final class Shortcodes {
 		$atts = shortcode_atts(
 			array(
 				'columns'       => 3,
-				'per_page'      => 12,
-				'orderby'       => 'date',
+				'per_page'      => 48,
+				'orderby'       => 'menu_order',
+				'order'         => '',
+				'ids'           => '',
+				'group_by'      => '',
 				'show_progress' => 'yes',
 			),
 			$atts,
@@ -243,6 +252,9 @@ final class Shortcodes {
 					'columns'       => absint( $atts['columns'] ),
 					'per_page'      => absint( $atts['per_page'] ),
 					'orderby'       => sanitize_key( $atts['orderby'] ),
+					'order'         => sanitize_key( $atts['order'] ),
+					'ids'           => array_filter( array_map( 'absint', explode( ',', (string) $atts['ids'] ) ) ),
+					'group_by'      => sanitize_key( $atts['group_by'] ),
 					'show_progress' => $this->flag( $atts['show_progress'] ),
 				)
 			)
